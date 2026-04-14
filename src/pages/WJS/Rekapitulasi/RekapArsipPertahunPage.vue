@@ -1,0 +1,153 @@
+<template>
+  <div class="q-pa-md">
+    <q-card class="tw-shadow-2xl tw-rounded-2xl tw-overflow-hidden">
+      <q-card-section :class="`side-${domain()}-1 tw-py-6`">
+        <div class="tw-flex tw-items-center tw-gap-3">
+          <q-icon name="trending_up" size="28px" class="tw-text-white"/>
+          <div>
+            <div class="text-h6 tw-text-white tw-font-bold">Grafik Perubahan Arsip BU Pertahun</div>
+            <div class="tw-flex tw-items-center tw-gap-2 tw-text-blue-100 tw-text-xs">
+              <q-icon name="home" size="14px"/><q-icon name="chevron_right" size="14px"/>
+              <span class="tw-text-white">Rekapitulasi</span><q-icon name="chevron_right" size="14px"/>
+              <span class="tw-text-white">Arsip Pertahun</span>
+            </div>
+          </div>
+        </div>
+      </q-card-section>
+
+      <q-card-section class="tw-p-6 tw-pb-4">
+        <RekapFilterSection
+          v-model:filter-bu="filter.bu_id" v-model:filter-lokasi-arsip="filter.lokasi_arsip_id"
+          v-model:filter-kategori="filter.kategori" v-model:filter-divisi="filter.divisi"
+          v-model:filter-from="filter.from" v-model:filter-to="filter.to" v-model:filter-tipe="filter.tipe"
+          period-type="number" period-label="Tahun"
+        >
+          <template #actions>
+            <q-btn unelevated color="blue-6" label="Tampilkan" icon="visibility"
+              class="tw-font-semibold tw-px-4 tw-rounded-lg" @click="loadData"/>
+          </template>
+        </RekapFilterSection>
+      </q-card-section>
+
+      <q-card-section class="tw-p-6">
+        <div v-if="tableData.length === 0 && !isLoading" class="tw-text-center tw-py-10 tw-text-slate-400">
+          <q-icon name="trending_up" size="48px" class="tw-mb-2"/>
+          <div>Tidak ada data. Silakan ubah filter dan klik Tampilkan.</div>
+        </div>
+        <template v-if="tableData.length > 0">
+          <!-- Horizontal Table (3 rows: TAHUN, JUMLAH, PERSENTASE) -->
+          <div class="tw-overflow-x-auto tw-mb-6">
+            <div class="tw-font-bold tw-text-slate-700 tw-mb-2">{{ tableTitle }}</div>
+            <table class="tw-w-full tw-border-collapse tw-text-sm">
+              <tr>
+                <td class="tw-bg-yellow-50 tw-border tw-px-3 tw-py-2 tw-text-center tw-font-bold">TAHUN</td>
+                <td v-for="d in tableData" :key="'t-'+d.tahun"
+                  class="tw-bg-yellow-50 tw-border tw-px-3 tw-py-1 tw-text-center tw-font-bold">{{ d.tahun }}</td>
+              </tr>
+              <tr>
+                <td class="tw-bg-yellow-50 tw-border tw-px-3 tw-py-2 tw-text-center tw-font-bold">JUMLAH ARSIP</td>
+                <td v-for="d in tableData" :key="'j-'+d.tahun" class="tw-border tw-px-3 tw-py-1 tw-text-center">
+                  {{ Number(d.jumlah).toLocaleString() }}
+                </td>
+              </tr>
+              <tr>
+                <td class="tw-bg-yellow-50 tw-border tw-px-3 tw-py-2 tw-text-center tw-font-bold tw-whitespace-nowrap">PERSENTASE PERUBAHAN</td>
+                <td v-for="d in tableData" :key="'p-'+d.tahun" class="tw-border tw-px-3 tw-py-1 tw-text-center">
+                  {{ Number(d.prosentase_perubahan).toFixed(2) }}%
+                </td>
+              </tr>
+            </table>
+          </div>
+          <!-- Chart: 1 horizontal grouped bar (jumlah + persentase) -->
+          <div class="tw-bg-white tw-rounded-xl tw-shadow-md tw-p-4">
+            <apexchart :key="chartKey" type="bar" :height="dynHeight" :options="chartOpts" :series="chartSeries"/>
+          </div>
+        </template>
+      </q-card-section>
+    </q-card>
+  </div>
+</template>
+<script setup>
+import { ref, reactive, onMounted, computed, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import { Loading } from 'quasar';
+import { spinnerBall, decryptMessage, empid, domain } from '../../../utils';
+import RekapFilterSection from '../../../components/WJS/Rekapitulasi/RekapFilterSection.vue';
+import { useChartColors } from '../../../composables/useChartColors';
+
+const router = useRouter();
+const { chartHeight: calcHeight } = useChartColors();
+const tmpPage = reactive({ add:'0', edit:'0', delete:'0', view:'0', admin:'0' });
+const filter = reactive({ bu_id:null, lokasi_arsip_id:null, kategori:null, divisi:null, from:null, to:null, tipe:null });
+const tableData = ref([]);
+const chartKey = ref(0);
+const isLoading = ref(false);
+
+const getPageAkses = async () => {
+  try {
+    spinnerBall();
+    const res = await axios.get(`${import.meta.env.VITE_API}pageakses`, {
+      params: { role: empid(), page: '/dms/rekapitulasi/rekap-arsip-pertahun', domain: domain() }
+    });
+    tmpPage.add = decryptMessage(res.data.add); tmpPage.edit = decryptMessage(res.data.edit);
+    tmpPage.delete = decryptMessage(res.data.delete); tmpPage.view = decryptMessage(res.data.view);
+    Loading.hide();
+  } catch (error) { Loading.hide(); }
+};
+
+const cleanParams = (obj) => {
+  const cleaned = {};
+  for (const [k, v] of Object.entries(obj)) { if (v != null && v !== '') cleaned[k] = v; }
+  return cleaned;
+};
+
+const loadData = async () => {
+  try {
+    isLoading.value = true;
+    spinnerBall();
+    const res = await axios.get(`${import.meta.env.VITE_API}dms/rekapitulasi/rekap-arsip-pertahun`, {
+      params: cleanParams({ ...filter, empid: empid() })
+    });
+    tableData.value = res.data.data || [];
+    Loading.hide();
+    isLoading.value = false;
+    await nextTick();
+    chartKey.value++;
+  } catch (e) { Loading.hide(); isLoading.value = false; console.error(e); }
+};
+
+const tableTitle = computed(() => {
+  let buLabel = 'All BU';
+  if (filter.bu_id) {
+    const first = tableData.value.length > 0 ? tableData.value[0] : null;
+    if (first && (first.bu_name || first.BU_NAME)) buLabel = first.bu_name || first.BU_NAME;
+  }
+  return `Data Perubahan Jumlah Arsip ${buLabel}`;
+});
+const chartTitle = computed(() => tableTitle.value.replace('Data', 'Grafik'));
+
+const dynHeight = computed(() => calcHeight(tableData.value.length, 50, 150));
+
+const chartOpts = computed(() => ({
+  chart: { type: 'bar', toolbar: { show: true } },
+  plotOptions: { bar: { horizontal: true, borderRadius: 3, barHeight: '70%' } },
+  xaxis: { title: { text: '' } },
+  yaxis: { labels: { maxWidth: 80 } },
+  colors: ['rgba(54, 162, 235, 0.8)', 'rgba(255, 159, 64, 0.8)'],
+  dataLabels: { enabled: true, style: { fontSize: '10px' } },
+  legend: { position: 'bottom' },
+  title: { text: chartTitle.value, align: 'center', style: { fontSize: '14px' } },
+  tooltip: {
+    y: { formatter: (val, opts) => opts.seriesIndex === 1 ? `${val}%` : val }
+  },
+}));
+const chartSeries = computed(() => [
+  { name: 'Jumlah Arsip', data: tableData.value.map(d => ({ x: String(d.tahun), y: Number(d.jumlah) || 0 })) },
+  { name: 'Persentase Perubahan (%)', data: tableData.value.map(d => ({ x: String(d.tahun), y: Number(d.prosentase_perubahan) || 0 })) },
+]);
+
+onMounted(() => { getPageAkses(); loadData(); });
+</script>
+
+
