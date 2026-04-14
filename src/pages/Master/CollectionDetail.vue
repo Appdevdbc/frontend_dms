@@ -14,7 +14,7 @@
               <div class="tw-flex tw-items-center tw-gap-2 tw-text-blue-100 tw-text-xs">
                 <q-icon name="home" size="14px"/>
                 <q-icon name="chevron_right" size="14px"/>
-                <router-link :to="{ path: '/collection' }" class="tw-text-white hover:tw-text-blue-200 tw-transition-colors tw-no-underline">
+                <router-link :to="{ path: '/master/collection' }" class="tw-text-white hover:tw-text-blue-200 tw-transition-colors tw-no-underline">
                   Master Collection
                 </router-link>
                 <q-icon name="chevron_right" size="14px"/>
@@ -486,7 +486,7 @@ const onRequest = (props) => {
 };
 
 const back = async () => {
- router.push({path: `/collection`})
+ router.push({path: `/master/collection`})
 };
 
 const updateTable = async () => {

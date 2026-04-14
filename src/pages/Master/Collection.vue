@@ -513,7 +513,7 @@ const addMenu = async () => {
 };
 
 const detailMenu = (value) => {
-  router.push("/collection-detail/"+ encrypt(value.colid.toString()) +"/"+encrypt(value.col_parent.toString())+"/"+encrypt(`${value.menu_name} (${value.col_name})`));      
+  router.push("/master/collection-detail/"+ encrypt(value.colid.toString()) +"/"+encrypt(value.col_parent.toString())+"/"+encrypt(`${value.menu_name} (${value.col_name})`));      
 };
 
 const editMenu = async (value) => {

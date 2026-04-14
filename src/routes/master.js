@@ -51,6 +51,50 @@ export default [
         component: () => import("./../pages/Master/Gencode.vue"),
       },
       {
+        path: "machining",
+        component: () => import("./../pages/Master/Machining.vue"),
+      },
+      {
+        path: "parts",
+        component: () => import("./../pages/Master/Parts.vue"),
+      },
+      {
+        path: "machine",
+        component: () => import("./../pages/Master/Machine.vue"),
+      },
+      {
+        path: "template",
+        component: () => import("./../pages/Master/Template.vue"),
+      },
+      {
+        path: "job-type",
+        component: () => import("./../pages/Master/JobType.vue"),
+      },
+      {
+        path: "department",
+        component: () => import("./../pages/Master/Department.vue"),
+      },
+      {
+        path: "group-department",
+        component: () => import("./../pages/Master/GroupDepartment.vue"),
+      },
+      {
+        path: "tjkn",
+        component: () => import("./../pages/Master/TJKN.vue"),
+      },
+      {
+        path: "tjkn-employee",
+        component: () => import("./../pages/Master/TJKNEmployee.vue"),
+      },
+      {
+        path: "employee",
+        component: () => import("./../pages/Master/Employee.vue"),
+      },
+      {
+        path: "break-time",
+        component: () => import("./../pages/Master/BreakTime.vue"),
+      },
+      {
         path: "error-list",
         component: () => import("./../pages/Master/ErrorList.vue"),
       },

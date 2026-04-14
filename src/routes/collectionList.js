@@ -21,6 +21,14 @@ export default [
         component: () => import("./../pages/WJS/Master/Index.vue"),
       },
       {
+        path: "collection/wjs-master-data",
+        component: () => import("./../pages/WJS/MasterData/Index.vue"),
+      },
+      {
+        path: "collection/wjs-master-transactions",
+        component: () => import("./../pages/WJS/MasterTransactions/Index.vue"),
+      },
+      {
         path: "collection/dms-no-document",
         component: () => import("./../pages/WJS/Agreement/Index.vue"),
       },
@@ -43,6 +51,10 @@ export default [
       {
         path: "collection/dms-report",
         component: () => import("./../pages/WJS/Document/Index.vue"),
+      },
+      {
+        path: "collection-detail/:id/:parent/:parentName",
+        component: () => import("./../pages/Master/CollectionDetail.vue"),
       },
     ],
     beforeEnter: (to, from, next) => {
