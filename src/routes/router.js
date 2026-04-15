@@ -4,6 +4,7 @@ import { role } from "./../utils";
 import master from './master';
 import dms from './wjs';
 import collection from './collectionList';
+import spk from './spk';
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -11,6 +12,7 @@ const router = createRouter({
     ...master,//Master general
     ...collection,//List Collection
     ...dms,//DMS routes
+    ...spk,//SPK routes
     // Standalone approval pages (no auth, no sidebar)
     {
       path: "/approval/mutasi",
