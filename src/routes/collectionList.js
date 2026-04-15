@@ -29,6 +29,10 @@ export default [
         component: () => import("./../pages/WJS/MasterTransactions/Index.vue"),
       },
       {
+        path: "collection/terima-spk",
+        component: () => import("./../pages/WJS/TerimaSPK/Index.vue"),
+      },
+      {
         path: "collection/dms-no-document",
         component: () => import("./../pages/WJS/Agreement/Index.vue"),
       },

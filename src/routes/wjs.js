@@ -1,6 +1,6 @@
 export default [
   {
-    path: "/dms",
+    path: "/wjs",
     component: () => import("./../layouts/MainLayout.vue"),
     children: [
       {
@@ -271,6 +271,23 @@ export default [
         path: "rekapitulasi/perbandingan",
         name: "RekapPerbandingan",
         component: () => import("./../pages/WJS/Rekapitulasi/RekapPerbandinganPage.vue"),
+      },
+      // TerimaSPK routes
+      {
+        path: "terima-spk",
+        component: () => import("./../pages/WJS/TerimaSPK/Index.vue"),
+      },
+      {
+        path: "terima-spk/list/:id_group?",
+        component: () => import("./../pages/WJS/TerimaSPK/TerimaSPKPage.vue"),
+      },
+      {
+        path: "terima-spk/proses",
+        component: () => import("./../pages/WJS/TerimaSPK/ProsesSPKPage.vue"),
+      },
+      {
+        path: "terima-spk/close",
+        component: () => import("./../pages/WJS/TerimaSPK/CloseSPKPage.vue"),
       },
       // Document routes
       {
