@@ -57,6 +57,10 @@ export default [
         component: () => import("./../pages/WJS/Document/Index.vue"),
       },
       {
+        path: "collection/report-service-level",
+        component: () => import("./../pages/Report/ServiceLevelCollection/Index.vue"),
+      },
+      {
         path: "collection-detail/:id/:parent/:parentName",
         component: () => import("./../pages/Master/CollectionDetail.vue"),
       },

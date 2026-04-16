@@ -27,6 +27,13 @@ if (savedToken) {
 // and placed in same folder as main.js
 import App from "./App.vue";
 import VueApexCharts from "vue3-apexcharts";
+import HighchartsVue from "highcharts-vue";
+import Highcharts from "highcharts";
+
+// Suppress accessibility warning — we don't use the accessibility module
+Highcharts.setOptions({
+  accessibility: { enabled: false },
+});
 
 const myApp = createApp(App);
 
@@ -37,10 +44,10 @@ myApp.use(Quasar, {
     Dialog,
     Loading,
     Notify,
-  }, // import Quasar plugins and add here
+  },
 });
 
-// Assumes you have a <div id="app"></div> in your index.html
 myApp.use(router);
 myApp.use(VueApexCharts);
+myApp.use(HighchartsVue);
 myApp.mount("#app");
