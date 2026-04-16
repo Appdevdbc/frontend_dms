@@ -61,6 +61,14 @@ export default [
         component: () => import("./../pages/Report/ServiceLevelCollection/Index.vue"),
       },
       {
+        path: "collection/report-spk",
+        component: () => import("./../pages/Report/SpkCollection/Index.vue"),
+      },
+      {
+        path: "collection/report-lainnya",
+        component: () => import("./../pages/Report/OtherReportCollection/Index.vue"),
+      },
+      {
         path: "collection-detail/:id/:parent/:parentName",
         component: () => import("./../pages/Master/CollectionDetail.vue"),
       },
