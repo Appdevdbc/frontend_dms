@@ -41,8 +41,9 @@
                 <q-checkbox
                   :model-value="isAllSelected"
                   @update:model-value="toggleSelectAll"
-                  color="white"
-                  dark
+                  color="black"
+                  keep-color
+                  class="checkbox-white-outline"
                 />
               </q-th>
               <q-th
@@ -404,3 +405,9 @@ const onCetak = async (row) => {
 
 // onMounted(() => getPageAkses());
 </script>
+
+<style scoped>
+.checkbox-white-outline :deep(.q-checkbox__bg) {
+  border-color: white !important;
+}
+</style>

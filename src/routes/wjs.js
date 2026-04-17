@@ -273,9 +273,40 @@ export default [
         component: () => import("./../pages/WJS/Rekapitulasi/RekapPerbandinganPage.vue"),
       },
       {
-        path: "dashboard",
+        path: "report/dashboard",
         name: "WJSDashboard",
         component: () => import("./../pages/WJS/DashboardPage.vue"),
+      },
+      // OrderPart / Transaksi routes
+      {
+        path: "transaksi/order-part",
+        component: () => import("./../pages/WJS/OrderPart/OrderPartPage.vue"),
+        props: { section: "order_part" },
+      },
+      {
+        path: "transaksi/bongkar-analisis",
+        component: () => import("./../pages/WJS/OrderPart/OrderPartPage.vue"),
+        props: { section: "bongkar_analisis" },
+      },
+      {
+        path: "transaksi/drawing",
+        component: () => import("./../pages/WJS/OrderPart/OrderPartPage.vue"),
+        props: { section: "drawing" },
+      },
+      {
+        path: "transaksi/assy",
+        component: () => import("./../pages/WJS/OrderPart/OrderPartPage.vue"),
+        props: { section: "assy" },
+      },
+      {
+        path: "transaksi/trial",
+        component: () => import("./../pages/WJS/OrderPart/OrderPartPage.vue"),
+        props: { section: "trial" },
+      },
+      {
+        path: "transaksi/adjustment",
+        name: "Adjustment",
+        component: () => import("./../pages/WJS/MachiningProses/AdjustmentPage.vue"),
       },
       // TerimaSPK routes
       {
