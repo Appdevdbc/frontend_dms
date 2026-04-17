@@ -51,12 +51,12 @@
               <div
                 v-for="(item, index) in listData"
                 :key="index"
-                class="tw-group tw-relative tw-flex tw-flex-col tw-items-center tw-space-y-3 tw-p-5 tw-rounded-2xl tw-shadow-lg hover:tw-shadow-2xl tw-transition-all tw-duration-500 hover:tw--translate-y-3 tw-border-2 hover:tw-border-gray-200 tw-cursor-pointer card-hover no-ripple" 
-                :style="{background: `linear-gradient(135deg, ${item.color}08, white)`, borderColor: `${item.color}20`}"
+                class="tw-group tw-relative tw-flex tw-flex-col tw-items-center tw-space-y-3 tw-p-5 tw-rounded-2xl tw-shadow-lg hover:tw-shadow-2xl tw-transition-all tw-duration-500 hover:tw--translate-y-3 tw-cursor-pointer card-hover no-ripple" 
+                :style="{background: `linear-gradient(135deg, ${item.color}30, ${item.color}15)`, border: `1px solid ${item.color}50`}"
                 @click.stop.prevent="goto(item.menu_link)"
               >
                 <!-- Animated Background Gradient -->
-                <div class="tw-absolute tw-inset-0 tw-rounded-2xl tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity tw-duration-500" :style="{background: `linear-gradient(135deg, ${item.color}20, ${item.color}08)`}"></div>
+                <div class="tw-absolute tw-inset-0 tw-rounded-2xl tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity tw-duration-500" :style="{background: `linear-gradient(135deg, ${item.color}50, ${item.color}25)`}"></div>
                 
                 <!-- Corner Accent -->
                 <div class="tw-absolute tw-top-0 tw-right-0 tw-w-12 tw-h-12 tw-opacity-0 group-hover:tw-opacity-100 tw-transition-all tw-duration-500" :style="{background: `linear-gradient(135deg, ${item.color}40, transparent)`, borderRadius: '0 1rem 0 1rem'}"></div>
@@ -110,7 +110,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios"
-import { ParseError, domain, role, spinnerBall, lightenColor, invertColor, darkenColor, empid} from "../../../utils";
+import { ParseError, domain, role, spinnerBall, lightenColor, empid} from "../../../utils";
 import { Loading } from "quasar";
 import { useRouter, useRoute} from "vue-router";
 
@@ -144,10 +144,13 @@ const goto = async (value) => {
  router.push({path: `${value}`})
 };
 
-const setdarkenColor= (hex, percent) => {
-   const inverted = invertColor(hex);
-   return darkenColor(inverted,percent)
-}
+const setdarkenColor = (hex, percent) => {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.max(0, Math.round((num >> 16) * (1 - percent / 100)));
+  const g = Math.max(0, Math.round(((num >> 8) & 0xff) * (1 - percent / 100)));
+  const b = Math.max(0, Math.round((num & 0xff) * (1 - percent / 100)));
+  return `rgb(${r},${g},${b})`;
+};
 
 const filterMenu = async (val) => {
       if (val === '') {
