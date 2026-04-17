@@ -272,10 +272,14 @@ export default [
         name: "RekapPerbandingan",
         component: () => import("./../pages/WJS/Rekapitulasi/RekapPerbandinganPage.vue"),
       },
+      {
+        path: "dashboard",
+        name: "WJSDashboard",
+        component: () => import("./../pages/WJS/DashboardPage.vue"),
+      },
       // TerimaSPK routes
       {
-        path: "terima-spk",
-        component: () => import("./../pages/WJS/TerimaSPK/Index.vue"),
+        path: "terima-spk",        component: () => import("./../pages/WJS/TerimaSPK/Index.vue"),
       },
       {
         path: "terima-spk/list/:id_group?",
