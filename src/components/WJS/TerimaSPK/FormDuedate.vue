@@ -67,9 +67,32 @@ const isVisible = (field) => {
   return props.data?.jenis === "repair";
 };
 
-watch(() => props.modelValue, (val) => {
+watch(() => props.modelValue, async (val) => {
   if (val && props.data) {
-    fields.forEach((f) => { form[f.key] = props.data[f.key] ?? ""; });
+    // Fetch due date data from API
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_API}wjs/terimaSPK/duedate/${props.data.id_spk}`);
+      fields.forEach((f) => { 
+        const dateValue = res.data[f.key];
+        // Skip if null, empty, or 1900-01-01
+        if (!dateValue || dateValue === '1900-01-01' || dateValue.startsWith('1900-01-01')) {
+          form[f.key] = "";
+        } else {
+          form[f.key] = dateValue.split('T')[0];
+        }
+      });
+    } catch (e) {
+      // If error, use data from props (fallback)
+      fields.forEach((f) => { 
+        const dateValue = props.data[f.key];
+        // Skip if null, empty, or 1900-01-01
+        if (!dateValue || dateValue === '1900-01-01' || dateValue.startsWith('1900-01-01')) {
+          form[f.key] = "";
+        } else {
+          form[f.key] = dateValue.split('T')[0];
+        }
+      });
+    }
   }
 });
 

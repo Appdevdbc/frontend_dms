@@ -336,7 +336,7 @@ const onViewList = async (row) => {
   showListDialog.value = true;
   loadingDetail.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/adjusment/list/${row.id_spk}/${row.pic}`);
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/adjusment/list/${row.id_spk}/${row.pic}`);
     const data = Array.isArray(res.data) ? res.data : [];
     
     // Initialize edit form for each row (PHP style)
@@ -346,9 +346,9 @@ const onViewList = async (row) => {
         ...item,
         saving: false,
         editForm: {
-          tanggal: dt ? dayjs(dt).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"),
-          jam:     dt ? dayjs(dt).format("HH") : dayjs().format("HH"),
-          menit:   dt ? dayjs(dt).format("mm") : dayjs().format("mm"),
+          tanggal: dt ? dayjs.utc(dt).format("DD-MM-YYYY") : dayjs().utc().format("DD-MM-YYYY"),
+          jam:     dt ? dayjs.utc(dt).format("HH") : dayjs().format("HH"),
+          menit:   dt ? dayjs.utc(dt).format("mm") : dayjs().utc().format("mm"),
         }
       };
     });
@@ -367,8 +367,7 @@ const onSaveInline = async (row) => {
 
   row.saving = true;
   try {
-<<<<<<< HEAD
-    await axios.post(`${import.meta.env.VITE_API}dms/adjustment/store`, {
+    await axios.post(`${import.meta.env.VITE_API}wjs/adjustment/store`, {
       id:       row.id,
       id_spk:   row.id_spk,
       id_mesin: row.id_mesin,
@@ -377,14 +376,6 @@ const onSaveInline = async (row) => {
       jam:      row.editForm.jam,
       menit:    row.editForm.menit,
       action:   row.finish ? "finish" : "postpone",
-=======
-    await axios.post(`${import.meta.env.VITE_API}wjs/adjustment/store`, {
-      id:       editData.value.id,
-      id_spk:   editData.value.id_spk,
-      id_mesin: editData.value.id_mesin,
-      pic:      editData.value.pic,
-      ...editForm.value,
->>>>>>> 0953232a455187841912e100eb85b88bd4104e2a
     });
     success("Adjustment berhasil disimpan");
     // Reload the list
