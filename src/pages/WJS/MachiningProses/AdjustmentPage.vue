@@ -20,39 +20,114 @@
       <q-separator />
 
       <!-- Filter Section -->
-      <q-card-section class="tw-bg-white tw-p-6">
-        <div class="tw-flex tw-items-end tw-gap-4 tw-flex-wrap">
-          <q-select
-            v-model="filterSection"
-            :options="sectionOptions"
-            label="Section"
-            outlined dense emit-value map-options
-            class="tw-min-w-[220px]"
-          />
-          <q-input v-model="filterStart" type="date" label="Dari Tanggal" outlined dense class="tw-min-w-[160px]" />
-          <q-input v-model="filterEnd"   type="date" label="Sampai Tanggal" outlined dense class="tw-min-w-[160px]" />
+      <q-card-section class="tw-bg-slate-50">
+        <div class="tw-font-bold tw-text-lg tw-mb-4 tw-flex tw-items-center tw-gap-2">
+          <q-icon name="filter_alt" size="24px" :color="`${domain()}`"/>
+          Filter
+        </div>
+        <div class="row q-col-gutter-md">
+          <div class="col-12 col-md-4">
+            <q-select
+              outlined
+              v-model="filterSection"
+              :options="sectionOptions"
+              label="Section"
+              emit-value
+              map-options
+              class="tw-rounded-lg"
+            >
+              <template v-slot:prepend>
+                <q-icon name="category" :color="`${domain()}`"/>
+              </template>
+            </q-select>
+          </div>
+          
+          <div class="col-12 col-md-4">
+            <q-input
+              outlined
+              v-model="filterStart"
+              type="date"
+              label="Dari Tanggal"
+              class="tw-rounded-lg"
+            >
+              <template v-slot:prepend>
+                <q-icon name="event" :color="`${domain()}`"/>
+              </template>
+            </q-input>
+          </div>
+          
+          <div class="col-12 col-md-4">
+            <q-input
+              outlined
+              v-model="filterEnd"
+              type="date"
+              label="Sampai Tanggal"
+              class="tw-rounded-lg"
+            >
+              <template v-slot:prepend>
+                <q-icon name="event" :color="`${domain()}`"/>
+              </template>
+            </q-input>
+          </div>
+        </div>
+        
+        <div class="tw-flex tw-gap-3 tw-mt-4">
           <q-btn
-            unelevated :color="`${domain()}`" icon="search" label="Cari"
-            class="tw-font-semibold tw-px-5 tw-rounded-lg"
-            :loading="loading"
+            unelevated
+            :color="`${domain()}`"
+            label="Cari"
+            icon="search"
             @click="loadList"
+            :loading="loading"
+            class="tw-font-semibold tw-px-6 tw-rounded-lg"
           />
         </div>
       </q-card-section>
     </q-card>
 
     <!-- Tabel Adjustment -->
-    <q-card class="tw-shadow-md tw-rounded-2xl tw-overflow-hidden">
-      <q-card-section class="tw-p-4">
+    <q-card class="tw-shadow-2xl tw-rounded-2xl tw-overflow-hidden tw-mt-4">
+      <q-card-section class="tw-bg-white">
         <q-table
           :rows="rows"
           :columns="columns"
           row-key="id"
           :loading="loading"
+          :filter="searchText"
+          :pagination.sync="pagination"
           flat
-          :rows-per-page-options="[10, 25, 50]"
-          class="tw-rounded-xl tw-overflow-hidden"
+          :rows-per-page-options="[10, 25, 50, 100]"
+          class="tw-shadow-md tw-rounded-xl tw-overflow-hidden"
         >
+          <template v-slot:top-left>
+            <div class="tw-flex tw-items-center tw-gap-2 tw-bg-white tw-px-4 tw-py-2 tw-rounded-lg tw-shadow-sm">
+              <q-icon name="view_headline" color="blue-6" size="20px">
+                <q-tooltip class="tw-bg-slate-800 tw-text-xs">Rows per page</q-tooltip>
+              </q-icon>
+              <q-select
+                borderless
+                dense
+                v-model="pagination.rowsPerPage"
+                :options="[10, 25, 50, 100]"
+                class="tw-min-w-[80px]"
+              />
+            </div>
+          </template>
+          
+          <template v-slot:top-right>
+            <q-input
+              outlined
+              dense
+              debounce="300"
+              v-model="searchText"
+              placeholder="Search..."
+              class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-min-w-[300px]"
+            >
+              <template v-slot:prepend>
+                <q-icon name="search" :color="`${domain()}`" />
+              </template>
+            </q-input>
+          </template>
           <template v-slot:header="props">
             <q-tr :props="props">
               <q-th v-for="col in props.cols" :key="col.name" :props="props"
@@ -87,13 +162,6 @@
                 >
                   <q-tooltip class="tw-bg-slate-800 tw-text-xs">Detail per SPK</q-tooltip>
                 </q-btn>
-                <q-btn
-                  round dense color="orange-6" icon="edit" size="sm"
-                  class="tw-shadow-md hover:tw-scale-110 tw-transition-all"
-                  @click="onEdit(props.row)"
-                >
-                  <q-tooltip class="tw-bg-slate-800 tw-text-xs">Edit Adjustment</q-tooltip>
-                </q-btn>
               </div>
             </q-td>
           </template>
@@ -101,111 +169,92 @@
       </q-card-section>
     </q-card>
 
-    <!-- Dialog: List by SPK -->
+    <!-- Dialog: List by SPK (PHP Style - Inline Edit Forms) -->
     <q-dialog v-model="showListDialog" maximized transition-show="slide-up" transition-hide="slide-down">
       <q-card>
         <q-card-section :class="`bg-${domain()} tw-flex tw-items-center tw-gap-3`">
           <q-icon name="list" size="24px" class="tw-text-white" />
           <span class="text-h6 tw-text-white tw-font-bold">
-            Detail — SPK {{ selectedRow?.id_spk }} / PIC {{ selectedRow?.pic }}
+            Edit Adjustment — SPK {{ selectedRow?.id_spk }} / PIC {{ selectedRow?.pic }}
           </span>
           <q-space />
           <q-btn flat round icon="close" color="white" @click="showListDialog = false" />
         </q-card-section>
-        <q-card-section class="tw-p-4">
-          <q-table
-            :rows="listBySPK"
-            :columns="detailColumns"
-            row-key="id"
-            :loading="loadingDetail"
-            flat
-            :rows-per-page-options="[0]"
-            class="tw-rounded-xl tw-overflow-hidden"
-          >
-            <template v-slot:header="props">
-              <q-tr :props="props">
-                <q-th v-for="col in props.cols" :key="col.name" :props="props"
-                  :class="`bg-${domain()} tw-text-white tw-font-bold tw-text-xs tw-uppercase tw-py-3`">
-                  {{ col.label }}
-                </q-th>
-              </q-tr>
-            </template>
-            <template v-slot:body-cell-actions="props">
-              <q-td :props="props" class="tw-py-3">
-                <q-btn
-                  round dense color="orange-6" icon="edit" size="sm"
-                  class="tw-shadow-md hover:tw-scale-110 tw-transition-all"
-                  @click="onEditFromList(props.row)"
-                >
-                  <q-tooltip class="tw-bg-slate-800 tw-text-xs">Edit</q-tooltip>
-                </q-btn>
-              </q-td>
-            </template>
-          </q-table>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-
-    <!-- Dialog: Edit Adjustment -->
-    <q-dialog v-model="showEditDialog" persistent>
-      <q-card style="min-width: 480px">
-        <q-card-section :class="`bg-${domain()}`">
-          <div class="text-h6 tw-text-white tw-font-bold tw-flex tw-items-center tw-gap-2">
-            <q-icon name="edit" />
-            Edit Adjustment
+        <q-card-section class="tw-p-6">
+          <div v-if="loadingDetail" class="tw-text-center tw-py-8">
+            <q-spinner color="primary" size="3em" />
           </div>
-        </q-card-section>
-        <q-separator />
+          <div v-else class="tw-space-y-4">
+            <!-- Loop through each record with inline edit form -->
+            <q-card v-for="(row, idx) in listBySPK" :key="row.id" class="tw-border tw-border-slate-200">
+              <q-card-section class="tw-bg-slate-50 tw-border-b tw-border-slate-200">
+                <div class="tw-font-bold tw-text-slate-700">
+                  Record #{{ idx + 1 }} - Section: {{ row.id_mesin }}
+                </div>
+              </q-card-section>
+              <q-card-section class="tw-p-4">
+                <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4 tw-mb-4">
+                  <div class="tw-text-sm">
+                    <span class="tw-font-semibold">Start:</span> {{ formatDt(row.start) }}
+                  </div>
+                  <div class="tw-text-sm">
+                    <span class="tw-font-semibold">Postpone:</span> {{ formatDt(row.postpone) }}
+                  </div>
+                  <div class="tw-text-sm">
+                    <span class="tw-font-semibold">Finish:</span> {{ formatDt(row.finish) }}
+                  </div>
+                </div>
 
-        <q-card-section class="tw-p-5 tw-space-y-3" v-if="editData">
-          <!-- Info readonly -->
-          <div class="tw-bg-slate-50 tw-rounded-lg tw-p-3 tw-text-sm tw-space-y-1">
-            <div><span class="tw-font-semibold">No SPK:</span> {{ editData.id_spk }}</div>
-            <div><span class="tw-font-semibold">PIC:</span> {{ editData.pic }}</div>
-            <div><span class="tw-font-semibold">Section/Mesin:</span> {{ editData.id_mesin }}</div>
-            <div v-if="editData.finish">
-              <span class="tw-font-semibold">Finish saat ini:</span>
-              {{ formatDt(editData.finish) }}
+                <!-- Inline Edit Form -->
+                <div class="tw-bg-blue-50 tw-p-4 tw-rounded-lg">
+                  <div class="tw-font-semibold tw-mb-3 tw-text-slate-700">
+                    {{ row.finish ? 'Edit Finish' : 'Edit Postpone' }}
+                  </div>
+                  <div class="tw-text-sm tw-mb-3 tw-font-bold">
+                    Current: {{ row.finish ? formatDt(row.finish) : formatDt(row.postpone) }}
+                  </div>
+                  <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-7 tw-gap-3 tw-items-end">
+                    <q-input
+                      v-model="row.editForm.tanggal"
+                      type="date"
+                      label="Tanggal"
+                      outlined dense
+                      class="md:tw-col-span-3"
+                    />
+                    <q-input
+                      v-model="row.editForm.jam"
+                      label="Jam" placeholder="10"
+                      outlined dense type="number" min="0" max="23"
+                      class="md:tw-col-span-2"
+                    />
+                    <q-input
+                      v-model="row.editForm.menit"
+                      label="Menit" placeholder="30"
+                      outlined dense type="number" min="0" max="59"
+                      class="md:tw-col-span-2"
+                    />
+                  </div>
+                  <div class="tw-mt-3">
+                    <q-btn
+                      unelevated :color="`${domain()}`" icon="save" label="Simpan"
+                      class="tw-font-semibold tw-px-5 tw-rounded-lg"
+                      :loading="row.saving"
+                      @click="onSaveInline(row)"
+                    />
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+
+            <div class="tw-mt-4">
+              <q-btn
+                flat color="grey-7" icon="arrow_back" label="Kembali"
+                class="tw-font-semibold tw-px-5 tw-rounded-lg"
+                @click="showListDialog = false"
+              />
             </div>
-            <div v-else-if="editData.postpone">
-              <span class="tw-font-semibold">Postpone saat ini:</span>
-              {{ formatDt(editData.postpone) }}
-            </div>
           </div>
-
-          <!-- Form edit -->
-          <div class="tw-grid tw-grid-cols-3 tw-gap-3">
-            <q-input
-              v-model="editForm.tanggal"
-              type="date" label="Tanggal *"
-              outlined dense
-              class="tw-col-span-3 md:tw-col-span-1"
-            />
-            <q-input
-              v-model="editForm.jam"
-              label="Jam *" placeholder="10"
-              outlined dense type="number" min="0" max="23"
-            />
-            <q-input
-              v-model="editForm.menit"
-              label="Menit *" placeholder="30"
-              outlined dense type="number" min="0" max="59"
-            />
-          </div>
-
-          <q-select
-            v-model="editForm.action"
-            :options="[{ label: 'Finish', value: 'finish' }, { label: 'Postpone', value: 'postpone' }]"
-            label="Action *"
-            outlined dense emit-value map-options
-          />
         </q-card-section>
-
-        <q-card-actions align="right" class="tw-px-5 tw-pb-5 tw-bg-slate-50">
-          <q-btn flat label="Batal" color="grey-7" icon="cancel" class="tw-font-semibold tw-px-5 tw-rounded-lg" @click="showEditDialog = false" />
-          <q-btn unelevated :color="`${domain()}`" label="Simpan" icon="save" class="tw-font-semibold tw-px-5 tw-rounded-lg"
-            :loading="saving" @click="onSave" />
-        </q-card-actions>
       </q-card>
     </q-dialog>
   </div>
@@ -228,16 +277,15 @@ const loading     = ref(false);
 const filterSection = ref("machining");
 const filterStart   = ref(dayjs().format("YYYY-MM-DD"));
 const filterEnd     = ref(dayjs().format("YYYY-MM-DD"));
+const searchText    = ref("");
+const pagination    = ref({
+  rowsPerPage: 10
+});
 
 const showListDialog  = ref(false);
 const listBySPK       = ref([]);
 const loadingDetail   = ref(false);
 const selectedRow     = ref(null);
-
-const showEditDialog  = ref(false);
-const editData        = ref(null);
-const saving          = ref(false);
-const editForm        = ref({ tanggal: "", jam: "", menit: "", action: "finish" });
 
 const sectionOptions = [
   { label: "Machining",        value: "machining" },
@@ -266,9 +314,8 @@ const detailColumns = [
   { name: "finish",    label: "Finish",   field: "finish",    align: "center", format: (v) => formatDt(v) },
 ];
 
-const formatDt = (v) => v ? dayjs.utc(v).format("DD/MM/YYYY HH:mm") : "-";
+const formatDt = (v) => v ? dayjs.utc(v).format("DD-MM-YYYY HH:mm") : "-";
 
-// ─── Load list ────────────────────────────────────────────────────────────────
 const loadList = async () => {
   loading.value = true;
   try {
@@ -283,16 +330,28 @@ const loadList = async () => {
   }
 };
 
-// ─── View list by SPK ─────────────────────────────────────────────────────────
+// ─── View list by SPK (PHP Style) ─────────────────────────────────────────────
 const onViewList = async (row) => {
   selectedRow.value = row;
   showListDialog.value = true;
   loadingDetail.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/adjustment/by-spk`, {
-      params: { spk: row.id_spk, pic: row.pic },
+    const res = await axios.get(`${import.meta.env.VITE_API}dms/adjusment/list/${row.id_spk}/${row.pic}`);
+    const data = Array.isArray(res.data) ? res.data : [];
+    
+    // Initialize edit form for each row (PHP style)
+    listBySPK.value = data.map(item => {
+      const dt = item.finish ?? item.postpone;
+      return {
+        ...item,
+        saving: false,
+        editForm: {
+          tanggal: dt ? dayjs(dt).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"),
+          jam:     dt ? dayjs(dt).format("HH") : dayjs().format("HH"),
+          menit:   dt ? dayjs(dt).format("mm") : dayjs().format("mm"),
+        }
+      };
     });
-    listBySPK.value = Array.isArray(res.data) ? res.data : [];
   } catch (e) {
     error("Gagal memuat detail");
   } finally {
@@ -300,70 +359,32 @@ const onViewList = async (row) => {
   }
 };
 
-// ─── Edit dari tabel utama ────────────────────────────────────────────────────
-const onEdit = (row) => {
-  editData.value = {
-    id: row.id,
-    id_spk: row.id_spk,
-    id_mesin: row.id_mesin ?? filterSection.value,
-    pic: row.pic,
-    finish: row.finish,
-    postpone: row.postpone,
-  };
-  const dt = row.finish ?? row.postpone;
-  editForm.value = {
-    tanggal: dt ? dayjs(dt).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"),
-    jam:     dt ? dayjs.utc(dt).format("HH") : "17",
-    menit:   dt ? dayjs.utc(dt).format("mm") : "00",
-    action:  row.finish ? "finish" : "postpone",
-  };
-  showEditDialog.value = true;
-};
-
-// ─── Edit dari dialog list ────────────────────────────────────────────────────
-const onEditFromList = (row) => {
-  editData.value = {
-    id: row.id,
-    id_spk: row.id_spk,
-    id_mesin: row.id_mesin,
-    pic: row.pic,
-    finish: row.finish,
-    postpone: row.postpone,
-  };
-  const dt = row.finish ?? row.postpone;
-  editForm.value = {
-    tanggal: dt ? dayjs(dt).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"),
-    jam:     dt ? dayjs(dt).format("HH") : "17",
-    menit:   dt ? dayjs(dt).format("mm") : "00",
-    action:  row.finish ? "finish" : "postpone",
-  };
-  showEditDialog.value = true;
-};
-
-// ─── Save ─────────────────────────────────────────────────────────────────────
-const onSave = async () => {
-  if (!editForm.value.tanggal || !editForm.value.jam || !editForm.value.menit)
+// ─── Save inline (PHP Style) ──────────────────────────────────────────────────
+const onSaveInline = async (row) => {
+  if (!row.editForm.tanggal || !row.editForm.jam || !row.editForm.menit) {
     return error("Tanggal, jam, dan menit wajib diisi");
+  }
 
-  saving.value = true;
+  row.saving = true;
   try {
     await axios.post(`${import.meta.env.VITE_API}dms/adjustment/store`, {
-      id:       editData.value.id,
-      id_spk:   editData.value.id_spk,
-      id_mesin: editData.value.id_mesin,
-      pic:      editData.value.pic,
-      ...editForm.value,
+      id:       row.id,
+      id_spk:   row.id_spk,
+      id_mesin: row.id_mesin,
+      pic:      row.pic,
+      tanggal:  row.editForm.tanggal,
+      jam:      row.editForm.jam,
+      menit:    row.editForm.menit,
+      action:   row.finish ? "finish" : "postpone",
     });
     success("Adjustment berhasil disimpan");
-    showEditDialog.value = false;
+    // Reload the list
+    await onViewList(selectedRow.value);
     loadList();
-    if (showListDialog.value) {
-      onViewList(selectedRow.value);
-    }
   } catch (e) {
     error(e.response?.data?.message ?? "Gagal menyimpan adjustment");
   } finally {
-    saving.value = false;
+    row.saving = false;
   }
 };
 
