@@ -105,7 +105,7 @@ const form = reactive({ id_part: null, saveTemplate: "N" });
 
 const loadMaster = async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/terimaSPK/machining/master`);
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/terimaSPK/machining/master`);
     allProses.value = res.data.proses ?? [];
     partAll.value = (res.data.parts ?? []).map((p) => ({ label: p.nama_part, value: p.id_part }));
     partOptions.value = partAll.value;
@@ -141,7 +141,7 @@ const removeProses = (idx) => {
 const onLoadTemplate = async (id) => {
   if (!id) return;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/terimaSPK/machining/template`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/terimaSPK/machining/template`, {
       params: { id_template: id },
     });
     selectedProses.value = res.data.selectedProses ?? [];
@@ -176,9 +176,9 @@ const onSubmit = async () => {
   try {
     const payload = { ...form, proses: prosesStr, creator: empid() };
     if (props.data) {
-      await axios.put(`${import.meta.env.VITE_API}dms/terimaSPK/machining/update/${props.data.id_spkpart}`, payload);
+      await axios.put(`${import.meta.env.VITE_API}wjs/terimaSPK/machining/update/${props.data.id_spkpart}`, payload);
     } else {
-      await axios.post(`${import.meta.env.VITE_API}dms/terimaSPK/machining/create`, {
+      await axios.post(`${import.meta.env.VITE_API}wjs/terimaSPK/machining/create`, {
         ...payload, id_spk: props.idSpk,
       });
     }

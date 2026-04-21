@@ -56,7 +56,7 @@ const router = createRouter({
     },
     {
       path: "/approval",
-      component: () => import("./pages/DMS/Agreement/ApprovalForm.vue"),
+      component: () => import("./pages/WJS/Agreement/ApprovalForm.vue"),
     },
     // Always leave this as last one,
     // but you can also remove it

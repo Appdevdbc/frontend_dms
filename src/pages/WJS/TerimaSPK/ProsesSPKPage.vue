@@ -130,7 +130,7 @@ const loadData = async (props) => {
   const { page, rowsPerPage, sortBy, descending } = props?.pagination ?? pagination.value;
   loading.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/terimaSPK/proses/list`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/terimaSPK/proses/list`, {
       params: {
         page, rowsPerPage, sortBy,
         descending: descending ? "true" : "false",
@@ -158,7 +158,7 @@ const onEditTarget = (row) => {
 
 const submitEditTarget = async () => {
   try {
-    await axios.put(`${import.meta.env.VITE_API}dms/terimaSPK/proses/target`, editTargetForm);
+    await axios.put(`${import.meta.env.VITE_API}wjs/terimaSPK/proses/target`, editTargetForm);
     success("Target selesai berhasil diupdate");
     showEditTarget.value = false;
     loadData();
@@ -177,7 +177,7 @@ const onTutup = (row) => {
     cancel: true, persistent: true,
   }).onOk(async () => {
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API}dms/terimaSPK/prosesStore`, {
+      const res = await axios.post(`${import.meta.env.VITE_API}wjs/terimaSPK/prosesStore`, {
         status: "tutup", table_id: row.id_spk,
       });
       if (res.data.status) { success(res.data.message); loadData(); }

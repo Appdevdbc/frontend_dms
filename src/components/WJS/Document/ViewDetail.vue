@@ -281,7 +281,7 @@ const openKelengkapan = async (p) => {
   selectedPendukung.value = null;
   showKelengkapanDialog.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/content-det`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/content-det`, {
       params: { content_id: props.contentId }
     });
     const detail = (res.data || []).find(d => d.cdet_content_det_id === p.cdet_content_det_id);
@@ -297,7 +297,7 @@ const handleDownload = () => {
   if (doc.value?.content_security !== 'non-restricted') {
     showDownloadDialog.value = true;
   } else {
-    axios.post(`${import.meta.env.VITE_API}dms/document/download-log`, { content_id: doc.value.content_id, empid: empid() }).catch(() => {});
+    axios.post(`${import.meta.env.VITE_API}wjs/document/download-log`, { content_id: doc.value.content_id, empid: empid() }).catch(() => {});
     openFile(doc.value.content_file);
   }
 };
@@ -306,7 +306,7 @@ const loadDoc = async () => {
   if (!props.contentId) return;
   loading.value = true;
   try {
-    const res = await axios.get(`/dms/document/files/${props.contentId}`);
+    const res = await axios.get(`/wjs/document/files/${props.contentId}`);
     doc.value = res.data.data;
     pendukung.value = res.data.pendukung || [];
   } catch (e) { error('Gagal memuat detail dokumen'); } finally { loading.value = false; }

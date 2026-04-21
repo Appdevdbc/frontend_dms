@@ -50,7 +50,7 @@ const handleRevisi = async () => {
   if (!reason.value?.trim()) { showError('Alasan revisi wajib diisi'); return; }
   try {
     loading.value = true;
-    await axios.post(`${import.meta.env.VITE_API}dms/approvePermintaan`, {
+    await axios.post(`${import.meta.env.VITE_API}wjs/approvePermintaan`, {
       creator: empid(),
       id: props.ticketData.id,
       nomor_tiket: props.ticketData.pinjam_no_tiket,

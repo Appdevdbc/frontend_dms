@@ -155,7 +155,7 @@ const handleDownload = (row) => {
     downloadTarget.value = row;
     showDownloadDialog.value = true;
   } else {
-    axios.post(`${import.meta.env.VITE_API}dms/document/download-log`, { content_id: row.content_id, empid: empid() }).catch(() => {});
+    axios.post(`${import.meta.env.VITE_API}wjs/document/download-log`, { content_id: row.content_id, empid: empid() }).catch(() => {});
     const base = import.meta.env.VITE_FTP || '';
     const dir = import.meta.env.VITE_FTP_DIR || 'dmslegal';
     window.open(`${base}${dir}/content/${row.content_file}`, '_blank');
@@ -164,7 +164,7 @@ const handleDownload = (row) => {
 
 const handleDelete = async (row) => {
   try {
-    await axios.post(`${import.meta.env.VITE_API}dms/document/files/${row.content_id}/delete`, { content_id: row.content_id });
+    await axios.post(`${import.meta.env.VITE_API}wjs/document/files/${row.content_id}/delete`, { content_id: row.content_id });
     success('Dokumen berhasil dihapus');
     emit('refresh');
   } catch (e) { error(e.response?.data?.message || 'Gagal menghapus dokumen'); }

@@ -140,7 +140,7 @@ const loadApprovals = async () => {
 
   try {
     loading.value = true;
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/master-approval`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/master-approval`, {
       params: {
         rowsPerPage: null,
         bu_id: props.buId,

@@ -124,8 +124,47 @@
           :loading="loadingList"
           flat
           class="tw-rounded-xl tw-overflow-hidden"
-          :rows-per-page-options="[10, 25, 50]"
+          v-model:pagination="pagination"
+          @request="onRequest"
+          :rows-per-page-options="[]"
+          :filter="pagination.filter"
+          binary-state-sort
         >
+          <template v-slot:top-left>
+            <div class="row q-col-gutter-sm">
+              <div class="col-12">
+                <q-select
+                  borderless
+                  dense
+                  debounce="300"
+                  v-model="pagination.rowsPerPage"
+                  :options="[10, 25, 50, 100]"
+                  @update:modelValue="updateTable"
+                >
+                  <template v-slot:before>
+                    <q-icon name="reorder">
+                      <q-tooltip :class="'tw-bg-black/90'">
+                        Rows per page
+                      </q-tooltip>
+                    </q-icon>
+                  </template>
+                </q-select>  
+              </div>
+            </div>    
+          </template>
+          <template v-slot:top-right>
+            <q-input
+              v-model="pagination.filter"
+              outlined dense
+              debounce="300"
+              placeholder="Cari SPK, PIC, Job..."
+              class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-min-w-[300px]"
+            >
+              <template v-slot:prepend>
+                <q-icon name="search" color="blue-6" />
+              </template>
+            </q-input>
+          </template>
           <template v-slot:header="props">
             <q-tr :props="props">
               <q-th v-for="col in props.cols" :key="col.name" :props="props"
@@ -154,7 +193,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import axios from "axios";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -203,6 +242,14 @@ const lastMomentOptions = [
 // ─── Table ────────────────────────────────────────────────────────────────────
 const scanList   = ref([]);
 const loadingList = ref(false);
+const pagination = ref({
+  sortBy: "id_spk",
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 0,
+  filter: null,
+});
 
 const columns = [
   { name: "id_spk",    label: "No SPK",     field: "id_spk",    align: "left",   sortable: true },
@@ -224,7 +271,7 @@ const focusJobType = () => refJobType.value?.focus();
 // ─── Load data ────────────────────────────────────────────────────────────────
 const loadJobTypes = async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/orderPart/job-types`);
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/orderPart/job-types`);
     jobTypeOptions.value = (res.data ?? []).map((j) => ({ label: j.nama_job, value: j.id_job }));
   } catch (e) { /* silent */ }
 };
@@ -232,15 +279,42 @@ const loadJobTypes = async () => {
 const loadList = async () => {
   loadingList.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/orderPart/list`, {
-      params: { section: activeSection.value },
+    if (pagination.value.rowsPerPage == 'All')
+      pagination.value.rowsPerPage = pagination.value.rowsNumber;
+    
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/orderPart/list`, {
+      params: {
+        section: activeSection.value,
+        ...pagination.value,
+      },
     });
-    scanList.value = Array.isArray(res.data) ? res.data : [];
+    
+    if (typeof res.data.data === "undefined") {
+      scanList.value = res.data;
+    } else {
+      scanList.value = res.data.data;
+    }
+    
+    pagination.value.rowsNumber = res.data.pagination?.total || res.data.length;
   } catch (e) {
     error("Gagal memuat daftar SPK");
   } finally {
     loadingList.value = false;
   }
+};
+
+const onRequest = (props) => {
+  const { page, rowsPerPage, sortBy, descending, filter } = props.pagination;
+  pagination.value.filter = filter;
+  pagination.value.page = page;
+  pagination.value.rowsPerPage = rowsPerPage;
+  pagination.value.sortBy = sortBy;
+  pagination.value.descending = descending;
+  loadList();
+};
+
+const updateTable = () => {
+  onRequest({ pagination: pagination.value });
 };
 
 // ─── Actions ──────────────────────────────────────────────────────────────────
@@ -250,7 +324,7 @@ const onAction = async (action) => {
 
   submitting.value = action;
   try {
-    await axios.post(`${import.meta.env.VITE_API}dms/orderPart/store`, {
+    await axios.post(`${import.meta.env.VITE_API}wjs/orderPart/store`, {
       ...form.value,
       section: activeSection.value,
       action,
@@ -281,6 +355,14 @@ const resetForm = () => {
 
 onMounted(() => {
   loadJobTypes();
-  loadList();
+  onRequest({ pagination: pagination.value });
+});
+
+// Watch for section changes when navigating between routes
+watch(activeSection, () => {
+  // Reset pagination when section changes
+  pagination.value.page = 1;
+  pagination.value.filter = null;
+  onRequest({ pagination: pagination.value });
 });
 </script>

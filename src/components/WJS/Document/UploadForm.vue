@@ -364,7 +364,7 @@ const hapusPendukung = async (idx) => {
       fd.append('plkp_type', 'hapus');
       fd.append('plkp_id', item._id);
       fd.append('content_id', pendukungContentId.value);
-      await axios.post(`${import.meta.env.VITE_API}dms/document/content-det`, fd);
+      await axios.post(`${import.meta.env.VITE_API}wjs/document/content-det`, fd);
     } catch {}
   }
   form.kelengkapan.splice(idx, 1);
@@ -388,7 +388,7 @@ const simpanPendukung = async () => {
 
     // Jika ada content_id (dokumen utama sudah ada), simpan ke DB langsung
     if (pendukungContentId.value) {
-      const res = await axios.post(`${import.meta.env.VITE_API}dms/document/content-det`, fd);
+      const res = await axios.post(`${import.meta.env.VITE_API}wjs/document/content-det`, fd);
       // Refresh list dari response
       if (res.data?.data) {
         form.kelengkapan = res.data.data.map(d => ({
@@ -426,7 +426,7 @@ const loadArsiparis = async (lokasi_id) => {
   emailArsiparis.value = '';
   form.arsiparis_id = '';
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/arsiparis-lokasi`, { params: { lokasi_arsip_id: lokasi_id } });
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/arsiparis-lokasi`, { params: { lokasi_arsip_id: lokasi_id } });
     arsiparisOptions.value = res.data;
   } catch {}
 };
@@ -445,7 +445,7 @@ const fetchNoArsip = async () => {
   try {
     const userData = JSON.parse(window.localStorage.getItem('data') || '{}');
     const div = userData?.data?.div || '';
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/no-arsip`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/no-arsip`, {
       params: {
         ctr_kateg_doc: form.content_kat_sub,
         bu: domain(),
@@ -470,7 +470,7 @@ watch(() => form.content_doc, (val) => {
   docStatus.value = 'checking';
   docCheckTimer = setTimeout(async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API}dms/document/check-doc`, { params: { doc_id: val.trim() } });
+      const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/check-doc`, { params: { doc_id: val.trim() } });
       docStatus.value = res.data.valid ? 'valid' : 'invalid';
       docInfo.value = res.data.doc || null;
     } catch { docStatus.value = null; }
@@ -510,7 +510,7 @@ const submit = async () => {
       else if (v !== null && v !== undefined && k !== 'filedoc' && k !== 'kelengkapan') fd.append(k, v);
     });
 
-    const res = await axios.post(`${import.meta.env.VITE_API}dms/document/files`, fd);
+    const res = await axios.post(`${import.meta.env.VITE_API}wjs/document/files`, fd);
     const newContentId = res.data?.content_id;
 
     // Kirim pendukung yang masih lokal (belum tersimpan ke DB)
@@ -528,7 +528,7 @@ const submit = async () => {
           pfd.append('plkp_tanggal_daluwarsa', item.plkp_tanggal_daluwarsa || '');
           pfd.append('plkp_notif_reminder', item.plkp_notif_reminder || '');
           if (item.plkp_file) pfd.append('plkp_file_pendukung', item.plkp_file);
-          await axios.post(`${import.meta.env.VITE_API}dms/document/content-det`, pfd).catch(() => {});
+          await axios.post(`${import.meta.env.VITE_API}wjs/document/content-det`, pfd).catch(() => {});
         }
       }
     }
@@ -545,9 +545,9 @@ const submit = async () => {
 onMounted(async () => {
   try {
     const [sub, wl, la] = await Promise.all([
-      axios.get(`${import.meta.env.VITE_API}dms/document/sub-kategori`),
-      axios.get(`${import.meta.env.VITE_API}dms/listWorkLocation`),
-      axios.get(`${import.meta.env.VITE_API}dms/listLokasiArsip`),
+      axios.get(`${import.meta.env.VITE_API}wjs/document/sub-kategori`),
+      axios.get(`${import.meta.env.VITE_API}wjs/listWorkLocation`),
+      axios.get(`${import.meta.env.VITE_API}wjs/listLokasiArsip`),
     ]);
     subKategoriOptions.value = sub.data;
     workLocationOptions.value = wl.data;

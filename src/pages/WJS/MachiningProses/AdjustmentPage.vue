@@ -272,7 +272,7 @@ const formatDt = (v) => v ? dayjs.utc(v).format("DD-MM-YYYY HH:mm") : "-";
 const loadList = async () => {
   loading.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/adjustment/list`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/adjustment/list`, {
       params: { section: filterSection.value, start: filterStart.value, end: filterEnd.value },
     });
     rows.value = Array.isArray(res.data) ? res.data : [];
@@ -289,7 +289,7 @@ const onViewList = async (row) => {
   showListDialog.value = true;
   loadingDetail.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/adjustment/by-spk`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/adjustment/by-spk`, {
       params: { spk: row.id_spk, pic: row.pic },
     });
     listBySPK.value = Array.isArray(res.data) ? res.data : [];
@@ -347,7 +347,7 @@ const onSave = async () => {
 
   saving.value = true;
   try {
-    await axios.post(`${import.meta.env.VITE_API}dms/adjustment/store`, {
+    await axios.post(`${import.meta.env.VITE_API}wjs/adjustment/store`, {
       id:       editData.value.id,
       id_spk:   editData.value.id_spk,
       id_mesin: editData.value.id_mesin,

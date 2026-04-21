@@ -237,7 +237,7 @@
 
         <q-separator />
         <q-card-actions align="right" class="tw-p-4 tw-bg-slate-50">
-          <q-btn label="Kembali" color="grey-6" push icon="arrow_back" @click="router.push('/dms/document/recap')" />
+          <q-btn label="Kembali" color="grey-6" push icon="arrow_back" @click="router.push('/wjs/document/recap')" />
           <q-btn label="Revisi" color="orange-6" push icon="edit_note" @click="showRevisiDialog = true" :loading="saving" />
           <q-btn label="Setuju" color="green-6" push icon="check_circle" @click="submit('approve')" :loading="saving" />
         </q-card-actions>
@@ -296,7 +296,7 @@ const openPendukungDetail = (item) => {
 const loadData = async () => {
   if (!token) { loading.value = false; return; }
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/approval/validate`, { params: { token } });
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/approval/validate`, { params: { token } });
     docData.value = res.data.data;
     pendukung.value = res.data.pendukung || [];
   } catch { docData.value = null; } finally { loading.value = false; }
@@ -305,9 +305,9 @@ const loadData = async () => {
 const submit = async (action) => {
   saving.value = true;
   try {
-    await axios.post(`${import.meta.env.VITE_API}dms/document/approval/atasan`, { token, action, catatan: catatan.value });
+    await axios.post(`${import.meta.env.VITE_API}wjs/document/approval/atasan`, { token, action, catatan: catatan.value });
     success(action === 'approve' ? 'Dokumen berhasil diapprove' : 'Dokumen dikembalikan untuk revisi');
-    router.push('/dms/document/recap');
+    router.push('/wjs/document/recap');
   } catch (e) { error(e.response?.data?.message || 'Gagal memproses'); } finally { saving.value = false; }
 };
 
@@ -315,12 +315,12 @@ const submitRevisi = async () => {
   if (!revisiReason.value.trim()) return error('Reason wajib diisi');
   saving.value = true;
   try {
-    await axios.post(`${import.meta.env.VITE_API}dms/document/approval/atasan`, {
+    await axios.post(`${import.meta.env.VITE_API}wjs/document/approval/atasan`, {
       token, action: 'revisi', catatan: revisiReason.value,
     });
     success('Permintaan revisi berhasil dikirim ke pembuat');
     showRevisiDialog.value = false;
-    router.push('/dms/document/recap');
+    router.push('/wjs/document/recap');
   } catch (e) { error(e.response?.data?.message || 'Gagal memproses'); } finally { saving.value = false; }
 };
 

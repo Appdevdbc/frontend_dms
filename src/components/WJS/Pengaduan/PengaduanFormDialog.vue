@@ -221,7 +221,7 @@ watch(() => props.modelValue, async (val) => {
 
 const loadDocList = async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/pengaduan/doc-list`);
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/pengaduan/doc-list`);
     allDocs.value = res.data;
     docOptions.value = res.data;
   } catch (e) { /* ignore */ }
@@ -242,7 +242,7 @@ const onDocChange = async (val) => {
     return;
   }
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/pengaduan/doc-detail`, { params: { doc_id: val } });
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/pengaduan/doc-detail`, { params: { doc_id: val } });
     const d = res.data.data?.[0];
     if (d) {
       tmpForm.nama_dokumen = d.content_name || d.doc_judul || '';
@@ -279,12 +279,12 @@ const saveData = async () => {
     if (tmpForm.filedoc) {
       const fd = new FormData();
       fd.append('filedoc', tmpForm.filedoc);
-      const upRes = await axios.post(`${import.meta.env.VITE_API}dms/pengaduan/upload`, fd);
+      const upRes = await axios.post(`${import.meta.env.VITE_API}wjs/pengaduan/upload`, fd);
       filename = upRes.data.data.filename;
     }
 
     if (isRevision.value) {
-      await axios.put(`${import.meta.env.VITE_API}dms/pengaduan/${tmpForm.adu_id}/revise`, {
+      await axios.put(`${import.meta.env.VITE_API}wjs/pengaduan/${tmpForm.adu_id}/revise`, {
         creator: empid(),
         judul_pengaduan: tmpForm.judul_pengaduan,
         uraian_pengaduan: tmpForm.uraian_pengaduan,
@@ -296,7 +296,7 @@ const saveData = async () => {
       }, { skipErrorInterceptor: true });
       success('Pengaduan berhasil direvisi');
     } else {
-      await axios.post(`${import.meta.env.VITE_API}dms/pengaduan`, {
+      await axios.post(`${import.meta.env.VITE_API}wjs/pengaduan`, {
         creator: empid(),
         judul_pengaduan: tmpForm.judul_pengaduan,
         uraian_pengaduan: tmpForm.uraian_pengaduan,

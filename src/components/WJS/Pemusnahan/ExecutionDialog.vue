@@ -459,7 +459,7 @@ const generateBAST = async () => {
   if (!canGenerateBAST.value) { showError('Lengkapi semua field BAST terlebih dahulu'); return; }
   try {
     const res = await axios.get(
-      `${import.meta.env.VITE_API}dms/pemusnahan/${props.ticketData.tr_arsip_id}/generate-bast-pdf`,
+      `${import.meta.env.VITE_API}wjs/pemusnahan/${props.ticketData.tr_arsip_id}/generate-bast-pdf`,
       { params: { saksi1_nik: tmpForm.saksi1_nik, saksi2_nik: tmpForm.saksi2_nik, tgl_pemusnahan: tmpForm.tgl_pemusnahan }, skipErrorInterceptor: true }
     );
     const filename = res.data.data.filename;
@@ -476,7 +476,7 @@ const showPdfDialog = ref(false);
 const generateMutasiBAST = async () => {
   try {
     const res = await axios.get(
-      `${import.meta.env.VITE_API}dms/mutasi/${props.ticketData.tr_arsip_id}/generate-bast-pdf`,
+      `${import.meta.env.VITE_API}wjs/mutasi/${props.ticketData.tr_arsip_id}/generate-bast-pdf`,
       { skipErrorInterceptor: true }
     );
     const filename = res.data.data.filename;

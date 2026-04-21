@@ -247,7 +247,7 @@ const getPageAkses = async () => {
 const getData = async () => {
   loading.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/terimaSPK/list`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/terimaSPK/list`, {
       params: {
         id_group: route.params.id_group ?? undefined,
         page: pagination.value.page,
@@ -314,7 +314,7 @@ const onDelete = (row) => {
   }).onOk(async () => {
     try {
       spinnerBall();
-      await axios.post(`${import.meta.env.VITE_API}dms/terimaSPK/delete`, { id: row.id_spk });
+      await axios.post(`${import.meta.env.VITE_API}wjs/terimaSPK/delete`, { id: row.id_spk });
       success("SPK berhasil dihapus");
       updateTable();
       $q.loading.hide();
@@ -349,7 +349,7 @@ const onBulkDelete = () => {
   }).onOk(async () => {
     try {
       spinnerBall();
-      await axios.post(`${import.meta.env.VITE_API}dms/terimaSPK/delete`, { ids });
+      await axios.post(`${import.meta.env.VITE_API}wjs/terimaSPK/delete`, { ids });
       success(`${ids.length} SPK berhasil dihapus`);
       updateTable();
       $q.loading.hide();
@@ -378,7 +378,7 @@ const submitProses = async (ids) => {
     const payload = ids.length === 1
       ? { status: "proses", table_id: ids[0] }
       : { status: "proses", tbl: ids.map((id) => ({ table_id: id })) };
-    const res = await axios.post(`${import.meta.env.VITE_API}dms/terimaSPK/prosesStore`, payload);
+    const res = await axios.post(`${import.meta.env.VITE_API}wjs/terimaSPK/prosesStore`, payload);
     $q.loading.hide();
     if (res.data.status) { success(res.data.message); updateTable(); }
     else error(res.data.message);
@@ -391,7 +391,7 @@ const submitProses = async (ids) => {
 const onCetak = async (row) => {
   try {
     spinnerBall();
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/terimaSPK/cetak/${row.id_spk}`);
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/terimaSPK/cetak/${row.id_spk}`);
     $q.loading.hide();
     const filename = res.data?.data?.filename;
     if (filename) window.open(`${import.meta.env.VITE_API}pdf/${filename}`, "_blank");

@@ -121,9 +121,9 @@ const onSubmit = async () => {
   try {
     const payload = { ...form, creator: empid() };
     if (props.data) {
-      await axios.put(`${import.meta.env.VITE_API}dms/terimaSPK/update/${props.data.id_spk}`, payload);
+      await axios.put(`${import.meta.env.VITE_API}wjs/terimaSPK/update/${props.data.id_spk}`, payload);
     } else {
-      await axios.post(`${import.meta.env.VITE_API}dms/terimaSPK/create`, payload);
+      await axios.post(`${import.meta.env.VITE_API}wjs/terimaSPK/create`, payload);
     }
     success("SPK berhasil disimpan");
     emit("done");

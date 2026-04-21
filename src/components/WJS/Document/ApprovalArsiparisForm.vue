@@ -252,7 +252,7 @@
 
         <q-separator />
         <q-card-actions align="right" class="tw-p-4 tw-bg-slate-50">
-          <q-btn label="Kembali" color="grey-6" push icon="arrow_back" @click="router.push('/dms/document/recap')" />
+          <q-btn label="Kembali" color="grey-6" push icon="arrow_back" @click="router.push('/wjs/document/recap')" />
           <q-btn label="Konfirmasi" color="green-6" push icon="check_circle" @click="showKonfirmDialog = true" :loading="saving" />
         </q-card-actions>
       </template>
@@ -325,7 +325,7 @@ const loadLemari = async (lokasi_id) => {
   form.lemari_id = '';
   selectedLemari.value = null;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/lemari-lokasi`, { params: { lokasi_arsip_id: lokasi_id } });
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/lemari-lokasi`, { params: { lokasi_arsip_id: lokasi_id } });
     lemariOptions.value = res.data;
   } catch {}
   // Load arsiparis berdasarkan lokasi
@@ -333,7 +333,7 @@ const loadLemari = async (lokasi_id) => {
   emailArsiparis.value = '';
   form.arsiparis_id = '';
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/arsiparis-lokasi`, { params: { lokasi_arsip_id: lokasi_id } });
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/arsiparis-lokasi`, { params: { lokasi_arsip_id: lokasi_id } });
     arsiparisOptions.value = res.data;
   } catch {}
 };
@@ -354,12 +354,12 @@ watch(() => form.chk_jenis_3, (v) => { if (!v) form.txt_jenis_3 = 0; });
 const doApprove = async () => {
   saving.value = true;
   try {
-    await axios.post(`${import.meta.env.VITE_API}dms/document/approval/arsiparis`, {
+    await axios.post(`${import.meta.env.VITE_API}wjs/document/approval/arsiparis`, {
       token, action: 'approve', ...form,
     });
     success('Dokumen berhasil dikonfirmasi oleh arsiparis');
     showKonfirmDialog.value = false;
-    router.push('/dms/document/recap');
+    router.push('/wjs/document/recap');
   } catch (e) { error(e.response?.data?.message || 'Gagal memproses'); } finally { saving.value = false; }
 };
 
@@ -367,8 +367,8 @@ onMounted(async () => {
   if (!token) { loading.value = false; return; }
   try {
     const [docRes, lokasiRes] = await Promise.all([
-      axios.get(`${import.meta.env.VITE_API}dms/document/approval/validate`, { params: { token } }),
-      axios.get(`${import.meta.env.VITE_API}dms/listLokasiArsip`),
+      axios.get(`${import.meta.env.VITE_API}wjs/document/approval/validate`, { params: { token } }),
+      axios.get(`${import.meta.env.VITE_API}wjs/listLokasiArsip`),
     ]);
     docData.value = docRes.data.data;
     pendukung.value = docRes.data.pendukung || [];

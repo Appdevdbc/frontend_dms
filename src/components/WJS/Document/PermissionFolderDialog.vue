@@ -153,7 +153,7 @@ const loadPermissions = async () => {
   if (!props.folderId) return;
   loading.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/folders/${props.folderId}/permissions`);
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/folders/${props.folderId}/permissions`);
     permissions.value = res.data || [];
   } catch {} finally { loading.value = false; }
 };
@@ -161,7 +161,7 @@ const loadPermissions = async () => {
 const loadMaster = async () => {
   try {
     const [bu, user] = await Promise.all([
-      axios.get(`${import.meta.env.VITE_API}dms/getBU`),
+      axios.get(`${import.meta.env.VITE_API}wjs/getBU`),
       axios.get(`${import.meta.env.VITE_API}master/users`, { params: { domain: domain() } }),
     ]);
     listBU.value = bu.data || [];
@@ -173,7 +173,7 @@ const loadMaster = async () => {
 const onJenisChange = async () => {
   form.mapbu = ''; form.mapdiv = ''; form.user = '';
   if (form.jenismapping === 'div' && form.mapbu) {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/getDiv`, { params: { bu: form.mapbu } });
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/getDiv`, { params: { bu: form.mapbu } });
     listDiv.value = res.data || [];
   }
 };
@@ -181,7 +181,7 @@ const onJenisChange = async () => {
 watch(() => form.mapbu, async (bu) => {
   if (form.jenismapping === 'div' && bu) {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API}dms/getDiv`, { params: { bu } });
+      const res = await axios.get(`${import.meta.env.VITE_API}wjs/getDiv`, { params: { bu } });
       listDiv.value = res.data || [];
     } catch {}
   }
@@ -226,10 +226,10 @@ const simpan = async () => {
       aksesfolder_manage: form.manage ? 1 : 0,
     };
     if (editingId.value) {
-      await axios.put(`${import.meta.env.VITE_API}dms/document/folders/permissions/${editingId.value}`, payload);
+      await axios.put(`${import.meta.env.VITE_API}wjs/document/folders/permissions/${editingId.value}`, payload);
       success('Permission berhasil diupdate');
     } else {
-      await axios.post(`${import.meta.env.VITE_API}dms/document/folders/${props.folderId}/permissions`, payload);
+      await axios.post(`${import.meta.env.VITE_API}wjs/document/folders/${props.folderId}/permissions`, payload);
       success('Permission berhasil ditambahkan');
     }
     resetForm();
@@ -239,7 +239,7 @@ const simpan = async () => {
 
 const hapus = async (row) => {
   try {
-    await axios.delete(`${import.meta.env.VITE_API}dms/document/folders/permissions/${row.aksesfolder_id}`);
+    await axios.delete(`${import.meta.env.VITE_API}wjs/document/folders/permissions/${row.aksesfolder_id}`);
     success('Permission berhasil dihapus');
     await loadPermissions();
   } catch (e) { error(e.response?.data?.message || 'Gagal menghapus permission'); }

@@ -76,7 +76,7 @@ watch(() => props.modelValue, (val) => {
 const onSubmit = async () => {
   saving.value = true;
   try {
-    await axios.put(`${import.meta.env.VITE_API}dms/terimaSPK/duedate/${props.data.id_spk}`, form);
+    await axios.put(`${import.meta.env.VITE_API}wjs/terimaSPK/duedate/${props.data.id_spk}`, form);
     success("Due date berhasil disimpan");
     emit("done");
     emit("update:modelValue", false);

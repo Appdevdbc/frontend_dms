@@ -176,7 +176,7 @@ const submitRevise = async () => {
   try {
     loading.value = true;
     await axios.post(
-      `${import.meta.env.VITE_API}dms/${props.module}/${props.ticketData.tr_arsip_id}/revisi-approval`,
+      `${import.meta.env.VITE_API}wjs/${props.module}/${props.ticketData.tr_arsip_id}/revisi-approval`,
       {
         creator: empid(),
         alasan: tmpForm.catatan

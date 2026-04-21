@@ -85,7 +85,7 @@ const loadData = async () => {
   if (!props.spk?.id_spk) return;
   loading.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/terimaSPK/machining/list`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/terimaSPK/machining/list`, {
       params: { id_spk: props.spk.id_spk, filter: filter.value || undefined },
     });
     rows.value = res.data.data ?? res.data;
@@ -107,7 +107,7 @@ const onDelete = (row) => {
     cancel: true, persistent: true,
   }).onOk(async () => {
     try {
-      await axios.post(`${import.meta.env.VITE_API}dms/terimaSPK/machining/delete`, { id: row.id_spkpart });
+      await axios.post(`${import.meta.env.VITE_API}wjs/terimaSPK/machining/delete`, { id: row.id_spkpart });
       success("Machining proses berhasil dihapus");
       loadData();
     } catch (e) {
