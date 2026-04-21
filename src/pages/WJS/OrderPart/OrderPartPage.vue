@@ -156,9 +156,13 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { useRoute } from "vue-router";
 import { domain } from "../../../utils";
 import { useNotify } from "../../../composables/useNotify";
+
+dayjs.extend(utc);
 
 const props = defineProps({
   section: { type: String, default: "order_part" },
@@ -203,8 +207,8 @@ const loadingList = ref(false);
 const columns = [
   { name: "id_spk",    label: "No SPK",     field: "id_spk",    align: "left",   sortable: true },
   { name: "nama_pic",  label: "PIC",         field: (r) => `${r.nama_pic} - ${r.pic}`, align: "left" },
-  { name: "start",     label: "Start",       field: "start",     align: "center", sortable: true },
-  { name: "finish",    label: "Finish",      field: "finish",    align: "center", sortable: true },
+  { name: "start",     label: "Start",       field: "start",     align: "center", sortable: true, format: (val) => val ? dayjs.utc(val).format("DD-MM-YYYY HH:mm:ss") : "-" },
+  { name: "finish",    label: "Finish",      field: "finish",    align: "center", sortable: true, format: (val) => val ? dayjs.utc(val).format("DD-MM-YYYY HH:mm:ss") : "-" },
   { name: "jamTotal",  label: "Total Jam",   field: "jamTotal",  align: "center" },
   { name: "status",    label: "Status",      field: "status",    align: "center" },
 ];

@@ -215,8 +215,11 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { domain } from "../../../utils";
 import { useNotify } from "../../../composables/useNotify";
+
+dayjs.extend(utc);
 
 const { error, success } = useNotify();
 
@@ -251,7 +254,7 @@ const columns = [
   { name: "nama_pic",  label: "PIC",        field: "nama_pic",  align: "left",   sortable: true },
   { name: "namaMesin", label: "Machine",    field: "namaMesin", align: "left",   sortable: true },
   { name: "start",     label: "Waktu",      field: "start",     align: "center", sortable: true,
-    format: (v) => formatDt(v) },
+    format: (val) => val ? dayjs.utc(val).format("DD-MM-YYYY HH:mm:ss") : "-" },
   { name: "status",    label: "Status SPK", field: "status",    align: "center" },
 ];
 
@@ -263,7 +266,7 @@ const detailColumns = [
   { name: "finish",    label: "Finish",   field: "finish",    align: "center", format: (v) => formatDt(v) },
 ];
 
-const formatDt = (v) => v ? dayjs(v).format("DD/MM/YYYY HH:mm") : "-";
+const formatDt = (v) => v ? dayjs.utc(v).format("DD/MM/YYYY HH:mm") : "-";
 
 // ─── Load list ────────────────────────────────────────────────────────────────
 const loadList = async () => {
@@ -310,8 +313,8 @@ const onEdit = (row) => {
   const dt = row.finish ?? row.postpone;
   editForm.value = {
     tanggal: dt ? dayjs(dt).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"),
-    jam:     dt ? dayjs(dt).format("HH") : "17",
-    menit:   dt ? dayjs(dt).format("mm") : "00",
+    jam:     dt ? dayjs.utc(dt).format("HH") : "17",
+    menit:   dt ? dayjs.utc(dt).format("mm") : "00",
     action:  row.finish ? "finish" : "postpone",
   };
   showEditDialog.value = true;

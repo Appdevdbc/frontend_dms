@@ -77,7 +77,6 @@
           <template v-slot:top-right>
             <div class="tw-flex tw-gap-3 tw-items-center">
               <q-btn
-                v-if="tmpPage.delete === '1'"
                 unelevated color="red-6" icon="delete" label="Hapus"
                 :disable="!selected.length"
                 class="tw-font-semibold tw-px-4 tw-rounded-lg tw-transition-all"
@@ -90,7 +89,6 @@
                 @click="onBulkProses"
               />
               <q-btn
-                v-if="tmpPage.add === '1'"
                 unelevated :color="`${domain()}`" icon="add" label="Tambah SPK"
                 class="tw-font-semibold tw-px-4 tw-rounded-lg hover:tw-brightness-110 tw-transition-all"
                 @click="onAdd"
@@ -130,7 +128,6 @@
                       <q-tooltip class="tw-bg-slate-800 tw-text-xs">Edit SPK</q-tooltip>
                     </q-btn>
                     <q-btn
-                      v-if="tmpPage.delete === '1'"
                       round dense color="red-6" icon="delete" size="sm"
                       class="tw-shadow-md hover:tw-shadow-lg hover:tw-scale-110 tw-transition-all"
                       @click="onDelete(props.row)"
@@ -184,6 +181,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from "vue";
 import axios from "axios";
+import dayjs from "dayjs";
 import { useRoute } from "vue-router";
 import { domain, empid, spinnerBall, decryptMessage } from "../../../utils";
 import { useNotify } from "../../../composables/useNotify";
@@ -219,11 +217,11 @@ const tmpPage = reactive({ add: "0", edit: "0", delete: "0", view: "0" });
 const columns = [
   { name: "actions", label: "Aksi", field: "actions", align: "left", sortable: false },
   { name: "id_spk", label: "No SPK", field: "id_spk", align: "left", sortable: true },
-  { name: "tanggal", label: "Tanggal", field: "tanggal", align: "center", sortable: true },
+  { name: "tanggal", label: "Tanggal", field: "tanggal", align: "center", sortable: true, format: (val) => val ? dayjs(val).format("DD-MM-YYYY") : "-" },
   { name: "dept", label: "Dept Request", field: "dept", align: "left", sortable: true },
   { name: "tipe", label: "Tipe SPK", field: "tipe", align: "center", sortable: true },
   { name: "jenis", label: "Jenis", field: "jenis", align: "center", sortable: true },
-  { name: "target_selesai", label: "Target Selesai", field: "target_selesai", align: "center", sortable: true },
+  { name: "target_selesai", label: "Target Selesai", field: "target_selesai", align: "center", sortable: true, format: (val) => val ? dayjs(val).format("DD-MM-YYYY") : "-" },
   { name: "subject", label: "Subjek", field: "subject", align: "left", sortable: true },
 ];
 
@@ -403,7 +401,7 @@ const onCetak = async (row) => {
   }
 };
 
-// onMounted(() => getPageAkses());
+onMounted(() => getPageAkses());
 </script>
 
 <style scoped>
