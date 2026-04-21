@@ -62,8 +62,8 @@ const deptOptions = ref([]);
 const deptAll = ref([]);
 
 const tipeOptions = [
-  { label: "Internal", value: "internal" },
-  { label: "External", value: "external" },
+  { label: "Normal", value: "normal" },
+  { label: "Urgent", value: "urgent" },
 ];
 const jenisOptions = [
   { label: "Repair", value: "repair" },
