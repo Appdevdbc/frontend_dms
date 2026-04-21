@@ -266,7 +266,7 @@ const detailColumns = [
   { name: "finish",    label: "Finish",   field: "finish",    align: "center", format: (v) => formatDt(v) },
 ];
 
-const formatDt = (v) => v ? dayjs.utc(v).format("DD/MM/YYYY HH:mm") : "-";
+const formatDt = (v) => v ? dayjs.utc(v).format("DD-MM-YYYY HH:mm") : "-";
 
 // ─── Load list ────────────────────────────────────────────────────────────────
 const loadList = async () => {

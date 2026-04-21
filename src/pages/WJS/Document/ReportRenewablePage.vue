@@ -172,7 +172,7 @@ const updateText = ref('');
 const updateFile = ref(null);
 const updateHistory = ref([]);
 
-const fmtDate = (v) => v ? dayjs(String(v).replace('Z', '')).format('DD/MM/YYYY HH:mm:ss') : '-';
+const fmtDate = (v) => v ? dayjs(String(v).replace('Z', '')).format('DD-MM-YYYY HH:mm:ss') : '-';
 
 const columns = [
   { name:'aksi', label:'Aksi', field:'aksi', align:'left', classes:'sticky-column-left', headerClasses:'sticky-column-left-header' },
@@ -186,7 +186,7 @@ const columns = [
   { name:'content_entrydate', label:'Date Created', field:'content_entrydate', align:'center', format: v => fmtDate(v) },
   { name:'content_lastmodified', label:'Last Modified', field:'content_lastmodified', align:'center', format: v => fmtDate(v) },
   { name:'last_update', label:'Last Update', field:'last_update', align:'center', format: v => v ? fmtDate(v) : 'Belum ada update' },
-  { name:'content_duedate', label:'Due Date', field:'content_duedate', align:'center', format: v => v ? dayjs(v).format('DD/MM/YYYY') : '-' },
+  { name:'content_duedate', label:'Due Date', field:'content_duedate', align:'center', format: v => v ? dayjs(v).format('DD-MM-YYYY') : '-' },
   { name:'status', label:'Status', field:'status', align:'center' },
 ];
 

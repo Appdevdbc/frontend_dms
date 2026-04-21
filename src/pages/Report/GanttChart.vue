@@ -160,7 +160,7 @@ const hasData = computed(() => ganttRows.value.length > 0);
 const formatDate = (val) => {
   if (!val) return '';
   const d = dayjs(val);
-  return d.isValid() ? d.format('DD/MM/YYYY HH:mm') : val;
+  return d.isValid() ? d.format('DD-MM-YYYY HH:mm') : val;
 };
 
 // ── Load SPK dropdown ─────────────────────────────────────────────────────────

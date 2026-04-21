@@ -255,15 +255,30 @@
             </q-input>
             
             <q-input
-              v-model="editForm.target_selesai"
+              v-model="editForm.target_selesai_display"
               outlined
               label="Target Selesai"
-              type="date"
               :rules="[val => !!val || 'Target selesai is required']"
               class="tw-rounded-lg"
+              readonly
             >
               <template v-slot:prepend>
                 <q-icon name="event" color="blue-6"/>
+              </template>
+              <template v-slot:append>
+                <q-icon name="calendar_month" class="cursor-pointer">
+                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                    <q-date
+                      v-model="editForm.target_selesai"
+                      mask="YYYY-MM-DD"
+                      @update:model-value="onDatePick"
+                    >
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Tutup" color="primary" flat />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
               </template>
             </q-input>
           </div>
@@ -298,6 +313,7 @@ import axios from "axios";
 import { domain, empid, spinnerBall } from "./../../utils";
 import { useQuasar } from "quasar";
 import { useNotify } from "./../../composables/useNotify";
+import dayjs from "dayjs";
 import "./../../assets/styles/table.css";
 
 const $q = useQuasar();
@@ -415,6 +431,7 @@ const pagination = ref({
 const editForm = reactive({
   id_spk: null,
   target_selesai: null,
+  target_selesai_display: null,
 });
 
 const getData = async () => {
@@ -459,16 +476,25 @@ const showDetail = async (row) => {
 
 const editTarget = (row) => {
   editForm.id_spk = row.id_spk;
-  // Convert DD/MM/YYYY back to YYYY-MM-DD for date input
+  // Convert DD-MM-YYYY back to YYYY-MM-DD for date input
   if (row.target_selesai) {
-    const parts = row.target_selesai.split('/');
-    if (parts.length === 3) {
+    const parts = row.target_selesai.split('-');
+    if (parts.length === 3 && parts[0].length === 2) {
+      // DD-MM-YYYY → YYYY-MM-DD
       editForm.target_selesai = `${parts[2]}-${parts[1]}-${parts[0]}`;
     } else {
+      // Already YYYY-MM-DD or unknown — use as-is
       editForm.target_selesai = row.target_selesai;
     }
   }
+  editForm.target_selesai_display = editForm.target_selesai
+    ? dayjs(editForm.target_selesai).format('DD-MM-YYYY')
+    : null;
   dialogEditTarget.value = true;
+};
+
+const onDatePick = (val) => {
+  editForm.target_selesai_display = val ? dayjs(val).format('DD-MM-YYYY') : null;
 };
 
 const saveEditTarget = async () => {

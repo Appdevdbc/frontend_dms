@@ -256,7 +256,7 @@ const spkMonitorColumns = [
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-const formatDate = (v) => v ? dayjs(v).format("DD/MM/YYYY") : "-";
+const formatDate = (v) => v ? dayjs(v).format("DD-MM-YYYY") : "-";
 
 const isLate = (row) => {
   if (!row.act_finish || !row.plan_finish) return false;
