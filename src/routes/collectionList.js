@@ -13,14 +13,6 @@ export default [
         component: () => import("./../pages/Master/IndexRole.vue"),
       },
       {
-        path: "collection/dms-peminjaman-arsip",
-        component: () => import("./../pages/Master/IndexRole.vue"),
-      },
-      {
-        path: "collection/dms-master",
-        component: () => import("./../pages/WJS/Master/Index.vue"),
-      },
-      {
         path: "collection/wjs-master-data",
         component: () => import("./../pages/WJS/MasterData/Index.vue"),
       },
@@ -31,30 +23,6 @@ export default [
       {
         path: "collection/terima-spk",
         component: () => import("./../pages/WJS/TerimaSPK/Index.vue"),
-      },
-      {
-        path: "collection/dms-no-document",
-        component: () => import("./../pages/WJS/Agreement/Index.vue"),
-      },
-      {
-        path: "collection/dms-doc-management",
-        component: () => import("./../pages/WJS/Document/Index.vue"),
-      },
-      {
-        path: "collection/dms-pemindahan-dan-penghapusan",
-        component: () => import("./../pages/WJS/PemindahanDanPemusnahan/Index.vue"),
-      },
-      {
-        path: "collection/dms-pengaduan",
-        component: () => import("./../pages/WJS/Pengaduan/Index.vue"),
-      },
-      {
-        path: "collection/dms-rekapitulasi",
-        component: () => import("./../pages/WJS/Rekapitulasi/Index.vue"),
-      },
-      {
-        path: "collection/dms-report",
-        component: () => import("./../pages/WJS/Document/Index.vue"),
       },
       {
         path: "collection/report-service-level",

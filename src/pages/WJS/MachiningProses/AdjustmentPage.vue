@@ -319,7 +319,7 @@ const formatDt = (v) => v ? dayjs.utc(v).format("DD-MM-YYYY HH:mm") : "-";
 const loadList = async () => {
   loading.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/adjustment/list`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/adjustment/list`, {
       params: { section: filterSection.value, start: filterStart.value, end: filterEnd.value },
     });
     rows.value = Array.isArray(res.data) ? res.data : [];
@@ -367,6 +367,7 @@ const onSaveInline = async (row) => {
 
   row.saving = true;
   try {
+<<<<<<< HEAD
     await axios.post(`${import.meta.env.VITE_API}dms/adjustment/store`, {
       id:       row.id,
       id_spk:   row.id_spk,
@@ -376,6 +377,14 @@ const onSaveInline = async (row) => {
       jam:      row.editForm.jam,
       menit:    row.editForm.menit,
       action:   row.finish ? "finish" : "postpone",
+=======
+    await axios.post(`${import.meta.env.VITE_API}wjs/adjustment/store`, {
+      id:       editData.value.id,
+      id_spk:   editData.value.id_spk,
+      id_mesin: editData.value.id_mesin,
+      pic:      editData.value.pic,
+      ...editForm.value,
+>>>>>>> 0953232a455187841912e100eb85b88bd4104e2a
     });
     success("Adjustment berhasil disimpan");
     // Reload the list

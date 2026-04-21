@@ -222,7 +222,7 @@ const searchArchives = async () => {
 
   try {
     loading.value = true;
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/pemusnahan/archives`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/pemusnahan/archives`, {
       params: {
         lokasi_arsip: props.lokasiArsip,
         kategori_keamanan: props.kategoriKeamanan,

@@ -256,7 +256,7 @@ const spkMonitorColumns = [
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-const formatDate = (v) => v ? dayjs(v).format("DD/MM/YYYY") : "-";
+const formatDate = (v) => v ? dayjs(v).format("DD-MM-YYYY") : "-";
 
 const isLate = (row) => {
   if (!row.act_finish || !row.plan_finish) return false;
@@ -268,8 +268,8 @@ const loadData = async () => {
   loading.value = true;
   try {
     const [perfRes, monitorRes] = await Promise.all([
-      axios.get(`${import.meta.env.VITE_API}dms/dashboard/performance`),
-      axios.get(`${import.meta.env.VITE_API}dms/dashboard/spk-monitor`),
+      axios.get(`${import.meta.env.VITE_API}wjs/dashboard/performance`),
+      axios.get(`${import.meta.env.VITE_API}wjs/dashboard/spk-monitor`),
     ]);
     data.value     = perfRes.data;
     spkMonitor.value = Array.isArray(monitorRes.data) ? monitorRes.data : [];

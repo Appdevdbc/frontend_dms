@@ -385,7 +385,7 @@ const openView = async (row) => {
   viewDoc.value = null;
   viewPendukung.value = [];
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/files/${row.content_id}`);
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/files/${row.content_id}`);
     viewDoc.value = res.data.data;
     viewPendukung.value = res.data.pendukung || [];
   } catch { viewDoc.value = null; } finally { viewLoading.value = false; }
@@ -394,7 +394,7 @@ const openView = async (row) => {
 const search = async () => {
   loading.value = true; searched.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/search`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/search`, {
       params: { ...filters, empid: empid(), domain: domain() }
     });
     results.value = res.data;
@@ -404,8 +404,8 @@ const search = async () => {
 onMounted(async () => {
   try {
     const [bu, la] = await Promise.all([
-      axios.get(`${import.meta.env.VITE_API}dms/getBU`),
-      axios.get(`${import.meta.env.VITE_API}dms/listLokasiArsip`),
+      axios.get(`${import.meta.env.VITE_API}wjs/getBU`),
+      axios.get(`${import.meta.env.VITE_API}wjs/listLokasiArsip`),
     ]);
     buOptions.value = bu.data;
     lokasiOptions.value = la.data;

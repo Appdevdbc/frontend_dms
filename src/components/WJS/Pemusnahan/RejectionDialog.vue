@@ -175,7 +175,7 @@ const submitReject = async () => {
   try {
     loading.value = true;
     await axios.post(
-      `${import.meta.env.VITE_API}dms/${props.module}/${props.ticketData.tr_arsip_id}/reject`,
+      `${import.meta.env.VITE_API}wjs/${props.module}/${props.ticketData.tr_arsip_id}/reject`,
       {
         creator: empid(),
         alasan: tmpForm.alasan

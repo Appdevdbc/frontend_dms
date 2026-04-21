@@ -131,7 +131,7 @@ const filterFn = (node, filter) => node.folder_name?.toLowerCase().includes(filt
 
 const loadFolders = async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/folders`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/folders`, {
       params: { empid: empid(), domain: domain(), type: folderScope.value, div: divId.value }
     });
     folders.value = res.data || [];
@@ -176,10 +176,10 @@ const saveFolder = async () => {
   saving.value = true;
   try {
     if (editingFolder.value) {
-      await axios.post(`/dms/document/folders/rename`, { folder_id: editingFolder.value.folder_id, folder_name: folderName.value });
+      await axios.post(`/wjs/document/folders/rename`, { folder_id: editingFolder.value.folder_id, folder_name: folderName.value });
       success('Folder berhasil direname');
     } else {
-      await axios.post(`/dms/document/folders`, {
+      await axios.post(`/wjs/document/folders`, {
         creator: empid(), folder_name: folderName.value,
         folder_parent: parentFolder.value?.folder_id || 0,
         folder_bu: domain(), folder_div: 'all', folder_security: 'private',
@@ -192,7 +192,7 @@ const saveFolder = async () => {
 
 const deleteFolder = async (node) => {
   try {
-    await axios.post(`/dms/document/folders/delete`, { folder_id: node.folder_id });
+    await axios.post(`/wjs/document/folders/delete`, { folder_id: node.folder_id });
     success('Folder berhasil dihapus'); await loadFolders();
   } catch (e) { error(e.response?.data?.message || 'Gagal menghapus folder'); }
 };

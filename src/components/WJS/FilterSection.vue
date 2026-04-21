@@ -172,7 +172,7 @@ const filterDomains = (val, update) => {
 
 const getLokasiArsip = async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/listLokasiArsip`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/listLokasiArsip`, {
       params: { rowsPerPage: null },
       skipErrorInterceptor: true
     });

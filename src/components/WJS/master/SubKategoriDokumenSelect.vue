@@ -60,7 +60,7 @@ const filteredSubKatDoc = ref([]);
 
 const getSubKatDocs = async (needle = null) => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/listSubKategoriDokumen`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/listSubKategoriDokumen`, {
       params: {
         limit: 10,
         needle: needle

@@ -153,7 +153,7 @@ const searchArchive = async (nama) => {
   
   try {
     searching.value = true;
-    const res = await axios.post(`${import.meta.env.VITE_API}dms/${props.module}/validate-archive`, {
+    const res = await axios.post(`${import.meta.env.VITE_API}wjs/${props.module}/validate-archive`, {
       nama_arsip: nama,
       kategori_dokumen: props.kategoriDokumen,
       kategori_keamanan: props.kategoriKeamanan,

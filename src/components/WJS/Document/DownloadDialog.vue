@@ -46,7 +46,7 @@ const submit = async () => {
   if (!noTiket.value.trim()) { logOutput.value = 'Nomor tiket wajib diisi'; return; }
   loading.value = true; logOutput.value = '';
   try {
-    await axios.post(`${import.meta.env.VITE_API}dms/document/download-log/pinjam`, {
+    await axios.post(`${import.meta.env.VITE_API}wjs/document/download-log/pinjam`, {
       content_id: props.contentId, empid: empid(), no_tiket: noTiket.value.trim(),
     });
     emit('update:modelValue', false);

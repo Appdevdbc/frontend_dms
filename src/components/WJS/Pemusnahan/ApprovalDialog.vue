@@ -168,7 +168,7 @@ const handleApprove = async () => {
   try {
     loading.value = true;
     await axios.post(
-      `${import.meta.env.VITE_API}dms/${props.module}/${props.ticketData.tr_arsip_id}/approve`,
+      `${import.meta.env.VITE_API}wjs/${props.module}/${props.ticketData.tr_arsip_id}/approve`,
       {
         creator: empid(),
         catatan: tmpForm.catatan

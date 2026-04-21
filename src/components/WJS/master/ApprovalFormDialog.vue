@@ -287,7 +287,7 @@ const loadDropdownData = async () => {
 
 const getListJenisApproval = async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/listJenisApproval`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/listJenisApproval`, {
       params: {
         ...tmpJenisApproval,
       },
@@ -355,7 +355,7 @@ const loadApprovalData = async () => {
     try {
       spinnerBall();
       const res = await axios.get(
-        `${import.meta.env.VITE_API}dms/approvals/${props.approvalData.app_id}`,
+        `${import.meta.env.VITE_API}wjs/approvals/${props.approvalData.app_id}`,
         { skipErrorInterceptor: true }
       );
       const data = res.data.data;
@@ -523,14 +523,14 @@ const saveApproval = async () => {
         
         if (props.isEdit) {
           await axios.put(
-            `${import.meta.env.VITE_API}dms/approvals/${props.approvalData.app_id}`,
+            `${import.meta.env.VITE_API}wjs/approvals/${props.approvalData.app_id}`,
             payload,
             { skipErrorInterceptor: true }
           );
           success('Master approval berhasil diubah');
         } else {
           await axios.post(
-            `${import.meta.env.VITE_API}dms/approvals`,
+            `${import.meta.env.VITE_API}wjs/approvals`,
             payload,
             { skipErrorInterceptor: true }
           );

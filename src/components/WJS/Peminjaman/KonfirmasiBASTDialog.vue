@@ -132,7 +132,7 @@ const handleKonfirmasi = async () => {
     loading.value = true;
     const row = props.ticketData;
     const appJnsTrans = row.pinjam_aktivitas === 'Pinjam Asli' ? 2 : 3;
-    await axios.post('/dms/approvePermintaan', {
+    await axios.post('/wjs/approvePermintaan', {
       creator: empid(),
       id: row.id,
       nomor_tiket: row.pinjam_no_tiket,

@@ -143,19 +143,19 @@ const filterDomainsFn = (val, update) => {
 };
 const getLokasiArsip = async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/listLokasiArsip`, { params: { rowsPerPage: null }, skipErrorInterceptor: true });
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/listLokasiArsip`, { params: { rowsPerPage: null }, skipErrorInterceptor: true });
     listLokasiArsip.value = res.data;
   } catch (e) { console.error(e); }
 };
 const getKategori = async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/rekapitulasi/kategori`);
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/rekapitulasi/kategori`);
     listKategori.value = res.data.data || res.data;
   } catch (e) { console.error(e); }
 };
 const getDivisi = async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/rekapitulasi/divisi`, { params: { empid: empid() } });
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/rekapitulasi/divisi`, { params: { empid: empid() } });
     listDivisi.value = res.data.data || res.data;
   } catch (e) { console.error(e); }
 };

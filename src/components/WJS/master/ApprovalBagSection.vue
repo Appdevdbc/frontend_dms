@@ -141,7 +141,7 @@ const bagTypesFull = ref([]);
 // Load bag types from API
 const loadBagTypes = async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/listTypeApproval`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/listTypeApproval`, {
       params: { limit: 100 },
       skipErrorInterceptor: true
     });

@@ -210,7 +210,7 @@
 
         <q-separator />
         <q-card-actions align="right" class="tw-p-4 tw-bg-slate-50">
-          <q-btn label="Kembali" color="grey-6" push icon="arrow_back" @click="router.push('/dms/document/recap')" />
+          <q-btn label="Kembali" color="grey-6" push icon="arrow_back" @click="router.push('/wjs/document/recap')" />
         </q-card-actions>
       </template>
 
@@ -274,7 +274,7 @@ const openPendukungDetail = (item) => {
 const loadData = async () => {
   if (!token) { loading.value = false; return; }
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/approval/validate`, { params: { token } });
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/approval/validate`, { params: { token } });
     docData.value = res.data.data;
     pendukung.value = res.data.pendukung || [];
   } catch { docData.value = null; } finally { loading.value = false; }

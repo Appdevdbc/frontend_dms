@@ -62,7 +62,7 @@ const loadData = async () => {
   if (!props.spk?.id_spk) return;
   loading.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/terimaSPK/proses/detail-status`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/terimaSPK/proses/detail-status`, {
       params: { no_spk: props.spk.id_spk },
     });
     rows.value = Array.isArray(res.data) ? res.data : [];

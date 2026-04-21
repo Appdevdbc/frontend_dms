@@ -15,9 +15,7 @@ export default [
     ],
     beforeEnter: (to, from, next) => {
       if (!window.localStorage.getItem("token")) {
-        next({
-          path: "/login",
-        });
+        next({ path: "/login" });
       } else {
         next();
       }

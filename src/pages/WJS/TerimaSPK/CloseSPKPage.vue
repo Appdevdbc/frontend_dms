@@ -84,7 +84,7 @@ const loadData = async (props) => {
   const { page, rowsPerPage, sortBy, descending } = props?.pagination ?? pagination.value;
   loading.value = true;
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/terimaSPK/close/list`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/terimaSPK/close/list`, {
       params: {
         page, rowsPerPage, sortBy,
         descending: descending ? "true" : "false",
@@ -110,7 +110,7 @@ const onReopen = (row) => {
     cancel: true, persistent: true,
   }).onOk(async () => {
     try {
-      await axios.post(`${import.meta.env.VITE_API}dms/terimaSPK/close/reopen`, { id: row.id_spk });
+      await axios.post(`${import.meta.env.VITE_API}wjs/terimaSPK/close/reopen`, { id: row.id_spk });
       success("SPK berhasil di-reopen");
       loadData();
     } catch (e) {

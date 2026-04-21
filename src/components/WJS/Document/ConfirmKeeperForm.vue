@@ -54,14 +54,14 @@ const submit = async (action) => {
     const endpoint = action === 'confirm' ? 'document/keeper/confirm' : 'document/keeper/reject';
     await axios.post(`${import.meta.env.VITE_API}${endpoint}`, { content_id: contentId, keeper_nik: keeperNik, reason: reason.value });
     success(action === 'confirm' ? 'Berhasil dikonfirmasi' : 'Berhasil ditolak');
-    router.push({ path: '/dms/document' });
+    router.push({ path: '/wjs/document' });
   } catch (e) { error(e.response?.data?.message || 'Gagal memproses'); } finally { saving.value = false; }
 };
 
 onMounted(async () => {
   if (!contentId) { loading.value = false; return; }
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/files/${contentId}`);
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/files/${contentId}`);
     doc.value = res.data.data;
   } catch { doc.value = null; } finally { loading.value = false; }
 });

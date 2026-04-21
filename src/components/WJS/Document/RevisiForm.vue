@@ -295,7 +295,7 @@
 
         <q-separator />
         <q-card-actions align="right" class="tw-p-4 tw-bg-slate-50">
-          <q-btn label="Kembali" color="grey-6" push icon="arrow_back" @click="router.push('/dms/document/recap')" />
+          <q-btn label="Kembali" color="grey-6" push icon="arrow_back" @click="router.push('/wjs/document/recap')" />
           <q-btn label="Kirim" color="orange-6" push icon="send" @click="submit" :loading="saving" />
         </q-card-actions>
       </template>
@@ -399,7 +399,7 @@ const simpanPendukung = async () => {
     fd.append('plkp_tanggal_daluwarsa', formPendukung.plkp_tanggal_daluwarsa || '');
     fd.append('plkp_notif_reminder', formPendukung.plkp_notif_reminder || '');
     if (formPendukung.plkp_file) fd.append('plkp_file_pendukung', formPendukung.plkp_file);
-    const res = await axios.post(`${import.meta.env.VITE_API}dms/document/content-det`, fd);
+    const res = await axios.post(`${import.meta.env.VITE_API}wjs/document/content-det`, fd);
     if (res.data?.data) {
       pendukung.value = res.data.data;
     }
@@ -417,7 +417,7 @@ const loadArsiparis = async (lokasi_id) => {
   emailArsiparis.value = '';
   form.arsiparis_id = '';
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/arsiparis-lokasi`, { params: { lokasi_arsip_id: lokasi_id } });
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/arsiparis-lokasi`, { params: { lokasi_arsip_id: lokasi_id } });
     arsiparisOptions.value = res.data;
   } catch {}
 };
@@ -437,7 +437,7 @@ watch(() => form.content_doc, (val) => {
   docStatus.value = 'checking';
   docCheckTimer = setTimeout(async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API}dms/document/check-doc`, { params: { doc_id: val.trim() } });
+      const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/check-doc`, { params: { doc_id: val.trim() } });
       docStatus.value = res.data.valid ? 'valid' : 'invalid';
       docInfo.value = res.data.doc || null;
     } catch { docStatus.value = null; }
@@ -479,9 +479,9 @@ const submit = async () => {
     fd.append('txt_jenis_3', form.txt_jenis_3 || 0);
     if (form.filedoc) fd.append('filedoc', form.filedoc);
 
-    await axios.post(`${import.meta.env.VITE_API}dms/document/approval/revisi`, fd);
+    await axios.post(`${import.meta.env.VITE_API}wjs/document/approval/revisi`, fd);
     success('Revisi berhasil dikirim, menunggu approval atasan');
-    router.push('/dms/document/recap');
+    router.push('/wjs/document/recap');
   } catch (e) {
     error(e.response?.data?.message || 'Gagal mengirim revisi');
   } finally {
@@ -492,7 +492,7 @@ const submit = async () => {
 const loadData = async () => {
   if (!token) { loading.value = false; return; }
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}dms/document/approval/validate`, { params: { token } });
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/document/approval/validate`, { params: { token } });
     const doc = res.data.data;
     docData.value = doc;
     pendukung.value = res.data.pendukung || [];
@@ -549,9 +549,9 @@ const loadData = async () => {
 onMounted(async () => {
   try {
     const [sub, wl, la] = await Promise.all([
-      axios.get(`${import.meta.env.VITE_API}dms/document/sub-kategori`),
-      axios.get(`${import.meta.env.VITE_API}dms/listWorkLocation`),
-      axios.get(`${import.meta.env.VITE_API}dms/listLokasiArsip`),
+      axios.get(`${import.meta.env.VITE_API}wjs/document/sub-kategori`),
+      axios.get(`${import.meta.env.VITE_API}wjs/listWorkLocation`),
+      axios.get(`${import.meta.env.VITE_API}wjs/listLokasiArsip`),
     ]);
     subKategoriOptions.value = sub.data;
     workLocationOptions.value = wl.data;
