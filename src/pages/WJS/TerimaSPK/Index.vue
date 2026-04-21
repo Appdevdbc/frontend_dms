@@ -50,8 +50,8 @@
 
               <!-- SPK count badge -->
               <div v-if="item.count > 0"
-                class="tw-absolute tw-top-2 tw-right-2 tw-z-20 tw-rounded-full tw-text-white tw-text-xs tw-font-bold tw-px-2 tw-py-0.5 tw-shadow-md"
-                :style="{ backgroundColor: color(index) }">
+                class="tw-absolute tw-top-2 tw-right-2 tw-z-20 tw-rounded-full tw-text-white tw-text-xs tw-font-bold tw-min-w-[1.5rem] tw-h-6 tw-px-2 tw-flex tw-items-center tw-justify-center tw-shadow-lg badge-pulse"
+                :style="{ backgroundColor: color(index), boxShadow: `0 0 0 3px white, 0 0 0 5px ${color(index)}` }">
                 {{ item.count }}
               </div>
 
@@ -185,4 +185,20 @@ onMounted(() => getGroups());
   transition: left 0.5s ease;
 }
 .card-hover:hover .label-button::before { left: 100%; }
+
+.badge-pulse {
+  animation: badge-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both,
+             badge-ring 2s ease-in-out 0.5s infinite;
+}
+
+@keyframes badge-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  80%  { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes badge-ring {
+  0%, 100% { box-shadow: 0 0 0 3px white, 0 0 0 5px currentColor; }
+  50%       { box-shadow: 0 0 0 3px white, 0 0 0 8px currentColor, 0 0 12px 6px currentColor; }
+}
 </style>
