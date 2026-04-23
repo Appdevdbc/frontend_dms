@@ -7,39 +7,41 @@
 
       <q-separator />
 
-      <q-card-section class="tw-space-y-3">
-        <q-input v-model="form.tanggal" type="date" label="Tanggal *" outlined dense :rules="[v => !!v || 'Wajib diisi']" />
-        <q-select
-          v-model="form.tipe"
-          :options="tipeOptions"
-          label="Tipe *"
-          outlined dense emit-value map-options
-          :rules="[v => !!v || 'Wajib diisi']"
-        />
-        <q-select
-          v-model="form.jenis"
-          :options="jenisOptions"
-          label="Jenis *"
-          outlined dense emit-value map-options
-          :rules="[v => !!v || 'Wajib diisi']"
-        />
-        <q-input v-model="form.target_selesai" type="date" label="Target Selesai *" outlined dense :rules="[v => !!v || 'Wajib diisi']" />
-        <q-input v-model="form.subject" label="Subject *" outlined dense :rules="[v => !!v || 'Wajib diisi']" />
-        <q-select
-          v-model="form.id_dept"
-          :options="deptOptions"
-          label="Departemen *"
-          outlined dense emit-value map-options
-          use-input input-debounce="300"
-          @filter="filterDept"
-          :rules="[v => !!v || 'Wajib diisi']"
-        />
-      </q-card-section>
+      <q-form ref="formRef" greedy @submit.prevent="onSubmit">
+        <q-card-section class="tw-space-y-3">
+          <q-input v-model="form.tanggal" type="date" label="Tanggal *" outlined dense :rules="[v => !!v || 'Tanggal wajib diisi']" />
+          <q-select
+            v-model="form.tipe"
+            :options="tipeOptions"
+            label="Tipe *"
+            outlined dense emit-value map-options
+            :rules="[v => !!v || 'Tipe wajib dipilih']"
+          />
+          <q-select
+            v-model="form.jenis"
+            :options="jenisOptions"
+            label="Jenis *"
+            outlined dense emit-value map-options
+            :rules="[v => !!v || 'Jenis wajib dipilih']"
+          />
+          <q-input v-model="form.target_selesai" type="date" label="Target Selesai *" outlined dense :rules="[v => !!v || 'Target Selesai wajib diisi']" />
+          <q-input v-model="form.subject" label="Subject *" outlined dense :rules="[v => !!v || 'Subject wajib diisi']" />
+          <q-select
+            v-model="form.id_dept"
+            :options="deptOptions"
+            label="Departemen *"
+            outlined dense emit-value map-options
+            use-input input-debounce="300"
+            @filter="filterDept"
+            :rules="[v => !!v || 'Departemen wajib dipilih']"
+          />
+        </q-card-section>
 
-      <q-card-actions align="right" class="tw-px-4 tw-pb-4">
-        <q-btn flat label="Batal" @click="$emit('update:modelValue', false)" />
-        <q-btn color="primary" label="Simpan" :loading="saving" @click="onSubmit" />
-      </q-card-actions>
+        <q-card-actions align="right" class="tw-px-4 tw-pb-4">
+          <q-btn flat label="Batal" @click="$emit('update:modelValue', false)" />
+          <q-btn color="primary" label="Simpan" :loading="saving" type="submit" />
+        </q-card-actions>
+      </q-form>
     </q-card>
   </q-dialog>
 </template>
@@ -58,6 +60,7 @@ const emit = defineEmits(["update:modelValue", "done"]);
 
 const { error, success } = useNotify();
 const saving = ref(false);
+const formRef = ref(null);
 const deptOptions = ref([]);
 const deptAll = ref([]);
 
@@ -117,6 +120,9 @@ watch(() => props.modelValue, (val) => {
 });
 
 const onSubmit = async () => {
+  const valid = await formRef.value.validate();
+  if (!valid) return;
+
   saving.value = true;
   try {
     const payload = { ...form, creator: empid() };
@@ -128,7 +134,7 @@ const onSubmit = async () => {
     success("SPK berhasil disimpan");
     emit("done");
   } catch (e) {
-    error("Gagal menyimpan SPK");
+    error(e.response?.data?.message ?? "Gagal menyimpan SPK");
   } finally {
     saving.value = false;
   }

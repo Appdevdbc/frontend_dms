@@ -98,13 +98,48 @@
         </q-card-section>
         <q-card-section class="tw-p-4">
           <q-table
-            :rows="data.spkMold"
+            :rows="spkMold"
             :columns="spkMoldColumns"
             row-key="id_spk"
             flat dense
-            :rows-per-page-options="[10, 25, 50]"
+            :loading="moldLoading"
+            :filter="moldFilter"
+            :rows-per-page-options="[]"
+            :pagination="moldPagination"
+            @update:pagination="onMoldPaginationUpdate"
+            @request="onMoldRequest"
+            binary-state-sort
             class="tw-rounded-xl tw-overflow-hidden"
           >
+            <template v-slot:top-left>
+              <div class="tw-flex tw-items-center tw-gap-2 tw-bg-white tw-px-4 tw-py-2 tw-rounded-lg tw-shadow-sm">
+                <q-icon name="view_headline" color="orange-6" size="20px">
+                  <q-tooltip class="tw-bg-slate-800 tw-text-xs">Rows per page</q-tooltip>
+                </q-icon>
+                <q-select
+                  borderless
+                  dense
+                  v-model="moldPagination.rowsPerPage"
+                  :options="[10, 25, 50, 100]"
+                  @update:modelValue="onMoldRequest({ pagination: moldPagination })"
+                  class="tw-min-w-[80px]"
+                />
+              </div>
+            </template>
+            <template v-slot:top-right>
+              <q-input
+                outlined
+                dense
+                debounce="300"
+                v-model="moldFilter"
+                placeholder="Search..."
+                class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-min-w-[250px]"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="search" color="orange-6" />
+                </template>
+              </q-input>
+            </template>
             <template v-slot:header="props">
               <q-tr :props="props">
                 <q-th v-for="col in props.cols" :key="col.name" :props="props"
@@ -158,9 +193,44 @@
             :columns="spkMonitorColumns"
             row-key="id_spk"
             flat dense
-            :rows-per-page-options="[10, 25, 50]"
+            :loading="monitorLoading"
+            :filter="monitorFilter"
+            :rows-per-page-options="[]"
+            :pagination="monitorPagination"
+            @update:pagination="onPaginationUpdate"
+            @request="onMonitorRequest"
+            binary-state-sort
             class="tw-rounded-xl tw-overflow-hidden"
           >
+            <template v-slot:top-left>
+              <div class="tw-flex tw-items-center tw-gap-2 tw-bg-white tw-px-4 tw-py-2 tw-rounded-lg tw-shadow-sm">
+                <q-icon name="view_headline" color="teal-6" size="20px">
+                  <q-tooltip class="tw-bg-slate-800 tw-text-xs">Rows per page</q-tooltip>
+                </q-icon>
+                <q-select
+                  borderless
+                  dense
+                  v-model="monitorPagination.rowsPerPage"
+                  :options="[10, 25, 50, 100]"
+                  @update:modelValue="onMonitorRequest({ pagination: monitorPagination })"
+                  class="tw-min-w-[80px]"
+                />
+              </div>
+            </template>
+            <template v-slot:top-right>
+              <q-input
+                outlined
+                dense
+                debounce="300"
+                v-model="monitorFilter"
+                placeholder="Search..."
+                class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-min-w-[250px]"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="search" color="teal-6" />
+                </template>
+              </q-input>
+            </template>
             <template v-slot:header="props">
               <q-tr :props="props">
                 <q-th v-for="col in props.cols" :key="col.name" :props="props"
@@ -191,14 +261,32 @@ import { Loading } from "quasar";
 import dayjs from "dayjs";
 
 const loading = ref(true);
+const moldLoading = ref(false);
+const moldFilter = ref("");
+const monitorLoading = ref(false);
+const monitorFilter = ref("");
 
 const data = ref({
   moldRepair: { closedMonth: 0, targetMonth: 0, closedYear: 0, targetYear: 0 },
   general:    { closedMonth: 0, targetMonth: 0, closedYear: 0, targetYear: 0 },
   sla:        { design: 0, trial: 0, machining: 0, assembly: 0 },
-  spkMold:    [],
+});
+const spkMold = ref([]);
+const moldPagination = ref({
+  sortBy: "id_spk",
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 0,
 });
 const spkMonitor = ref([]);
+const monitorPagination = ref({
+  sortBy: "id_spk",
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 0,
+});
 
 // ─── Computed percentages ─────────────────────────────────────────────────────
 const pct = (closed, target) => target > 0 ? Math.round((closed / target) * 100) : 0;
@@ -267,12 +355,8 @@ const isLate = (row) => {
 const loadData = async () => {
   loading.value = true;
   try {
-    const [perfRes, monitorRes] = await Promise.all([
-      axios.get(`${import.meta.env.VITE_API}wjs/dashboard/performance`),
-      axios.get(`${import.meta.env.VITE_API}wjs/dashboard/spk-monitor`),
-    ]);
-    data.value     = perfRes.data;
-    spkMonitor.value = Array.isArray(monitorRes.data) ? monitorRes.data : [];
+    const perfRes = await axios.get(`${import.meta.env.VITE_API}wjs/dashboard/performance`);
+    data.value = perfRes.data;
   } catch (e) {
     console.error(e);
   } finally {
@@ -280,5 +364,80 @@ const loadData = async () => {
   }
 };
 
-onMounted(() => loadData());
+// ─── SPK Mold remote pagination ──────────────────────────────────────────────
+const loadSpkMold = async () => {
+  moldLoading.value = true;
+  try {
+    const p = moldPagination.value;
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/dashboard/spk-mold`, {
+      params: {
+        page: p.page,
+        rowsPerPage: p.rowsPerPage,
+        sortBy: p.sortBy,
+        descending: p.descending,
+        filter: moldFilter.value || undefined,
+      },
+    });
+    spkMold.value = res.data.data ?? [];
+    moldPagination.value.rowsNumber = res.data.pagination?.total ?? 0;
+  } catch (e) {
+    console.error(e);
+  } finally {
+    moldLoading.value = false;
+  }
+};
+
+const onMoldRequest = (props) => {
+  const { page, rowsPerPage, sortBy, descending } = props.pagination;
+  moldPagination.value.page = page;
+  moldPagination.value.rowsPerPage = rowsPerPage;
+  moldPagination.value.sortBy = sortBy;
+  moldPagination.value.descending = descending;
+  loadSpkMold();
+};
+
+const onMoldPaginationUpdate = (newPag) => {
+  moldPagination.value = { ...moldPagination.value, ...newPag };
+};
+
+// ─── SPK Monitor remote pagination ───────────────────────────────────────────
+const loadSpkMonitor = async () => {
+  monitorLoading.value = true;
+  try {
+    const p = monitorPagination.value;
+    const res = await axios.get(`${import.meta.env.VITE_API}wjs/dashboard/spk-monitor`, {
+      params: {
+        page: p.page,
+        rowsPerPage: p.rowsPerPage,
+        sortBy: p.sortBy,
+        descending: p.descending,
+        filter: monitorFilter.value || undefined,
+      },
+    });
+    spkMonitor.value = res.data.data ?? [];
+    monitorPagination.value.rowsNumber = res.data.pagination?.total ?? 0;
+  } catch (e) {
+    console.error(e);
+  } finally {
+    monitorLoading.value = false;
+  }
+};
+
+const onMonitorRequest = (props) => {
+  const { page, rowsPerPage, sortBy, descending } = props.pagination;
+  monitorPagination.value.page = page;
+  monitorPagination.value.rowsPerPage = rowsPerPage;
+  monitorPagination.value.sortBy = sortBy;
+  monitorPagination.value.descending = descending;
+  loadSpkMonitor();
+};
+
+const onPaginationUpdate = (newPag) => {
+  monitorPagination.value = { ...monitorPagination.value, ...newPag };
+};
+
+onMounted(async () => {
+  await loadData();
+  await Promise.all([loadSpkMold(), loadSpkMonitor()]);
+});
 </script>
