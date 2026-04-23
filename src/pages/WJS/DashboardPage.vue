@@ -103,10 +103,9 @@
             row-key="id_spk"
             flat dense
             :loading="moldLoading"
-            :filter="moldFilter"
+            :filter="moldPagination.filter"
             :rows-per-page-options="[]"
-            :pagination="moldPagination"
-            @update:pagination="onMoldPaginationUpdate"
+            v-model:pagination="moldPagination"
             @request="onMoldRequest"
             binary-state-sort
             class="tw-rounded-xl tw-overflow-hidden"
@@ -128,10 +127,8 @@
             </template>
             <template v-slot:top-right>
               <q-input
-                outlined
-                dense
-                debounce="300"
-                v-model="moldFilter"
+                outlined dense debounce="300"
+                v-model="moldPagination.filter"
                 placeholder="Search..."
                 class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-min-w-[250px]"
               >
@@ -143,10 +140,16 @@
             <template v-slot:header="props">
               <q-tr :props="props">
                 <q-th v-for="col in props.cols" :key="col.name" :props="props"
-                  class="tw-bg-orange-50 tw-font-bold tw-text-xs tw-uppercase tw-text-orange-700">
+                  :class="`bg-${domain()} tw-text-white tw-font-bold tw-text-xs tw-uppercase tw-py-3`">
                   {{ col.label }}
                 </q-th>
               </q-tr>
+            </template>
+            <template v-slot:loading>
+              <q-inner-loading showing color="orange-6">
+                <q-spinner-gears size="50px" color="orange-6" />
+                <div class="tw-text-orange-700 tw-font-semibold tw-mt-2 tw-text-sm">Memuat data...</div>
+              </q-inner-loading>
             </template>
             <template v-slot:body-cell-analyze="props">
               <q-td :props="props" class="text-center">
@@ -191,13 +194,12 @@
           <q-table
             :rows="spkMonitor"
             :columns="spkMonitorColumns"
-            row-key="id_spk"
+            row-key="id_spk_section_pic"
             flat dense
             :loading="monitorLoading"
-            :filter="monitorFilter"
+            :filter="monitorPagination.filter"
             :rows-per-page-options="[]"
-            :pagination="monitorPagination"
-            @update:pagination="onPaginationUpdate"
+            v-model:pagination="monitorPagination"
             @request="onMonitorRequest"
             binary-state-sort
             class="tw-rounded-xl tw-overflow-hidden"
@@ -219,10 +221,8 @@
             </template>
             <template v-slot:top-right>
               <q-input
-                outlined
-                dense
-                debounce="300"
-                v-model="monitorFilter"
+                outlined dense debounce="300"
+                v-model="monitorPagination.filter"
                 placeholder="Search..."
                 class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-min-w-[250px]"
               >
@@ -234,13 +234,18 @@
             <template v-slot:header="props">
               <q-tr :props="props">
                 <q-th v-for="col in props.cols" :key="col.name" :props="props"
-                  class="tw-bg-teal-50 tw-font-bold tw-text-xs tw-uppercase tw-text-teal-700">
+                  :class="`bg-${domain()} tw-text-white tw-font-bold tw-text-xs tw-uppercase tw-py-3`">
                   {{ col.label }}
                 </q-th>
               </q-tr>
             </template>
-            <template v-slot:body-cell-act_finish="props">
-              <q-td :props="props" class="text-center">
+            <template v-slot:loading>
+              <q-inner-loading showing color="teal-6">
+                <q-spinner-gears size="50px" color="teal-6" />
+                <div class="tw-text-teal-700 tw-font-semibold tw-mt-2 tw-text-sm">Memuat data...</div>
+              </q-inner-loading>
+            </template>
+            <template v-slot:body-cell-act_finish="props">              <q-td :props="props" class="text-center">
                 <span :class="isLate(props.row) ? 'tw-text-red-600 tw-font-semibold' : ''">
                   {{ formatDate(props.value) }}
                 </span>
@@ -262,9 +267,7 @@ import dayjs from "dayjs";
 
 const loading = ref(true);
 const moldLoading = ref(false);
-const moldFilter = ref("");
 const monitorLoading = ref(false);
-const monitorFilter = ref("");
 
 const data = ref({
   moldRepair: { closedMonth: 0, targetMonth: 0, closedYear: 0, targetYear: 0 },
@@ -278,6 +281,7 @@ const moldPagination = ref({
   page: 1,
   rowsPerPage: 10,
   rowsNumber: 0,
+  filter: null,
 });
 const spkMonitor = ref([]);
 const monitorPagination = ref({
@@ -286,6 +290,7 @@ const monitorPagination = ref({
   page: 1,
   rowsPerPage: 10,
   rowsNumber: 0,
+  filter: null,
 });
 
 // ─── Computed percentages ─────────────────────────────────────────────────────
@@ -375,7 +380,7 @@ const loadSpkMold = async () => {
         rowsPerPage: p.rowsPerPage,
         sortBy: p.sortBy,
         descending: p.descending,
-        filter: moldFilter.value || undefined,
+        filter: p.filter || undefined,
       },
     });
     spkMold.value = res.data.data ?? [];
@@ -388,11 +393,12 @@ const loadSpkMold = async () => {
 };
 
 const onMoldRequest = (props) => {
-  const { page, rowsPerPage, sortBy, descending } = props.pagination;
+  const { page, rowsPerPage, sortBy, descending, filter } = props.pagination;
   moldPagination.value.page = page;
   moldPagination.value.rowsPerPage = rowsPerPage;
   moldPagination.value.sortBy = sortBy;
   moldPagination.value.descending = descending;
+  moldPagination.value.filter = filter;
   loadSpkMold();
 };
 
@@ -411,10 +417,13 @@ const loadSpkMonitor = async () => {
         rowsPerPage: p.rowsPerPage,
         sortBy: p.sortBy,
         descending: p.descending,
-        filter: monitorFilter.value || undefined,
+        filter: p.filter || undefined,
       },
     });
-    spkMonitor.value = res.data.data ?? [];
+    spkMonitor.value = (res.data.data ?? []).map(r => ({
+      ...r,
+      id_spk_section_pic: `${r.id_spk}_${r.section}_${r.pic}`
+    }));
     monitorPagination.value.rowsNumber = res.data.pagination?.total ?? 0;
   } catch (e) {
     console.error(e);
@@ -424,11 +433,12 @@ const loadSpkMonitor = async () => {
 };
 
 const onMonitorRequest = (props) => {
-  const { page, rowsPerPage, sortBy, descending } = props.pagination;
+  const { page, rowsPerPage, sortBy, descending, filter } = props.pagination;
   monitorPagination.value.page = page;
   monitorPagination.value.rowsPerPage = rowsPerPage;
   monitorPagination.value.sortBy = sortBy;
   monitorPagination.value.descending = descending;
+  monitorPagination.value.filter = filter;
   loadSpkMonitor();
 };
 
