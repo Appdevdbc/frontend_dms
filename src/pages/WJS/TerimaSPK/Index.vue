@@ -90,7 +90,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
-import { domain, spinnerBall } from "../../../utils";
+import { domain, spinnerBall, encrypt } from "../../../utils";
 import { Loading } from "quasar";
 import { useRouter } from "vue-router";
 
@@ -130,8 +130,7 @@ const getGroups = async () => {
 };
 
 const goto = (id_group) => {
-  // Navigate to TerimaSPK group list page
-  router.push({ path: `/wjs/terima-spk/list/${id_group}` });
+  router.push({ path: `/wjs/terima-spk/list/${encrypt(String(id_group))}` });
 };
 
 const filterMenu = (val) => {

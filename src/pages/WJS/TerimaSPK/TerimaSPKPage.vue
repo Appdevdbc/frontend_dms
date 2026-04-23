@@ -37,20 +37,15 @@
           <!-- Custom header -->
           <template v-slot:header="props">
             <q-tr :props="props">
-              <q-th auto-width :class="`bg-${domain()} tw-py-4 text-center`">
-                <q-checkbox
-                  :model-value="isAllSelected"
-                  @update:model-value="toggleSelectAll"
-                  color="black"
-                  keep-color
-                  class="checkbox-white-outline"
-                />
-              </q-th>
               <q-th
                 v-for="col in props.cols"
                 :key="col.name"
                 :props="props"
-                :class="`bg-${domain()} tw-text-white tw-font-bold tw-text-sm tw-uppercase tw-tracking-wide tw-py-4`"
+                :class="[
+                  `bg-${domain()} tw-text-white tw-font-bold tw-text-sm tw-uppercase tw-tracking-wide tw-py-4`,
+                  col.name === 'actions' ? 'sticky-column-left-header' : ''
+                ]"
+                :style="col.name === 'actions' ? 'min-width: 260px;' : col.name === 'subject' ? 'max-width: 300px; width: 300px;' : ''"
               >
                 {{ col.label }}
               </q-th>
@@ -76,6 +71,15 @@
           <!-- Toolbar kanan: bulk actions + tambah + search -->
           <template v-slot:top-right>
             <div class="tw-flex tw-gap-3 tw-items-center">
+              <q-btn
+                v-if="rows.length > 0"
+                outline
+                :color="`${domain()}`"
+                :label="isAllSelected ? 'Deselect All' : 'Select All'"
+                :icon="isAllSelected ? 'check_box_outline_blank' : 'check_box'"
+                @click="toggleSelectAll(!isAllSelected)"
+                class="tw-font-semibold tw-px-4 tw-rounded-lg hover:tw-brightness-110 tw-transition-all"
+              />
               <q-btn
                 unelevated color="red-6" icon="delete" label="Hapus"
                 :disable="!selected.length"
@@ -106,18 +110,16 @@
             </div>
           </template>
 
-          <!-- Body slot dengan checkbox manual -->
+          <!-- Body -->
           <template v-slot:body="props">
             <q-tr :props="props">
-              <q-td auto-width class="text-center">
-                <q-checkbox
-                  :model-value="isSelected(props.row)"
-                  @update:model-value="toggleSelection(props.row)"
-                  dense color="blue-6"
-                />
-              </q-td>
-              <q-td v-for="col in props.cols" :key="col.name" :props="props" class="tw-py-4 tw-text-slate-700">
-                <template v-if="col.name === 'actions'">
+              <q-td key="actions" class="tw-py-3 sticky-column-left" style="min-width: 260px;">
+                <div class="tw-flex tw-items-center tw-gap-3">
+                  <q-checkbox
+                    :model-value="isSelected(props.row)"
+                    @update:model-value="toggleSelection(props.row)"
+                    dense color="blue-6"
+                  />
                   <div class="tw-flex tw-gap-2">
                     <q-btn
                       v-if="tmpPage.edit === '1'"
@@ -163,8 +165,32 @@
                       <q-tooltip class="tw-bg-slate-800 tw-text-xs">Set Proses</q-tooltip>
                     </q-btn>
                   </div>
-                </template>
-                <template v-else>{{ col.value }}</template>
+                </div>
+              </q-td>
+              <q-td
+                v-for="col in props.cols.filter(c => c.name !== 'actions')"
+                :key="col.name"
+                :props="props"
+                class="tw-py-4 tw-text-slate-700"
+                :style="col.name === 'subject' ? 'max-width: 300px; width: 300px;' : ''"
+              >
+                <div v-if="col.name === 'subject'" class="tw-w-full">
+                  <div
+                    :class="props.row.showFullSubject ? 'tw-whitespace-normal tw-break-words' : 'tw-line-clamp-2'"
+                    class="tw-text-sm"
+                  >
+                    {{ col.value }}
+                  </div>
+                  <q-btn
+                    v-if="col.value && col.value.length > 80"
+                    flat dense size="xs"
+                    :color="`${domain()}`"
+                    :label="props.row.showFullSubject ? 'Show Less' : 'Show More'"
+                    @click="props.row.showFullSubject = !props.row.showFullSubject"
+                    class="tw-mt-1 tw-text-xs tw-font-semibold tw-underline hover:tw-no-underline tw-transition-all"
+                  />
+                </div>
+                <span v-else>{{ col.value }}</span>
               </q-td>
             </q-tr>
           </template>
@@ -182,8 +208,8 @@
 import { ref, reactive, onMounted, computed } from "vue";
 import axios from "axios";
 import dayjs from "dayjs";
-import { useRoute } from "vue-router";
-import { domain, empid, spinnerBall, decryptMessage } from "../../../utils";
+import { useRoute, useRouter } from "vue-router";
+import { domain, empid, spinnerBall, decryptMessage, decrypt } from "../../../utils";
 import { useNotify } from "../../../composables/useNotify";
 import { Loading, useQuasar } from "quasar";
 import FormSPK from "../../../components/WJS/TerimaSPK/FormSPK.vue";
@@ -194,6 +220,7 @@ import "../../../assets/styles/table.css";
 const { error, success } = useNotify();
 const $q = useQuasar();
 const route = useRoute();
+const router = useRouter();
 
 const rows = ref([]);
 const selected = ref([]);
@@ -215,14 +242,14 @@ const pagination = ref({
 const tmpPage = reactive({ add: "0", edit: "0", delete: "0", view: "0" });
 
 const columns = [
-  { name: "actions", label: "Aksi", field: "actions", align: "left", sortable: false },
+  { name: "actions", label: "Aksi", field: "actions", align: "left", sortable: false, classes: "sticky-column-left", headerClasses: "sticky-column-left-header", style: "min-width: 260px; width: 260px;", headerStyle: "min-width: 260px; width: 260px;" },
   { name: "id_spk", label: "No SPK", field: "id_spk", align: "left", sortable: true },
   { name: "tanggal", label: "Tanggal", field: "tanggal", align: "center", sortable: true, format: (val) => val ? dayjs(val).format("DD-MM-YYYY") : "-" },
   { name: "dept", label: "Dept Request", field: "dept", align: "left", sortable: true },
   { name: "tipe", label: "Tipe SPK", field: "tipe", align: "center", sortable: true },
   { name: "jenis", label: "Jenis", field: "jenis", align: "center", sortable: true },
   { name: "target_selesai", label: "Target Selesai", field: "target_selesai", align: "center", sortable: true, format: (val) => val ? dayjs(val).format("DD-MM-YYYY") : "-" },
-  { name: "subject", label: "Subjek", field: "subject", align: "left", sortable: true },
+  { name: "subject", label: "Subjek", field: "subject", align: "left", sortable: true, style: "max-width: 300px; width: 300px;", headerStyle: "max-width: 300px; width: 300px;" },
 ];
 
 const getPageAkses = async () => {
@@ -247,9 +274,27 @@ const getPageAkses = async () => {
 const getData = async () => {
   loading.value = true;
   try {
+    // Validate the encrypted param — if decryption fails or result is not numeric, redirect
+    let id_group = undefined;
+    if (route.params.id_group) {
+      try {
+        const decrypted = decrypt(route.params.id_group);
+        if (!decrypted || isNaN(Number(decrypted))) {
+          error("Akses tidak valid");
+          router.replace("/wjs/terima-spk");
+          return;
+        }
+        id_group = decrypted;
+      } catch {
+        error("Akses tidak valid");
+        router.replace("/wjs/terima-spk");
+        return;
+      }
+    }
+
     const res = await axios.get(`${import.meta.env.VITE_API}wjs/terimaSPK/list`, {
       params: {
-        id_group: route.params.id_group ?? undefined,
+        id_group,
         page: pagination.value.page,
         rowsPerPage: pagination.value.rowsPerPage,
         sortBy: pagination.value.sortBy,
@@ -257,7 +302,7 @@ const getData = async () => {
         filter: pagination.value.filter || undefined,
       },
     });
-    rows.value = res.data.data ?? res.data;
+    rows.value = (res.data.data ?? res.data).map(r => ({ ...r, showFullSubject: false }));
     pagination.value.rowsNumber = res.data.pagination?.total ?? res.data.total ?? rows.value.length;
     selected.value = [];
   } catch (e) {
@@ -404,8 +449,4 @@ const onCetak = async (row) => {
 onMounted(() => getPageAkses());
 </script>
 
-<style scoped>
-.checkbox-white-outline :deep(.q-checkbox__bg) {
-  border-color: white !important;
-}
-</style>
+

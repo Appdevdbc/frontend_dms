@@ -206,11 +206,23 @@
             hide-pagination
             :rows-per-page-options="[0]"
           >
+            <template v-slot:header="props">
+              <q-tr :props="props">
+                <q-th
+                  v-for="col in props.cols"
+                  :key="col.name"
+                  :props="props"
+                  :class="`bg-${domain()} tw-text-white tw-font-bold tw-text-sm tw-uppercase tw-tracking-wide tw-py-3`"
+                >
+                  {{ col.label }}
+                </q-th>
+              </q-tr>
+            </template>
             <template v-slot:body-cell-status="props">
               <q-td :props="props">
                 <q-badge
-                  :color="props.row.finish ? 'green' : props.row.postpone ? 'orange' : 'blue'"
-                  :label="props.row.finish ? 'Selesai' : props.row.postpone ? 'Postpone' : 'Proses'"
+                  :color="props.row.status === 'Finish' ? 'green' : props.row.status === 'Postpone' ? 'orange' : props.row.status === 'Belum Start' ? 'grey' : 'blue'"
+                  :label="props.row.status"
                 />
               </q-td>
             </template>
@@ -385,22 +397,23 @@ const columns = [
 
 const detailColumns = [
   {
-    name: "pic",
+    name: "nama_pic",
     align: "left",
     label: "PIC",
-    field: "pic",
+    field: (r) => `${r.nama_pic} (${r.pic})`,
   },
   {
-    name: "mesin",
+    name: "nama_mesin",
     align: "left",
     label: "Mesin",
-    field: "mesin",
+    field: (r) => r.nama_mesin || '-',
   },
   {
     name: "total_jam",
     align: "center",
     label: "Total Proses (Jam)",
     field: "total_jam",
+    format: (val) => val != null ? `${val} jam` : '-',
   },
   {
     name: "status",
