@@ -167,12 +167,10 @@ admin,
 decryptMessage,
 empid,
 spinnerBall,
-formatDateDMYHM,} from "./../../utils";
+formatDateDMYHM,} from "./../../utils.js";
 import { useQuasar } from "quasar";
-import * as yup from "yup";
 import { useRouter, useRoute} from "vue-router";
 import { useNotify } from "./../../composables/useNotify";
-import numeral from "numeral";
 import "./../../assets/styles/table.css";
 
 const router = useRouter();
@@ -208,7 +206,7 @@ const columns = [
     required: true,
     label: "Size (KB)",
     align: "right",
-    field: "size",
+    field: (row) => (row.size / 1024).toFixed(2),
     sortable: true,
   },
 ];
@@ -254,7 +252,7 @@ const getErrorLogs = async () => {
     loading.value = false;
   } catch (err) {
     loading.value = false;
-    error(err?.response?.data?.message || err?.message || 'Gagal memuat data');
+    error(err?.response?.data?.message || err?.message || 'Failed to load data');
   }
 };
 
@@ -275,7 +273,7 @@ const getErrorDataLogs = async () => {
   } catch (err) {
     loading.value = false;
     logData.value = { filename: '', totalLines: 0, from: 0, to: 0, lines: [] };
-    error(err?.response?.data?.message || err?.message || 'Gagal memuat data');
+    error(err?.response?.data?.message || err?.message || 'Failed to load log data');
   }
 };
 
@@ -285,7 +283,7 @@ const getPageAkses = async () => {
     const res = await axios.get(`${import.meta.env.VITE_API}pageakses`, {
       params: {
         role:empid(),
-        page:'/error-list',
+        page:'/master/error-list',
         domain:domain(),
       },
       skipErrorInterceptor: true
