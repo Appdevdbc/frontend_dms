@@ -102,16 +102,29 @@ const resetForm = () => {
   form.target_selesai = ""; form.subject = ""; form.id_dept = null;
 };
 
+// Helper: ambil YYYY-MM-DD dari nilai tanggal apapun (ISO string, Date, dll)
+const toDateInput = (val) => {
+  if (!val) return "";
+  // Jika sudah format YYYY-MM-DD, langsung pakai
+  if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+  // Potong bagian T ke belakang (ISO timestamp)
+  if (typeof val === "string" && val.includes("T")) return val.split("T")[0];
+  // Fallback: parse via Date
+  const d = new Date(val);
+  if (isNaN(d)) return "";
+  return d.toISOString().split("T")[0];
+};
+
 watch(() => props.modelValue, (val) => {
   if (val) {
     if (props.data) {
       Object.assign(form, {
-        tanggal: props.data.tanggal,
-        tipe: props.data.tipe,
-        jenis: props.data.jenis,
-        target_selesai: props.data.target_selesai,
-        subject: props.data.subject,
-        id_dept: props.data.id_dept,
+        tanggal:        toDateInput(props.data.tanggal),
+        tipe:           props.data.tipe,
+        jenis:          props.data.jenis,
+        target_selesai: toDateInput(props.data.target_selesai),
+        subject:        props.data.subject,
+        id_dept:        props.data.id_dept,
       });
     } else {
       resetForm();

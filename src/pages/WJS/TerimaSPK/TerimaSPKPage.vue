@@ -122,7 +122,6 @@
                   />
                   <div class="tw-flex tw-gap-2">
                     <q-btn
-                      v-if="tmpPage.edit === '1'"
                       round dense color="blue-6" icon="edit" size="sm"
                       class="tw-shadow-md hover:tw-shadow-lg hover:tw-scale-110 tw-transition-all"
                       @click="onEdit(props.row)"
@@ -365,7 +364,7 @@ const onDelete = (row) => {
       $q.loading.hide();
     } catch (e) {
       $q.loading.hide();
-      error("Gagal menghapus SPK");
+      error(e.response?.data?.message ?? "Gagal menghapus SPK");
     }
   });
 };
@@ -400,7 +399,7 @@ const onBulkDelete = () => {
       $q.loading.hide();
     } catch (e) {
       $q.loading.hide();
-      error("Gagal menghapus SPK");
+      error(e.response?.data?.message ?? "Gagal menghapus SPK");
     }
   });
 };
