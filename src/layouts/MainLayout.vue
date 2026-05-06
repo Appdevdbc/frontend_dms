@@ -10,7 +10,7 @@
               <q-icon name="description" size="20px" class="tw-text-white/90" />
               <span class="app-name">Workshop Job System (WJS)</span>
             </div>
-            <span class="app-subtitle">Workshop Management System</span>
+            <span class="app-subtitle">Workshop Job System</span>
           </div>
         </q-toolbar-title>
 
