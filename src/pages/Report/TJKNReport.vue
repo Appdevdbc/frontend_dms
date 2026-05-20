@@ -169,9 +169,9 @@ const summary         = ref({});
 // ── Detail table columns ──────────────────────────────────────────────────────
 const detailColumns = [
   { name: 'spk',      label: 'No SPK',   field: 'spk',      align: 'center', sortable: true },
-  { name: 'start',    label: 'Start',    field: r => r.start    ? dayjs(r.start).format('YYYY-MM-DD HH:mm')    : '-', align: 'center' },
-  { name: 'finish',   label: 'Finish',   field: r => r.finish   ? dayjs(r.finish).format('YYYY-MM-DD HH:mm')   : '-', align: 'center' },
-  { name: 'postpone', label: 'Postpone', field: r => r.postpone ? dayjs(r.postpone).format('YYYY-MM-DD HH:mm') : '-', align: 'center' },
+  { name: 'start',    label: 'Start',    field: r => r.start || '-', align: 'center' },
+  { name: 'finish',   label: 'Finish',   field: r => r.finish || '-', align: 'center' },
+  { name: 'postpone', label: 'Postpone', field: r => r.postpone || '-', align: 'center' },
   { name: 'totalJam', label: 'Durasi (jam)', field: 'totalJam', align: 'center' },
 ];
 
@@ -255,8 +255,8 @@ async function loadDetail(label, nik) {
 
       // Overtime: if finish > 17:00, add 3.5 to overtime TJKN
       if (row.finish) {
-        const finishTime = dayjs(row.finish);
-        const officeEnd  = dayjs(row.finish).hour(17).minute(0).second(0);
+        const finishTime = dayjs(row.finish, 'DD-MM-YYYY HH:mm');
+        const officeEnd  = finishTime.hour(17).minute(0).second(0);
         if (finishTime.isAfter(officeEnd)) tjknOver += 3.5;
       }
     });
