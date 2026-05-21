@@ -7,18 +7,173 @@
       <q-separator />
 
       <q-card-section>
-        <div class="tw-grid tw-grid-cols-2 tw-gap-3">
-          <template v-for="field in fields">
-            <q-input
-              v-if="isVisible(field)"
-              :key="field.key"
-              v-model="form[field.key]"
-              type="date"
-              :label="field.label"
-              outlined dense
-            />
-          </template>
-        </div>
+        <!-- Jenis Repair: Semua field -->
+        <template v-if="data?.jenis === 'repair'">
+          <!-- Bongkar Analisis -->
+          <div class="tw-mb-4">
+            <div class="tw-font-semibold tw-mb-2">Bongkar Analisis</div>
+            <div class="tw-grid tw-grid-cols-2 tw-gap-3">
+              <q-input
+                v-model="form.target_analisis_start"
+                type="date"
+                label="Mulai"
+                outlined dense
+              />
+              <q-input
+                v-model="form.target_analisis_finish"
+                type="date"
+                label="Selesai"
+                outlined dense
+              />
+            </div>
+          </div>
+
+          <!-- Drawing -->
+          <div class="tw-mb-4">
+            <div class="tw-font-semibold tw-mb-2">Drawing</div>
+            <div class="tw-grid tw-grid-cols-2 tw-gap-3">
+              <q-input
+                v-model="form.target_drawing_start"
+                type="date"
+                label="Mulai"
+                outlined dense
+              />
+              <q-input
+                v-model="form.target_drawing_finish"
+                type="date"
+                label="Selesai"
+                outlined dense
+              />
+            </div>
+          </div>
+
+          <!-- Order Part -->
+          <div class="tw-mb-4">
+            <div class="tw-font-semibold tw-mb-2">Order Part</div>
+            <div class="tw-grid tw-grid-cols-2 tw-gap-3">
+              <q-input
+                v-model="form.target_order_start"
+                type="date"
+                label="Mulai"
+                outlined dense
+              />
+              <q-input
+                v-model="form.target_order_finish"
+                type="date"
+                label="Selesai"
+                outlined dense
+              />
+            </div>
+          </div>
+
+          <!-- Machining -->
+          <div class="tw-mb-4">
+            <div class="tw-font-semibold tw-mb-2">Machining <span class="tw-text-red-500">*</span></div>
+            <div class="tw-grid tw-grid-cols-2 tw-gap-3">
+              <q-input
+                v-model="form.target_machining_start"
+                type="date"
+                label="Mulai"
+                outlined dense
+                :rules="[val => !!val || 'Wajib diisi']"
+              />
+              <q-input
+                v-model="form.target_machining_finish"
+                type="date"
+                label="Selesai"
+                outlined dense
+                :rules="[val => !!val || 'Wajib diisi']"
+              />
+            </div>
+          </div>
+
+          <!-- Assy -->
+          <div class="tw-mb-4">
+            <div class="tw-font-semibold tw-mb-2">Assy <span class="tw-text-red-500">*</span></div>
+            <div class="tw-grid tw-grid-cols-2 tw-gap-3">
+              <q-input
+                v-model="form.target_assy_start"
+                type="date"
+                label="Mulai"
+                outlined dense
+                :rules="[val => !!val || 'Wajib diisi']"
+              />
+              <q-input
+                v-model="form.target_assy_finish"
+                type="date"
+                label="Selesai"
+                outlined dense
+                :rules="[val => !!val || 'Wajib diisi']"
+              />
+            </div>
+          </div>
+
+          <!-- Trial -->
+          <div class="tw-mb-4">
+            <div class="tw-font-semibold tw-mb-2">Trial <span class="tw-text-red-500">*</span></div>
+            <div class="tw-grid tw-grid-cols-2 tw-gap-3">
+              <q-input
+                v-model="form.target_trial_start"
+                type="date"
+                label="Mulai"
+                outlined dense
+                :rules="[val => !!val || 'Wajib diisi']"
+              />
+              <q-input
+                v-model="form.target_trial_finish"
+                type="date"
+                label="Selesai"
+                outlined dense
+                :rules="[val => !!val || 'Wajib diisi']"
+              />
+            </div>
+          </div>
+        </template>
+
+        <!-- Jenis General: Hanya Drawing & Machining -->
+        <template v-else>
+          <!-- Drawing -->
+          <div class="tw-mb-4">
+            <div class="tw-font-semibold tw-mb-2">Drawing <span class="tw-text-red-500">*</span></div>
+            <div class="tw-grid tw-grid-cols-2 tw-gap-3">
+              <q-input
+                v-model="form.target_drawing_start"
+                type="date"
+                label="Mulai"
+                outlined dense
+                :rules="[val => !!val || 'Wajib diisi']"
+              />
+              <q-input
+                v-model="form.target_drawing_finish"
+                type="date"
+                label="Selesai"
+                outlined dense
+                :rules="[val => !!val || 'Wajib diisi']"
+              />
+            </div>
+          </div>
+
+          <!-- Machining -->
+          <div class="tw-mb-4">
+            <div class="tw-font-semibold tw-mb-2">Machining <span class="tw-text-red-500">*</span></div>
+            <div class="tw-grid tw-grid-cols-2 tw-gap-3">
+              <q-input
+                v-model="form.target_machining_start"
+                type="date"
+                label="Mulai"
+                outlined dense
+                :rules="[val => !!val || 'Wajib diisi']"
+              />
+              <q-input
+                v-model="form.target_machining_finish"
+                type="date"
+                label="Selesai"
+                outlined dense
+                :rules="[val => !!val || 'Wajib diisi']"
+              />
+            </div>
+          </div>
+        </template>
       </q-card-section>
 
       <q-card-actions align="right" class="tw-px-4 tw-pb-4">
@@ -44,28 +199,22 @@ const { error, success } = useNotify();
 const saving = ref(false);
 
 const fields = [
-  { key: "target_analisis_start",  label: "Analisis Mulai",    repair: true },
-  { key: "target_analisis_finish", label: "Analisis Selesai",  repair: true },
-  { key: "target_drawing_start",   label: "Drawing Mulai",     repair: true },
-  { key: "target_drawing_finish",  label: "Drawing Selesai",   repair: true },
-  { key: "target_order_start",     label: "Order Part Mulai",  repair: true },
-  { key: "target_order_finish",    label: "Order Part Selesai",repair: true },
-  { key: "target_machining_start", label: "Machining Mulai",   repair: false },
-  { key: "target_machining_finish",label: "Machining Selesai", repair: false },
-  { key: "target_assy_start",      label: "Assy Mulai",        repair: true },
-  { key: "target_assy_finish",     label: "Assy Selesai",      repair: true },
-  { key: "target_trial_start",     label: "Trial Mulai",       repair: true },
-  { key: "target_trial_finish",    label: "Trial Selesai",     repair: true },
+  { key: "target_analisis_start",  label: "Analisis Mulai" },
+  { key: "target_analisis_finish", label: "Analisis Selesai" },
+  { key: "target_drawing_start",   label: "Drawing Mulai" },
+  { key: "target_drawing_finish",  label: "Drawing Selesai" },
+  { key: "target_order_start",     label: "Order Part Mulai" },
+  { key: "target_order_finish",    label: "Order Part Selesai" },
+  { key: "target_machining_start", label: "Machining Mulai" },
+  { key: "target_machining_finish",label: "Machining Selesai" },
+  { key: "target_assy_start",      label: "Assy Mulai" },
+  { key: "target_assy_finish",     label: "Assy Selesai" },
+  { key: "target_trial_start",     label: "Trial Mulai" },
+  { key: "target_trial_finish",    label: "Trial Selesai" },
 ];
 
 const form = reactive({});
 fields.forEach((f) => (form[f.key] = ""));
-
-// Sembunyikan field repair-only jika jenis = general
-const isVisible = (field) => {
-  if (!field.repair) return true;
-  return props.data?.jenis === "repair";
-};
 
 watch(() => props.modelValue, async (val) => {
   if (val && props.data) {
@@ -97,6 +246,28 @@ watch(() => props.modelValue, async (val) => {
 });
 
 const onSubmit = async () => {
+  // Validasi field required berdasarkan jenis SPK
+  if (props.data?.jenis === "repair") {
+    // Repair: Machining, Assy, Trial wajib diisi
+    if (!form.target_machining_start || !form.target_machining_finish) {
+      return error("Machining Mulai dan Selesai wajib diisi");
+    }
+    if (!form.target_assy_start || !form.target_assy_finish) {
+      return error("Assy Mulai dan Selesai wajib diisi");
+    }
+    if (!form.target_trial_start || !form.target_trial_finish) {
+      return error("Trial Mulai dan Selesai wajib diisi");
+    }
+  } else {
+    // General: Drawing dan Machining wajib diisi
+    if (!form.target_drawing_start || !form.target_drawing_finish) {
+      return error("Drawing Mulai dan Selesai wajib diisi");
+    }
+    if (!form.target_machining_start || !form.target_machining_finish) {
+      return error("Machining Mulai dan Selesai wajib diisi");
+    }
+  }
+
   saving.value = true;
   try {
     await axios.put(`${import.meta.env.VITE_API}wjs/terimaSPK/duedate/${props.data.id_spk}`, form);

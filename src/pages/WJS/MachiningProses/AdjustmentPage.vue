@@ -346,7 +346,7 @@ const onViewList = async (row) => {
         ...item,
         saving: false,
         editForm: {
-          tanggal: dt ? dayjs.utc(dt).format("DD-MM-YYYY") : dayjs().utc().format("DD-MM-YYYY"),
+          tanggal: dt ? dayjs.utc(dt).format("YYYY-MM-DD") : dayjs().utc().format("YYYY-MM-DD"),
           jam:     dt ? dayjs.utc(dt).format("HH") : dayjs().format("HH"),
           menit:   dt ? dayjs.utc(dt).format("mm") : dayjs().utc().format("mm"),
         }

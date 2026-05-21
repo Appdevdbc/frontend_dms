@@ -52,6 +52,11 @@ export default [
         name: "Adjustment",
         component: () => import("./../pages/WJS/MachiningProses/AdjustmentPage.vue"),
       },
+      {
+        path: "transaksi/machining/proses",
+        name: "MachiningProses",
+        component: () => import("./../pages/WJS/MachiningProses/ScanOperatorPage.vue"),
+      },
       // TerimaSPK routes
       {
         path: "terima-spk",
