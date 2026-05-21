@@ -214,16 +214,23 @@ const columns = [
     headerClasses: 'sticky-column-left-header'
   },
   {
+    name: "id",
+    align: "center",
+    label: "ID Machine",
+    field: "id",
+    sortable: true,
+  },
+  {
     name: "kode",
     align: "left",
-    label: "Machine Code",
+    label: "Kode Machine",
     field: "kode",
     sortable: true,
   },
   {
     name: "nama",
     align: "left",
-    label: "Machine Name",
+    label: "Nama Machine",
     field: "nama",
     sortable: true,
   },
