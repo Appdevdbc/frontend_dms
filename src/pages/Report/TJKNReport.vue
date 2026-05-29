@@ -109,7 +109,7 @@
                 <q-table
                   :rows="detailRows"
                   :columns="detailColumns"
-                  row-key="spk"
+                  row-key="_rowKey"
                   flat
                   :rows-per-page-options="[10, 25, 50]"
                   class="tw-text-xs"
@@ -239,7 +239,11 @@ async function loadDetail(label, nik) {
       params: { tanggal: filter.value.start, nik },
     });
 
-    detailRows.value = res.data.detail;
+    // Add unique row key untuk setiap row agar sorting tidak menggandakan data
+    detailRows.value = (res.data.detail || []).map((row, idx) => ({
+      ...row,
+      _rowKey: `${row.spk || 'no-spk'}-${idx}`,
+    }));
 
     // Calculate summary from detail rows
     const rows = res.data.detail;
