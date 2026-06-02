@@ -243,7 +243,7 @@ const makeColumnChart = (title, categories, data, color) => ({
   yAxis: [{ min: 0, title: { text: '' } }],
   legend: { enabled: false },
   tooltip: {
-    headerFormat: '<b>{point.x}</b><br/>',
+    headerFormat: '<b>{point.key}</b><br/>',
     pointFormat: '{series.name}: {point.y}',
   },
   plotOptions: {
