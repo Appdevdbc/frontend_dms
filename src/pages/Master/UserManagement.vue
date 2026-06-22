@@ -1,23 +1,23 @@
 <template>
   <div class="q-pa-md">
-    <q-card class="tw-shadow-2xl tw-rounded-2xl tw-overflow-hidden">
-      <q-card-section :class="`side-${domain()}-1 tw-py-6`">
+    <q-card class="tw-shadow-lg tw-rounded-lg tw-overflow-hidden">
+      <q-card-section class="tw-bg-slate-500 tw-py-4">
         <div class="tw-flex tw-items-center tw-gap-3">
-          <q-icon name="people" size="28px" class="tw-text-white" />
+          <q-icon name="people" size="24px" class="tw-text-white" />
           <div>
-            <div class="text-h6 tw-text-white tw-font-bold">User Management</div>
-            <div class="tw-flex tw-items-center tw-gap-2 tw-text-blue-100 tw-text-xs">
-              <q-icon name="home" size="14px"/>
-              <q-icon name="chevron_right" size="14px"/>
+            <div class="text-h6 tw-text-white tw-font-semibold tw-mb-1">User Management</div>
+            <div class="tw-flex tw-items-center tw-gap-1 tw-text-white tw-text-xs tw-opacity-90">
+              <q-icon name="home" size="12px"/>
+              <q-icon name="chevron_right" size="12px"/>
               <span>Master</span>
-              <q-icon name="chevron_right" size="14px"/>
+              <q-icon name="chevron_right" size="12px"/>
               <span>Users</span>
             </div>
           </div>
         </div>
       </q-card-section>
       <q-separator />
-      <q-card-section class="tw-bg-white">
+      <q-card-section class="tw-bg-slate-50 tw-p-0">
         <q-table
           :rows="listUser"
           :columns="columns"
@@ -29,18 +29,19 @@
           @request="onRequest"
           binary-state-sort
           flat
-          class="tw-shadow-md tw-rounded-xl tw-overflow-hidden"
+          class="tw-bg-white"
         >
           <template v-slot:header="props">
-            <q-tr :props="props">
+            <q-tr :props="props" class="tw-bg-slate-700">
                 <q-th
                     v-for="col in props.cols"
                     :key="col.name"
                     :props="props"
                     :class="[
-                      `bg-${domain()} tw-text-white tw-font-bold tw-text-sm tw-uppercase tw-tracking-wide tw-py-4`,
+                      'tw-text-white tw-font-semibold tw-text-xs tw-uppercase tw-tracking-wider tw-py-3',
                       col.name === 'aksi' ? 'sticky-column-left-header' : ''
                     ]"
+                    :style="{ backgroundColor: '#1e3a4c !important', borderBottom: 'none' }"
                 >
                         {{ col.label }}
                 </q-th>
@@ -48,8 +49,8 @@
           </template>
           
           <template v-slot:top-left>
-            <div class="tw-flex tw-items-center tw-gap-2 tw-bg-white tw-px-4 tw-py-2 tw-rounded-lg tw-shadow-sm">
-              <q-icon name="view_headline" color="blue-6" size="20px">
+            <div class="tw-flex tw-items-center tw-gap-2 tw-px-3 tw-py-2">
+              <q-icon name="view_headline" color="slate-600" size="18px">
                 <q-tooltip class="tw-bg-slate-800 tw-text-xs">Rows per page</q-tooltip>
               </q-icon>
               <q-select
@@ -58,7 +59,8 @@
                 v-model="pagination.rowsPerPage"
                 :options="[10,25,50,100]"
                 @update:modelValue="updateTable"
-                class="tw-min-w-[80px]"
+                class="tw-min-w-[70px]"
+                :style="{ fontSize: '14px' }"
               />
             </div>
           </template>
@@ -67,11 +69,12 @@
             <div class="tw-flex tw-gap-3 tw-items-center">
               <q-btn
                 unelevated
-                :color="`${domain()}`"
-                label="Add User"
+                color="slate-700"
+                label="ADD USER"
                 icon="add"
                 @click="openAddDialog"
-                class="tw-font-semibold tw-px-4 tw-rounded-lg hover:tw-brightness-110 tw-transition-all"
+                class="tw-font-semibold tw-px-5 tw-py-2 tw-text-xs tw-rounded-md hover:tw-brightness-110 tw-transition-all"
+                :style="{ backgroundColor: '#1e3a4c' }"
               />
               <q-input
                 outlined
@@ -79,42 +82,43 @@
                 debounce="300"
                 v-model="pagination.filter"
                 placeholder="Search..."
-                class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-min-w-[300px]"
+                class="tw-bg-white tw-rounded-md tw-min-w-[250px]"
+                :style="{ fontSize: '14px' }"
               >
                 <template v-slot:prepend>
-                  <q-icon name="search" :color="`${domain()}`" />
+                  <q-icon name="search" color="slate-500" size="18px" />
                 </template>
               </q-input>
             </div>
           </template>
           
-          <template v-slot:body-cell-activated="props">
-            <q-td :props="props" class="tw-py-4">
+          <template v-slot:body-cell-account_active="props">
+            <q-td :props="props" class="tw-py-3">
               <q-badge 
-                :color="props.row.activated ? 'green-6' : 'red-6'" 
-                :label="props.row.activated ? 'Active' : 'Inactive'"
-                class="tw-px-3 tw-py-1 tw-font-semibold tw-rounded-full"
+                :color="props.row.account_active === 'Active' ? 'green-5' : 'red-5'" 
+                :label="props.row.account_active === 'Active' ? 'Active' : 'Inactive'"
+                class="tw-px-4 tw-py-1 tw-font-medium tw-text-xs tw-rounded-full"
               />
             </q-td>
           </template>
           
           <template v-slot:body-cell="props">
-            <q-td :props="props" class="tw-py-4 tw-text-slate-700">
+            <q-td :props="props" class="tw-py-3 tw-text-slate-700 tw-text-sm">
               {{ props.value }}
             </q-td>
           </template>
           
           <template v-slot:body-cell-aksi="props">
-            <q-td :props="props" class="tw-py-3 sticky-column-left">
-              <div class="tw-flex tw-gap-2">
+            <q-td :props="props" class="tw-py-2 sticky-column-left">
+              <div class="tw-flex tw-gap-1">
                 <q-btn
                   round
                   dense
-                  color="blue-6"
+                  color="blue-5"
                   icon="edit"
-                  size="sm"
+                  size="10px"
                   @click="openEditDialog(props.row)"
-                  class="tw-shadow-md hover:tw-shadow-lg hover:tw-scale-110 tw-transition-all"
+                  class="tw-shadow-sm hover:tw-shadow-md hover:tw-scale-105 tw-transition-all"
                 >
                   <q-tooltip class="tw-bg-slate-800 tw-text-xs">Edit</q-tooltip>
                 </q-btn>
@@ -122,25 +126,25 @@
                 <q-btn
                   round
                   dense
-                  :color="props.row.activated ? 'red-6' : 'green-6'"
-                  :icon="props.row.activated ? 'block' : 'check_circle'"
-                  size="sm"
+                  :color="props.row.account_active === 'Active' ? 'red-5' : 'green-5'"
+                  :icon="props.row.account_active === 'Active' ? 'block' : 'check_circle'"
+                  size="10px"
                   @click="toggleActivation(props.row)"
-                  class="tw-shadow-md hover:tw-shadow-lg hover:tw-scale-110 tw-transition-all"
+                  class="tw-shadow-sm hover:tw-shadow-md hover:tw-scale-105 tw-transition-all"
                 >
                   <q-tooltip class="tw-bg-slate-800 tw-text-xs">
-                    {{ props.row.activated ? 'Deactivate' : 'Activate' }}
+                    {{ props.row.account_active === 'Active' ? 'Deactivate' : 'Activate' }}
                   </q-tooltip>
                 </q-btn>
                 
                 <q-btn
                   round
                   dense
-                  color="purple-6"
+                  color="purple-5"
                   icon="admin_panel_settings"
-                  size="sm"
+                  size="10px"
                   @click="openGroupDialog(props.row)"
-                  class="tw-shadow-md hover:tw-shadow-lg hover:tw-scale-110 tw-transition-all"
+                  class="tw-shadow-sm hover:tw-shadow-md hover:tw-scale-105 tw-transition-all"
                 >
                   <q-tooltip class="tw-bg-slate-800 tw-text-xs">Setup Group</q-tooltip>
                 </q-btn>
@@ -152,79 +156,164 @@
     </q-card>
 
     <!-- Add/Edit Dialog -->
-    <q-dialog v-model="dialogForm" transition-show="slide-up" transition-hide="slide-down">
-      <q-card class="tw-w-full tw-max-w-2xl tw-rounded-2xl tw-shadow-2xl">
-        <q-card-section :class="`bg-${domain()}`">
-          <div class="text-h5 tw-text-white tw-font-bold tw-flex tw-items-center tw-gap-3">
-            <q-icon name="person_add" size="32px"/>
+    <q-dialog v-model="dialogForm" transition-show="scale" transition-hide="scale">
+      <q-card class="tw-w-full tw-max-w-lg tw-rounded-lg tw-shadow-2xl">
+        <q-card-section class="tw-py-4 tw-px-6" :style="{ backgroundColor: '#1e3a4c' }">
+          <div class="tw-text-white tw-font-semibold tw-text-lg tw-flex tw-items-center tw-gap-3">
+            <q-icon name="person_add" size="24px"/>
             {{ isEdit ? 'Edit' : 'Add' }} User
           </div>
         </q-card-section>
         <q-separator/>
-        <q-card-section class="tw-p-6">
-          <div class="row q-col-gutter-md">
-            <div class="col-12">
-              <q-input
-                v-model="form.nik"
-                outlined
-                label="NIK"
-                :readonly="isEdit"
-                :rules="[val => !!val || 'NIK is required']"
-                @blur="!isEdit && getHrisByNIK()"
-                class="tw-rounded-lg"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="badge" color="blue-6"/>
-                </template>
-              </q-input>
-            </div>
+        <q-card-section class="tw-p-6 tw-bg-white">
+          <div class="tw-space-y-4">
+            <q-input
+              v-model="form.nik"
+              outlined
+              dense
+              label="NIK"
+              :readonly="isEdit"
+              :rules="[val => !!val || 'NIK is required']"
+              @blur="!isEdit && getHrisByNIK()"
+              class="tw-rounded"
+            >
+              <template v-slot:prepend>
+                <q-icon name="badge" color="blue-6" size="20px"/>
+              </template>
+              <template v-slot:label>
+                NIK <span class="tw-text-red-600">*</span>
+              </template>
+            </q-input>
             
-            <div class="col-12">
-              <q-input
-                v-model="form.first_name"
-                outlined
-                label="Nama"
-                readonly
-                class="tw-rounded-lg tw-bg-slate-50"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="person" color="blue-6"/>
-                </template>
-              </q-input>
-            </div>
+            <q-input
+              v-model="form.bu_name"
+              outlined
+              dense
+              label="Business Unit"
+              readonly
+              class="tw-rounded tw-bg-slate-50"
+            >
+              <template v-slot:prepend>
+                <q-icon name="business" color="blue-6" size="20px"/>
+              </template>
+            </q-input>
             
-            <div class="col-12">
-              <q-input
-                v-model="form.email"
+            <q-input
+              v-model="form.nama_div"
+              outlined
+              dense
+              label="Division"
+              readonly
+              class="tw-rounded tw-bg-slate-50"
+            >
+              <template v-slot:prepend>
+                <q-icon name="account_tree" color="blue-6" size="20px"/>
+              </template>
+            </q-input>
+            
+            <q-input
+              v-model="form.nama_dept"
+              outlined
+              dense
+              label="Department"
+              readonly
+              class="tw-rounded tw-bg-slate-50"
+            >
+              <template v-slot:prepend>
+                <q-icon name="corporate_fare" color="blue-6" size="20px"/>
+              </template>
+            </q-input>
+            
+            <q-input
+              v-model="form.jabatan"
+              outlined
+              dense
+              label="Jabatan"
+              readonly
+              class="tw-rounded tw-bg-slate-50"
+            >
+              <template v-slot:prepend>
+                <q-icon name="work" color="blue-6" size="20px"/>
+              </template>
+            </q-input>
+            
+            <q-input
+              v-model="form.first_name"
+              outlined
+              dense
+              label="Nama"
+              readonly
+              class="tw-rounded tw-bg-slate-50"
+            >
+              <template v-slot:prepend>
+                <q-icon name="person" color="blue-6" size="20px"/>
+              </template>
+            </q-input>
+            
+            <q-input
+              v-model="form.email"
+              outlined
+              dense
+              label="Email"
+              type="email"
+              readonly
+              class="tw-rounded tw-bg-slate-50"
+            >
+              <template v-slot:prepend>
+                <q-icon name="email" color="blue-6" size="20px"/>
+              </template>
+            </q-input>
+            
+            <div class="tw-relative">
+              <q-select
+                v-model="form.role_id"
+                :options="filteredRoles"
+                option-value="role_id"
+                option-label="role_name"
+                emit-value
+                map-options
                 outlined
-                label="Email"
-                type="email"
-                readonly
-                class="tw-rounded-lg tw-bg-slate-50"
+                label="Role"
+                dense
+                use-input
+                input-debounce="300"
+                @filter="filterRoles"
+                :rules="[val => val !== null || 'Role is required']"
+                class="tw-rounded"
               >
                 <template v-slot:prepend>
-                  <q-icon name="email" color="blue-6"/>
+                  <q-icon name="shield" color="blue-6" size="20px"/>
                 </template>
-              </q-input>
+                <template v-slot:label>
+                  <span>Role <span style="color: #dc2626;">*</span></span>
+                </template>
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey tw-text-center tw-text-sm">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
             </div>
           </div>
         </q-card-section>
         <q-separator class="tw-bg-slate-200"/>
-        <q-card-actions align="right" class="tw-p-6 tw-bg-slate-50">
+        <q-card-actions align="right" class="tw-p-4 tw-bg-slate-50">
           <q-btn
-            label="Cancel"
-            color="red-7"
-            push
+            unelevated
+            label="CANCEL"
+            color="red-6"
             icon="close"
-            class="tw-px-6 tw-font-semibold"
+            class="tw-px-6 tw-font-semibold tw-text-xs tw-rounded"
             v-close-popup
           />
           <q-btn
-            label="Save"
-            :color="`${domain()}`"
-            push
+            unelevated
+            label="SAVE"
             icon="save"
-            class="tw-px-6 tw-font-semibold"
+            class="tw-px-6 tw-font-semibold tw-text-xs tw-rounded tw-text-white"
+            :style="{ backgroundColor: '#1e3a4c' }"
             @click="saveData"
           />
         </q-card-actions>
@@ -232,21 +321,21 @@
     </q-dialog>
 
     <!-- Group Assignment Dialog -->
-    <q-dialog v-model="dialogGroup" transition-show="slide-up" transition-hide="slide-down">
-      <q-card class="tw-w-full tw-max-w-3xl tw-rounded-2xl tw-shadow-2xl">
-        <q-card-section :class="`bg-${domain()}`">
-          <div class="text-h5 tw-text-white tw-font-bold tw-flex tw-items-center tw-gap-3">
-            <q-icon name="admin_panel_settings" size="32px"/>
+    <q-dialog v-model="dialogGroup" transition-show="scale" transition-hide="scale">
+      <q-card class="tw-w-full tw-max-w-2xl tw-rounded-lg tw-shadow-2xl">
+        <q-card-section class="tw-py-4 tw-px-6" :style="{ backgroundColor: '#1e3a4c' }">
+          <div class="tw-text-white tw-font-semibold tw-text-lg tw-flex tw-items-center tw-gap-3">
+            <q-icon name="admin_panel_settings" size="24px"/>
             Setup User Group
           </div>
-          <div class="tw-text-white tw-text-sm tw-mt-2">
-            {{ selectedUser?.first_name }} ({{ selectedUser?.name }})
+          <div class="tw-text-white tw-text-xs tw-mt-2 tw-opacity-90">
+            {{ selectedUser?.account_name }} ({{ selectedUser?.account_nik }})
           </div>
         </q-card-section>
         <q-separator/>
-        <q-card-section class="tw-p-6">
-          <div class="row q-col-gutter-md">
-            <div class="col-6">
+        <q-card-section class="tw-p-6 tw-bg-white">
+          <div class="tw-space-y-4">
+            <div class="tw-grid tw-grid-cols-2 tw-gap-4">
               <q-select
                 v-model="groupForm.bu_id"
                 :options="listBU"
@@ -255,17 +344,16 @@
                 emit-value
                 map-options
                 outlined
+                dense
                 label="Business Unit"
                 @update:model-value="loadUserGroups"
-                class="tw-rounded-lg"
+                class="tw-rounded"
               >
                 <template v-slot:prepend>
-                  <q-icon name="business" color="blue-6"/>
+                  <q-icon name="business" color="blue-6" size="20px"/>
                 </template>
               </q-select>
-            </div>
-            
-            <div class="col-6">
+              
               <q-select
                 v-model="groupForm.group_id"
                 :options="listGroups"
@@ -274,37 +362,39 @@
                 emit-value
                 map-options
                 outlined
+                dense
                 label="Group"
-                class="tw-rounded-lg"
+                class="tw-rounded"
               >
                 <template v-slot:prepend>
-                  <q-icon name="group" color="blue-6"/>
+                  <q-icon name="group" color="blue-6" size="20px"/>
                 </template>
               </q-select>
             </div>
             
-            <div class="col-12">
+            <div>
               <q-btn
                 unelevated
                 color="green-6"
-                label="Add Group"
+                label="ADD GROUP"
                 icon="add"
                 @click="addUserGroup"
-                class="tw-font-semibold tw-px-4 tw-rounded-lg"
+                class="tw-font-semibold tw-px-5 tw-text-xs tw-rounded"
               />
             </div>
             
-            <div class="col-12">
-              <q-separator class="tw-my-2"/>
-              <div class="tw-font-semibold tw-text-slate-700 tw-mb-3">Assigned Groups:</div>
-              <q-list bordered class="tw-rounded-lg">
-                <q-item v-for="ug in userGroups" :key="ug.ugrp_id">
+            <q-separator class="tw-my-3"/>
+            
+            <div>
+              <div class="tw-font-semibold tw-text-slate-700 tw-mb-3 tw-text-sm">Assigned Groups:</div>
+              <q-list bordered class="tw-rounded tw-border-slate-200">
+                <q-item v-for="ug in userGroups" :key="ug.ugrp_id" class="tw-py-2">
                   <q-item-section avatar>
-                    <q-icon name="group" color="purple-6"/>
+                    <q-icon name="group" color="purple-6" size="20px"/>
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label>{{ ug.grp_name }}</q-item-label>
-                    <q-item-label caption>{{ ug.ugrp_bu_id }}</q-item-label>
+                    <q-item-label class="tw-text-sm tw-font-medium">{{ ug.grp_name }}</q-item-label>
+                    <q-item-label caption class="tw-text-xs">{{ ug.ugrp_bu_id }}</q-item-label>
                   </q-item-section>
                   <q-item-section side>
                     <q-btn
@@ -313,12 +403,13 @@
                       flat
                       color="red-6"
                       icon="delete"
+                      size="sm"
                       @click="removeUserGroup(ug)"
                     />
                   </q-item-section>
                 </q-item>
-                <q-item v-if="userGroups.length === 0">
-                  <q-item-section class="tw-text-center tw-text-slate-500">
+                <q-item v-if="userGroups.length === 0" class="tw-py-4">
+                  <q-item-section class="tw-text-center tw-text-slate-400 tw-text-sm">
                     No groups assigned yet
                   </q-item-section>
                 </q-item>
@@ -327,13 +418,13 @@
           </div>
         </q-card-section>
         <q-separator class="tw-bg-slate-200"/>
-        <q-card-actions align="right" class="tw-p-6 tw-bg-slate-50">
+        <q-card-actions align="right" class="tw-p-4 tw-bg-slate-50">
           <q-btn
-            label="Close"
+            unelevated
+            label="CLOSE"
             color="grey-7"
-            push
             icon="close"
-            class="tw-px-6 tw-font-semibold"
+            class="tw-px-6 tw-font-semibold tw-text-xs tw-rounded"
             v-close-popup
           />
         </q-card-actions>
@@ -343,15 +434,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive, computed } from "vue";
 import axios from "axios";
-import { domain, empid, spinnerBall } from "./../../utils";
+import { domain, empid, spinnerBall, encrypt } from "./../../utils";
 import { useQuasar } from "quasar";
 import { useNotify } from "./../../composables/useNotify";
 import "./../../assets/styles/table.css";
 
 const $q = useQuasar();
 const { success, error } = useNotify();
+
+// Computed property for role label with asterisk
+const roleLabelHtml = computed(() => 'Role <span style="color: #dc2626;">*</span>');
 
 const columns = [
   {
@@ -364,37 +458,39 @@ const columns = [
     headerClasses: 'sticky-column-left-header'
   },
   {
-    name: "name",
+    name: "account_nik",
     required: true,
     label: "NIK",
     align: "left",
-    field: "name",
+    field: "account_nik",
     sortable: true,
   },
   {
-    name: "first_name",
+    name: "account_name",
     align: "left",
     label: "Name",
-    field: "first_name",
+    field: "account_name",
     sortable: true,
   },
   {
-    name: "email",
+    name: "account_email",
     label: "Email",
     align: "left",
-    field: "email",
+    field: "account_email",
     sortable: true,
   },
   {
-    name: "activated",
+    name: "account_active",
     label: "Status",
     align: "left",
-    field: "activated",
+    field: "account_active",
   },
 ];
 
 const listUser = ref([]);
 const listGroups = ref([]);
+const listRoles = ref([]);
+const filteredRoles = ref([]);
 const listBU = ref([
   { value: 'WNR', label: 'WNR - Workshop' },
   { value: 'DFR', label: 'DFR - DBC Freight' },
@@ -408,7 +504,7 @@ const isEdit = ref(false);
 const selectedUser = ref(null);
 
 const pagination = ref({
-  sortBy: "name",
+  sortBy: "account_username",
   descending: false,
   page: 1,
   rowsPerPage: 10,
@@ -423,6 +519,11 @@ const form = reactive({
   email: null,
   emp_id: null,
   activated: true,
+  role_id: null,
+  bu_name: null,
+  nama_div: null,
+  nama_dept: null,
+  jabatan: null,
 });
 
 const groupForm = reactive({
@@ -461,6 +562,32 @@ const getGroups = async () => {
   }
 };
 
+const getRoles = async () => {
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_API}getRoles`);
+    listRoles.value = res.data;
+    filteredRoles.value = res.data; // Initialize filtered list
+  } catch (err) {
+    error('Failed to load roles');
+  }
+};
+
+const filterRoles = (val, update) => {
+  if (val === '') {
+    update(() => {
+      filteredRoles.value = listRoles.value;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    filteredRoles.value = listRoles.value.filter(
+      role => role.role_name.toLowerCase().indexOf(needle) > -1
+    );
+  });
+};
+
 const getHrisByNIK = async () => {
   if (!form.nik) return;
   
@@ -473,6 +600,10 @@ const getHrisByNIK = async () => {
     form.first_name = res.data.name;
     form.email = res.data.email;
     form.emp_id = res.data.empid;
+    form.bu_name = res.data.bu_name;
+    form.nama_div = res.data.nama_div;
+    form.nama_dept = res.data.nama_dept;
+    form.jabatan = res.data.jabatan;
     $q.loading.hide();
   } catch (err) {
     $q.loading.hide();
@@ -483,17 +614,39 @@ const getHrisByNIK = async () => {
 const openAddDialog = async () => {
   isEdit.value = false;
   resetForm();
+  await getRoles();
   dialogForm.value = true;
 };
 
 const openEditDialog = async (row) => {
   isEdit.value = true;
   form.id = row.id;
-  form.nik = row.name;
-  form.first_name = row.first_name;
-  form.email = row.email;
+  form.nik = row.account_nik;
+  form.first_name = row.account_name;
+  form.email = row.account_email;
   form.emp_id = row.emp_id;
-  form.activated = row.activated;
+  form.activated = row.account_active === 'Active';
+  form.role_id = row.account_type;
+  
+  // Fetch organizational data from HRIS
+  try {
+    spinnerBall();
+    const res = await axios.get(`${import.meta.env.VITE_API}getHrisByNIK`, {
+      params: { empid: row.emp_id }
+    });
+    
+    form.bu_name = res.data.bu_name;
+    form.nama_div = res.data.nama_div;
+    form.nama_dept = res.data.nama_dept;
+    form.jabatan = res.data.jabatan;
+    $q.loading.hide();
+  } catch (err) {
+    $q.loading.hide();
+    console.error('Failed to fetch organizational data:', err);
+    // Continue anyway, organizational fields will be empty
+  }
+  
+  await getRoles();
   dialogForm.value = true;
 };
 
@@ -521,16 +674,18 @@ const saveData = async () => {
 };
 
 const toggleActivation = async (row) => {
+  const isActive = row.account_active === 'Active';
+  
   $q.dialog({
     title: "Confirm",
-    message: `Are you sure you want to ${row.activated ? 'deactivate' : 'activate'} user <strong>${row.first_name}</strong>?`,
+    message: `Are you sure you want to ${isActive ? 'deactivate' : 'activate'} user <strong>${row.account_name}</strong>?`,
     html: true,
     class: `side-${domain()} tw-rounded-2xl`,
     ok: {
       push: true,
-      color: row.activated ? "red-7" : "green-6",
-      label: row.activated ? "Deactivate" : "Activate",
-      icon: row.activated ? "block" : "check_circle",
+      color: isActive ? "red-7" : "green-6",
+      label: isActive ? "Deactivate" : "Activate",
+      icon: isActive ? "block" : "check_circle",
       class: "tw-font-semibold tw-px-6 tw-rounded-lg"
     },
     cancel: {
@@ -545,11 +700,11 @@ const toggleActivation = async (row) => {
     try {
       spinnerBall();
       await axios.post(`${import.meta.env.VITE_API}toggleUserActivation`, {
-        id: row.id,
-        activated: !row.activated,
+        nik: row.account_nik,
+        account_active: isActive ? 'Inactive' : 'Active',
         creator: empid(),
       });
-      success(`User ${row.activated ? 'deactivated' : 'activated'} successfully`);
+      success(`User ${isActive ? 'deactivated' : 'activated'} successfully`);
       onRequest({
         pagination: pagination.value,
       });
@@ -656,6 +811,11 @@ const resetForm = () => {
   form.email = null;
   form.emp_id = null;
   form.activated = true;
+  form.role_id = null;
+  form.bu_name = null;
+  form.nama_div = null;
+  form.nama_dept = null;
+  form.jabatan = null;
 };
 
 const onRequest = (props) => {

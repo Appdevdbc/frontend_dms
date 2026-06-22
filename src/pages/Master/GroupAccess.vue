@@ -21,7 +21,7 @@
         <q-table
           :rows="listGroups"
           :columns="columns"
-          row-key="grp_id"
+          row-key="role_id"
           v-model:pagination="pagination"
           :loading="loading"
           :filter="pagination.filter"
@@ -128,18 +128,11 @@ const columns = [
     headerClasses: 'sticky-column-left-header'
   },
   {
-    name: "grp_name",
+    name: "role_name",
     required: true,
     label: "Group Name",
     align: "left",
-    field: "grp_name",
-    sortable: true,
-  },
-  {
-    name: "grp_code",
-    label: "Group Code",
-    align: "left",
-    field: "grp_code",
+    field: "role_name",
     sortable: true,
   },
 ];
@@ -150,7 +143,7 @@ const dialogAccess = ref(false);
 const selectedGroup = ref(null);
 
 const pagination = ref({
-  sortBy: "grp_name",
+  sortBy: "role_name",
   descending: false,
   page: 1,
   rowsPerPage: 10,
@@ -183,8 +176,8 @@ const getData = async () => {
 const openAccessDialog = (group) => {
   // Transform group data to match the expected roleData structure
   selectedGroup.value = {
-    role_id: group.grp_id,
-    role_name: group.grp_name,
+    role_id: group.role_id,
+    role_name: group.role_name,
     role_code: group.grp_code
   };
   dialogAccess.value = true;

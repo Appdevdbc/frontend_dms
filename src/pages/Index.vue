@@ -19,8 +19,8 @@
         </div>
         
         <div class="text-content">
-          <h1 class="main-title">Workshop Job System (WJS)</h1>
-          <p class="subtitle">Selamat Datang<br/>Workshop Job System DBC</p>
+          <h1 class="main-title">Legal Monitoring System</h1>
+          <p class="subtitle">Selamat Datang<br/>Legal Monitoring System DBC</p>
         </div>
       </div>
     </div>

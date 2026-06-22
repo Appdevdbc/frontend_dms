@@ -1,6 +1,7 @@
 // FILE: main.js
 
 import { createApp } from "vue";
+import { createPinia } from "pinia";
 import { Dialog, Quasar, Loading, Notify } from "quasar";
 import router from "./routes/router.js";
 import CryptoJS from 'crypto-js';
@@ -36,6 +37,7 @@ Highcharts.setOptions({
 });
 
 const myApp = createApp(App);
+const pinia = createPinia();
 
 myApp.config.globalProperties.$baseURL = import.meta.env.VITE_API;
 
@@ -47,6 +49,7 @@ myApp.use(Quasar, {
   },
 });
 
+myApp.use(pinia);
 myApp.use(router);
 myApp.use(VueApexCharts);
 myApp.use(HighchartsVue);

@@ -13,7 +13,7 @@
              <div class="tw-bg-white/20 tw-p-2 tw-rounded-lg tw-backdrop-blur-sm">
                <q-icon name="storage" size="sm" class="tw-text-white" />
              </div>
-             <div class="text-h6 tw-font-bold tw-text-white tw-drop-shadow-lg">WJS User & Access</div>
+             <div class="text-h6 tw-font-bold tw-text-white tw-drop-shadow-lg">Legal Monitoring User & Access</div>
            </div>
            <div class="tw-flex tw-items-center tw-gap-1 tw-text-white/90 tw-text-sm">
               <q-icon name="chevron_right" size="xs"/>

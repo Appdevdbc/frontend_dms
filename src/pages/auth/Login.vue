@@ -3,7 +3,7 @@
     <q-card class="q-pa-lg shadow-2" style="width: 450px; max-width: 90vw">
       <q-card-section class="text-center q-pb-none">
         <div class="text-h4 text-weight-bold text-primary q-mb-sm">
-          Workshop Job System
+          Legal Monitoring System
         </div>
         <div class="text-h6 text-grey-7">(WJS)</div>
         <div class="text-subtitle2 text-grey-6 q-mt-md">
@@ -65,7 +65,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from 'src/stores/auth';
+import { useAuthStore } from '../../stores/auth';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -76,7 +76,7 @@ const showPassword = ref(false);
 const loading = ref(false);
 
 // Set page title
-document.title = 'Login - Workshop Job System (WJS)';
+document.title = 'Login - Legal Monitoring System';
 
 const handleLogin = async () => {
   loading.value = true;

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { api } from 'src/boot/axios';
-import { useNotify } from 'src/composables/useNotify';
+import axios from 'axios';
+import { useNotify } from '../composables/useNotify';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -15,6 +15,7 @@ export const useAuthStore = defineStore('auth', {
     userNik: (state) => state.user?.nik,
     userName: (state) => state.user?.name,
     userEmail: (state) => state.user?.email,
+    userEmpId: (state) => state.user?.empid || state.user?.id || localStorage.getItem('empid'),
     isLoggedIn: (state) => state.isAuthenticated && !!state.token
   },
 
@@ -27,7 +28,7 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true;
       
       try {
-        const response = await api.post('/wjs/auth/login', {
+        const response = await axios.post('/wjs/auth/login', {
           username,
           password
         });
@@ -75,7 +76,7 @@ export const useAuthStore = defineStore('auth', {
       const { success } = useNotify();
       
       try {
-        await api.post('/wjs/auth/logout');
+        await axios.post('/wjs/auth/logout');
         success('Logout berhasil');
       } catch (err) {
         console.error('Logout error:', err);
@@ -89,7 +90,7 @@ export const useAuthStore = defineStore('auth', {
      */
     async verifyToken() {
       try {
-        const response = await api.get('/wjs/auth/verify');
+        const response = await axios.get('/wjs/auth/verify');
         return response.data.success;
       } catch (err) {
         this.clearAuth();
@@ -102,7 +103,7 @@ export const useAuthStore = defineStore('auth', {
      */
     async getCurrentUser() {
       try {
-        const response = await api.get('/wjs/auth/me');
+        const response = await axios.get('/wjs/auth/me');
         
         if (response.data.success) {
           this.user = response.data.data;
@@ -127,7 +128,7 @@ export const useAuthStore = defineStore('auth', {
      */
     async refreshToken() {
       try {
-        const response = await api.post('/wjs/auth/refresh');
+        const response = await axios.post('/wjs/auth/refresh');
         
         if (response.data.success) {
           const { token } = response.data.data;

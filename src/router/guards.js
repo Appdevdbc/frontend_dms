@@ -1,4 +1,4 @@
-import { useAuthStore } from 'src/stores/auth';
+import { useAuthStore } from '../stores/auth';
 
 /**
  * Navigation guard to check authentication

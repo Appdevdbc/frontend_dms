@@ -8,9 +8,9 @@
           <div class="title-container">
             <div class="tw-flex tw-items-center tw-gap-2">
               <q-icon name="description" size="20px" class="tw-text-white/90" />
-              <span class="app-name">Workshop Job System (WJS)</span>
+              <span class="app-name">Legal Monitoring System</span>
             </div>
-            <span class="app-subtitle">Workshop Job System</span>
+            <span class="app-subtitle">Legal Monitoring System</span>
           </div>
         </q-toolbar-title>
 

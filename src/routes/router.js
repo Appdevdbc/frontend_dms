@@ -6,6 +6,7 @@ import dms from './wjs';
 import collection from './collectionList';
 import spk from './spk';
 import report from './report';
+import transaction from './transaction';
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -15,6 +16,7 @@ const router = createRouter({
     ...dms,//DMS routes
     ...spk,//SPK routes
     ...report,//Report routes
+    ...transaction,//Transaction routes
     {
       path: "/",
       redirect: (to) => {

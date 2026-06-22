@@ -13,7 +13,7 @@ export default [
         component: () => import("./../pages/Master/IndexRole.vue"),
       },
       {
-        path: "collection/wjs-master-data",
+        path: "collection/legal-master-data",
         component: () => import("./../pages/WJS/MasterData/Index.vue"),
       },
       {
