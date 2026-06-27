@@ -22,7 +22,7 @@ const router = createRouter({
       redirect: (to) => {
         // Check if user has token
         if (window.localStorage.getItem("token")) {
-          return "/master/dashboard";
+          return "/report/dashboard";
         } else {
           return "/login";
         }
@@ -30,7 +30,7 @@ const router = createRouter({
     },
     {
       path: "/dashboard",
-      redirect: "/master/dashboard"
+      redirect: "/report/dashboard"
     },
     {
       path: "/login",
@@ -39,6 +39,43 @@ const router = createRouter({
     {
       path: "/404",
       component: () => import("./../pages/Error404.vue"),
+    },
+    // Redirect old routes to new routes for backward compatibility
+    {
+      path: "/master_menu",
+      redirect: "/master/menu"
+    },
+    {
+      path: "/master_user",
+      redirect: "/master/users"
+    },
+    {
+      path: "/master_plant",
+      redirect: "/master/plant"
+    },
+    {
+      path: "/master_dept",
+      redirect: "/master/dept"
+    },
+    {
+      path: "/master_dept",
+      redirect: "/master/dept"
+    },
+    {
+      path: "/master_folder",
+      redirect: "/master/folder"
+    },
+    {
+      path: "/master_content",
+      redirect: "/master/content"
+    },
+    {
+      path: "/master_akses",
+      redirect: "/master/akses"
+    },
+    {
+      path: "/dept/:deptSeo/:folderSeo?/:subfolder1Seo?/:subfolder2Seo?",
+      redirect: to => `/transaction/dept/${to.params.deptSeo}${to.params.folderSeo ? '/' + to.params.folderSeo : ''}${to.params.subfolder1Seo ? '/' + to.params.subfolder1Seo : ''}${to.params.subfolder2Seo ? '/' + to.params.subfolder2Seo : ''}`
     },
     // Always leave this as last one,
     // but you can also remove it

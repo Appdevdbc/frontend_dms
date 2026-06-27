@@ -7,7 +7,7 @@
           <div class="logo-section">
             <q-img class="logo-image" src="logo.png" width="180px" />
             <h6 class="app-title">
-              <span class="title-gradient">Legal Monitoring System</span>
+              <span class="title-gradient">Document Management System (DMS)</span>
             </h6>
             <p class="subtitle">Welcome back! Please sign in to continue</p>
           </div>

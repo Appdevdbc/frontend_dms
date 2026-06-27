@@ -59,6 +59,14 @@ export default [
         path: "spk/mold",
         component: () => import("./../pages/Report/SpkMold.vue"),
       },
+      {
+        path: "history_document",
+        component: () => import("./../pages/Report/HistoryDocument.vue"),
+      },
+      {
+        path: "dashboard",
+        component: () => import("./../pages/Report/Dashboard.vue"),
+      }
     ],
     beforeEnter: (to, from, next) => {
       if (!window.localStorage.getItem("token")) {

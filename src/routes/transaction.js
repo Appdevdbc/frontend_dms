@@ -38,6 +38,15 @@ export default [
           requiresAuth: true,
           title: 'Confirm Closing'
         }
+      },
+      {
+        path: 'dept/:deptSeo/:folderSeo?/:subfolder1Seo?/:subfolder2Seo?',
+        name: 'Dept',
+        component: () => import("./../pages/Transaction/Dept.vue"),
+        meta: {
+          requiresAuth: true,
+          title: 'Department File Manager'
+        }
       }
     ]
   }

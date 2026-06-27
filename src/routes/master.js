@@ -95,6 +95,26 @@ export default [
         component: () => import("./../pages/Master/BreakTime.vue"),
       },
       {
+        path: "plant",
+        component: () => import("./../pages/Master/Plant.vue"),
+      },
+      {
+        path: "dept",
+        component: () => import("./../pages/Master/Dept.vue"),
+      },
+      {
+        path: "folder",
+        component: () => import("./../pages/Master/Folder.vue"),
+      },
+      {
+        path: "content",
+        component: () => import("./../pages/Master/Content.vue"),
+      },
+      {
+        path: "akses",
+        component: () => import("./../pages/Master/Akses.vue"),
+      },
+      {
         path: "error-list",
         component: () => import("./../pages/Master/ErrorList.vue"),
       },

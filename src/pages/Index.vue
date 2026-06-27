@@ -19,8 +19,8 @@
         </div>
         
         <div class="text-content">
-          <h1 class="main-title">Legal Monitoring System</h1>
-          <p class="subtitle">Selamat Datang<br/>Legal Monitoring System DBC</p>
+          <h1 class="main-title">Document Management System (DMS)</h1>
+          <p class="subtitle">Selamat Datang<br/>Document Management System (DMS)</p>
         </div>
       </div>
     </div>

@@ -45,7 +45,7 @@ const route = useRoute();
 const props = defineProps({
   headerTitle: {
     type: String,
-    default: 'Legal Monitoring System'
+    default: 'Document Management System (DMS)'
   },
   headerSubtitle: {
     type: String,

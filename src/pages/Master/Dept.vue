@@ -3,15 +3,15 @@
     <q-card class="tw-shadow-2xl tw-rounded-2xl tw-overflow-hidden">
       <q-card-section :class="`side-${domain()}-1 tw-py-6`">
         <div class="tw-flex tw-items-center tw-gap-3">
-          <q-icon name="people" size="28px" class="tw-text-white" />
+          <q-icon name="corporate_fare" size="28px" class="tw-text-white" />
           <div>
-            <div class="text-h6 tw-text-white tw-font-bold">Master User</div>
+            <div class="text-h6 tw-text-white tw-font-bold">Master Departement</div>
             <div class="tw-flex tw-items-center tw-gap-2 tw-text-blue-100 tw-text-xs">
               <q-icon name="home" size="14px"/>
               <q-icon name="chevron_right" size="14px"/>
               <span>Master</span>
               <q-icon name="chevron_right" size="14px"/>
-              <span>Data User</span>
+              <span>Data Departement</span>
             </div>
           </div>
         </div>
@@ -20,9 +20,9 @@
       <q-card-section class="tw-bg-white">
         <q-table
           v-if="tmpPage.view =='1' || tmpPage.admin =='1'"
-          :rows="listUser"
+          :rows="listDept"
           :columns="columns"
-          row-key="emp_id"
+          row-key="dept_id"
           v-model:pagination="pagination"
           :rows-per-page-options="[]"
           :loading="loading"
@@ -76,7 +76,7 @@
                 dense
                 debounce="300"
                 v-model="pagination.filter"
-                placeholder="Search users..."
+                placeholder="Search departments..."
                 class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-min-w-[300px]"
               >
                 <template v-slot:prepend>
@@ -88,8 +88,8 @@
                 push
                 :color="`${domain()}`"
                 icon="add"
-                label="Tambah User"
-                @click="addUser"
+                label="Tambah Dept"
+                @click="addDept"
                 class="tw-font-semibold tw-shadow-md hover:tw-shadow-lg tw-transition-all"
               />
             </div>
@@ -97,11 +97,6 @@
           <template v-slot:body-cell="props">
             <q-td :props="props" class="tw-py-4 tw-text-slate-700">
               {{ props.value }}
-            </q-td>
-          </template>
-          <template v-slot:body-cell-no="props">
-            <q-td :props="props" class="tw-py-4 tw-text-slate-700">
-              {{ (pagination.page - 1) * pagination.rowsPerPage + props.rowIndex + 1 }}
             </q-td>
           </template>
           <template v-slot:body-cell-aksi="props">
@@ -113,7 +108,7 @@
                   color="orange-7"
                   size="sm"
                   class="tw-mr-1 tw-shadow-md hover:tw-shadow-lg hover:tw-scale-110 tw-transition-all"
-                  @click="editUser(props.row)"
+                  @click="editDept(props.row)"
                   icon="edit"
                 >
                   <q-tooltip class="tw-bg-slate-800 tw-text-xs">
@@ -128,7 +123,7 @@
                   color="red-7"
                   size="sm"
                   class="tw-mr-1 tw-shadow-md hover:tw-shadow-lg hover:tw-scale-110 tw-transition-all"
-                  @click="deleteUser(props.row)"
+                  @click="deleteDept(props.row)"
                   icon="delete"
                 >
                   <q-tooltip class="tw-bg-slate-800 tw-text-xs">
@@ -143,11 +138,11 @@
 
     <!-- Dialog Form -->
     <q-dialog v-model="dialogForm" transition-show="slide-up" transition-hide="slide-down">
-      <q-card class="tw-w-full tw-max-w-4xl tw-rounded-2xl tw-shadow-2xl">
+      <q-card class="tw-w-full tw-max-w-2xl tw-rounded-2xl tw-shadow-2xl">
         <q-card-section :class="`bg-${domain()}`">
           <div class="text-h5 tw-text-white tw-font-bold tw-flex tw-items-center tw-gap-3">
             <q-icon name="edit_note" size="32px"/>
-            {{ updateForm ? 'Edit User' : 'Tambah User' }}
+            {{ updateForm ? 'Edit Departement' : 'Tambah Departement' }}
           </div>
         </q-card-section>
         <q-separator/>
@@ -161,91 +156,32 @@
                 <span class="tw-text-red-700 tw-font-medium">Field bertanda bintang (*) wajib diisi</span>
               </q-banner>
             </div>
-            
-            <!-- Left Column -->
-            <div class="col-md-6 col-12">
+            <div class="col-12">
               <q-input
-                v-model="tmpForm.nik"
+                v-model="tmpForm.dept_name"
                 outlined
-                counter maxlength="50" 
-                :readonly="updateForm"
+                counter maxlength="100" 
                 :rules="[val => !!val || 'Field is required']"
-                @blur="getHrisByNIK"
                 label-slot
                 class="tw-rounded-lg"
               >
                 <template v-slot:prepend>
-                  <q-icon name="badge" color="blue-6"/>
+                  <q-icon name="corporate_fare" color="blue-6"/>
                 </template>
                 <template v-slot:label>
-                  <span class="tw-font-semibold tw-text-slate-700">NIK</span>
+                  <span class="tw-font-semibold tw-text-slate-700">Nama Departement</span>
                   <span class="tw-text-red-500 tw-font-bold">*</span>
                 </template>
               </q-input>
             </div>
-
-            <div class="col-md-6 col-12">
-              <q-input
-                v-model="tmpForm.nama"
-                outlined
-                label="Nama"
-                counter maxlength="100" 
-                readonly
-                class="tw-rounded-lg tw-bg-slate-50"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="person" color="blue-6"/>
-                </template>
-              </q-input>
-            </div>
-
-            <div class="col-md-6 col-12">
-              <q-input
-                v-model="tmpForm.email" 
-                outlined 
-                type="email"
-                counter maxlength="100" 
-                readonly
-                label="Email"
-                class="tw-rounded-lg tw-bg-slate-50"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="email" color="blue-6"/>
-                </template>
-              </q-input>
-            </div>
-
-            <div class="col-md-6 col-12" v-if="!updateForm">
-              <q-input
-                v-model="tmpForm.password"
-                outlined
-                type="password"
-                counter maxlength="100"
-                :rules="[val => updateForm || !!val || 'Field is required']"
-                label-slot
-                class="tw-rounded-lg"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="lock" color="blue-6"/>
-                </template>
-                <template v-slot:label>
-                  <span class="tw-font-semibold tw-text-slate-700">Password</span>
-                  <span class="tw-text-red-500 tw-font-bold" v-if="!updateForm">*</span>
-                </template>
-              </q-input>
-            </div>
-
-            <!-- Right Column -->
-            <div class="col-md-6 col-12">
+            <div class="col-12">
               <q-select
-                v-model="tmpForm.divisi"
+                v-model="tmpForm.dept_divisi"
                 :options="listDivisi"
                 outlined
                 emit-value
                 map-options
-                option-value="value"
-                option-label="description"
-                @update:modelValue="onDivisiChange"
+                :rules="[val => !!val || 'Field is required']"
                 label-slot
                 class="tw-rounded-lg"
               >
@@ -258,49 +194,20 @@
                 </template>
               </q-select>
             </div>
-
-            <div class="col-md-6 col-12">
-              <q-select
-                v-model="tmpForm.dept"
-                :options="listDept"
+            <div class="col-12">
+              <q-input
+                v-model="tmpForm.dept_note"
                 outlined
-                emit-value
-                map-options
-                option-value="value"
-                option-label="description"
-                label-slot
+                type="textarea"
+                rows="3"
+                counter maxlength="200" 
+                label="Keterangan"
                 class="tw-rounded-lg"
               >
                 <template v-slot:prepend>
-                  <q-icon name="work" color="blue-6"/>
+                  <q-icon name="notes" color="blue-6"/>
                 </template>
-                <template v-slot:label>
-                  <span class="tw-font-semibold tw-text-slate-700">Departemen</span>
-                  <span class="tw-text-red-500 tw-font-bold">*</span>
-                </template>
-              </q-select>
-            </div>
-
-            <div class="col-md-6 col-12">
-              <q-select
-                v-model="tmpForm.role"
-                :options="listRole"
-                outlined
-                emit-value
-                map-options
-                option-value="value"
-                option-label="label"
-                label-slot
-                class="tw-rounded-lg"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="admin_panel_settings" color="blue-6"/>
-                </template>
-                <template v-slot:label>
-                  <span class="tw-font-semibold tw-text-slate-700">Role</span>
-                  <span class="tw-text-red-500 tw-font-bold">*</span>
-                </template>
-              </q-select>
+              </q-input>
             </div>
           </div>
         </q-card-section>
@@ -320,7 +227,7 @@
             push
             icon="save"
             class="tw-px-6 tw-font-semibold"
-            @click="validateUser"
+            @click="validateDept"
           />
         </q-card-actions>
       </q-card>
@@ -349,68 +256,48 @@ const router = useVueRouter();
 const { success, error } = useNotify();
 const columns = [
   {
-    name: "no",
+    name: "aksi",
     required: true,
-    label: "No",
+    label: "Aksi",
     align: "left",
-    field: "no",
-  },
-  {
-    name: "account_name",
-    align: "left",
-    label: "Nama",
-    field: "account_name",
-    sortable: true,
-  },
-  {
-    name: "account_email",
-    label: "Email",
-    align: "left",
-    field: "account_email",
-    sortable: true,
-  },
-  {
-    name: "divisi_name",
-    label: "Divisi",
-    align: "left",
-    field: "divisi_name",
-    sortable: true,
+    field: "aksi",
+    classes: 'sticky-column-left',
+    headerClasses: 'sticky-column-left-header'
   },
   {
     name: "dept_name",
-    label: "Departemen",
+    required: true,
+    label: "Departement",
     align: "left",
     field: "dept_name",
     sortable: true,
   },
   {
-    name: "role_name",
-    label: "Akses",
+    name: "divisi_name",
     align: "left",
-    field: "role_name",
+    label: "Divisi",
+    field: "divisi_name",
     sortable: true,
   },
   {
-    name: "aksi",
-    required: true,
-    label: "Aksi",
-    align: "center",
-    field: "aksi",
+    name: "dept_note",
+    label: "Keterangan",
+    align: "left",
+    field: "dept_note",
+    sortable: true,
   }
 ];
 const $q = useQuasar();
-const listUser = ref([]);
-const listDivisi = ref([]);
 const listDept = ref([]);
-const listRole = ref([]);
+const listDivisi = ref([]);
 
 const loading = ref(false);
 const updateForm = ref(false);
 const dialogForm = ref(false);
 
 const pagination = ref({
-  sortBy: "account_name",
-  descending: false,
+  sortBy: "dept_id",
+  descending: true,
   page: 1,
   rowsPerPage: 10,
   rowsNumber: 0,
@@ -419,15 +306,11 @@ const pagination = ref({
 
 const tmpForm = reactive({
   id: null,
-  nik: null,
-  nama: null,
-  email: null,
-  password: null,
-  divisi: null,
-  dept: null,
-  role: null,
-  empid: null,
+  dept_name: null,
+  dept_divisi: null,
+  dept_note: null,
   creator: empid(),
+  domain: domain(),
 });
 
 const tmpPage = reactive({
@@ -439,15 +322,8 @@ const tmpPage = reactive({
 });
 
 const schema = yup.object({
-  nik: yup.string().required("NIK wajib diisi").nullable(),
-  email: yup.string().required("Email wajib diisi").email('Format email tidak sesuai').nullable(),
-  divisi: yup.string().required("Divisi wajib diisi").nullable(),
-  dept: yup.string().required("Departemen wajib diisi").nullable(),
-  role: yup.string().required("Role wajib diisi").nullable(),
-  password: yup.string().when('$updateForm', {
-    is: false,
-    then: (schema) => schema.required("Password wajib diisi untuk user baru"),
-  }),
+  dept_name: yup.string().required("Nama departement wajib diisi").nullable(),
+  dept_divisi: yup.number().required("Divisi wajib dipilih").nullable(),
 });
 
 const getPageAkses = async () => {
@@ -456,7 +332,7 @@ const getPageAkses = async () => {
     const res = await axios.get(`${import.meta.env.VITE_API}pageakses`, {
       params: {
         role: empid(),
-        page: 'master_user',
+        page: 'master_dept',
         domain: domain(),
       }
     });
@@ -473,21 +349,21 @@ const getPageAkses = async () => {
   }
 };
 
-const getUser = async () => {
+const getDept = async () => {
   try {
     spinnerBall()
     loading.value = true;
     if (pagination.value.rowsPerPage == 'All')
      pagination.value.rowsPerPage = pagination.value.rowsNumber;
     
-    const res = await axios.get(`${import.meta.env.VITE_API}users`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}listDept`, {
       params: pagination.value
     });
     
     if (typeof res.data.data === "undefined") {
-      listUser.value = res.data;
+      listDept.value = res.data;
     } else {
-      listUser.value = res.data.data;
+      listDept.value = res.data.data;
     }
 
     pagination.value.rowsNumber = res.data.pagination?.total || res.data.length;
@@ -499,86 +375,45 @@ const getUser = async () => {
   }
 };
 
-const getDivisi = async (selectedId = null) => {
+const getDivisi = async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}User_Action/get_select_divisi`, {
-      params: { id: selectedId }
-    });
+    const res = await axios.get(`${import.meta.env.VITE_API}getSelectDivisi`);
     listDivisi.value = res.data;
   } catch (error) {
     console.error('getDivisi error:', error);
   }
 };
 
-const getDept = async (divisiId, selectedId = null) => {
-  try {
-    const res = await axios.get(`${import.meta.env.VITE_API}User_Action/get_select_dept`, {
-      params: { 
-        iddiv: divisiId,
-        iddept: selectedId 
-      }
-    });
-    listDept.value = res.data;
-  } catch (error) {
-    console.error('getDept error:', error);
-  }
-};
-
-const getRole = async (selectedId = null) => {
-  try {
-    const res = await axios.get(`${import.meta.env.VITE_API}getRoles`);
-    listRole.value = res.data.map(r => ({
-      value: r.role_id,
-      label: r.role_name
-    }));
-  } catch (error) {
-    console.error('getRole error:', error);
-  }
-};
-
-const addUser = async () => {
+const addDept = async () => {
   updateForm.value = false;
   dialogForm.value = true;
   reset();
   await getDivisi();
-  await getRole();
 };
 
-const editUser = async (value) => {
+const editDept = async (value) => {
   try {
     reset();
     updateForm.value = true;
     dialogForm.value = true;
     
-    tmpForm.id = value.user_id;
-    tmpForm.nik = value.account_nik;
-    tmpForm.nama = value.account_name;
-    tmpForm.email = value.account_email;
-    tmpForm.empid = value.emp_id;
+    tmpForm.id = value.dept_id;
+    tmpForm.dept_name = value.dept_name;
+    tmpForm.dept_divisi = value.dept_divisi;
+    tmpForm.dept_note = value.dept_note;
     
-    await getDivisi(value.user_iddiv);
-    tmpForm.divisi = value.user_iddiv;
-    
-    await getDept(value.user_iddiv, value.user_iddept);
-    tmpForm.dept = value.user_iddept;
-    
-    await getRole(value.user_role);
-    tmpForm.role = value.user_role;
+    await getDivisi();
   } catch (error) {
     console.log(error)
   }
 };
 
-const validateUser = async () => {
+const validateDept = async () => {
   let validate = {
-    nik: tmpForm.nik,
-    email: tmpForm.email,
-    divisi: tmpForm.divisi,
-    dept: tmpForm.dept,
-    role: tmpForm.role,
-    password: tmpForm.password,
+    dept_name: tmpForm.dept_name,
+    dept_divisi: tmpForm.dept_divisi,
   }
-  schema.validate(validate, { abortEarly: false, context: { updateForm: updateForm.value } })
+  schema.validate(validate, { abortEarly: false })
     .then(() => {
       saveDialog();
     })
@@ -613,20 +448,20 @@ const saveDialog = async () => {
     persistent: true,
   }).onOk(async () => {
     try {
-      await saveUser();
+      await saveDept();
     } catch (error) {
-      // Error handled in saveUser
+      // Error handled in saveDept
     }
   });
 };
 
-const saveUser = async () => {
+const saveDept = async () => {
   try {
-    await axios.post(`${import.meta.env.VITE_API}users`, tmpForm);
+    await axios.post(`${import.meta.env.VITE_API}saveDept`, tmpForm);
     dialogForm.value = false;
     reset();
     success(updateForm.value ? 'Data berhasil diubah' : 'Data berhasil disimpan');
-    onRequest({
+    await onRequest({
       pagination: pagination.value,
     });
   } catch (error) {
@@ -634,10 +469,10 @@ const saveUser = async () => {
   }
 };
 
-const deleteUser = (value) => {
+const deleteDept = (value) => {
   $q.dialog({
     title: "Konfirmasi",
-    message: `Apakah anda ingin menghapus user <span class="text-bold">${value.account_name}</span>?`,
+    message: `Apakah anda ingin menghapus departement <span class="text-bold">${value.dept_name}</span>?`,
     html: true,
     class:`side-${domain()} text-semibold tw-rounded-2xl`,
     style: 'border-radius: 16px;',
@@ -658,14 +493,14 @@ const deleteUser = (value) => {
     persistent: true,
   }).onOk(async () => {
     try {
-      await axios.post(`${import.meta.env.VITE_API}deleteusers`, {
-        id: value.user_id,
+      await axios.post(`${import.meta.env.VITE_API}deleteDept`, {
+        id: value.dept_id,
         creator: empid(),
       });
       dialogForm.value = false;
       reset();
       success('Data berhasil dihapus');
-      onRequest({
+      await onRequest({
         pagination: pagination.value,
       });
     } catch (error) {
@@ -674,47 +509,11 @@ const deleteUser = (value) => {
   });
 };
 
-const getHrisByNIK = async () => {
-  if (!tmpForm.nik || updateForm.value) return;
-  
-  try {
-    spinnerBall();
-    const res = await axios.get(`${import.meta.env.VITE_API}getHrisByNIK`, {
-      params: {
-        nik: tmpForm.nik,
-      },
-    });
-    
-    if (res.data.type === 'success') {
-      tmpForm.nama = res.data.name;
-      tmpForm.email = res.data.email;
-      tmpForm.empid = res.data.empid;
-    }
-    Loading.hide();
-  } catch (error) {
-    Loading.hide();
-    // Error already shown by API
-  }
-};
-
-const onDivisiChange = async () => {
-  tmpForm.dept = null;
-  if (tmpForm.divisi) {
-    await getDept(tmpForm.divisi);
-  }
-};
-
 const reset = () => {
   tmpForm.id = null;
-  tmpForm.nik = null;
-  tmpForm.nama = null;
-  tmpForm.email = null;
-  tmpForm.password = null;
-  tmpForm.divisi = null;
-  tmpForm.dept = null;
-  tmpForm.role = null;
-  tmpForm.empid = null;
-  listDept.value = [];
+  tmpForm.dept_name = null;
+  tmpForm.dept_divisi = null;
+  tmpForm.dept_note = null;
 };
 
 const onRequest = (props) => {
@@ -724,7 +523,7 @@ const onRequest = (props) => {
   pagination.value.rowsPerPage = rowsPerPage;
   pagination.value.sortBy = sortBy;
   pagination.value.descending = descending;
-  getUser();
+  getDept();
 };
 
 const updateTable = async () => {
