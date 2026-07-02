@@ -1,77 +1,77 @@
 <template>
   <div class="q-pa-md">
-    <!-- Page Header Card -->
-    <q-card class="tw-shadow-2xl tw-rounded-2xl tw-overflow-hidden tw-mb-6">
-      <q-card-section :class="`side-${domain()}-1 tw-py-6`">
-        <div class="tw-flex tw-items-center tw-gap-3">
-          <q-icon name="dashboard" size="28px" class="tw-text-white" />
-          <div>
-            <div class="text-h6 tw-text-white tw-font-bold">Dashboard</div>
-            <div class="tw-flex tw-items-center tw-gap-2 tw-text-blue-100 tw-text-xs">
-              <q-icon name="home" size="14px"/>
-              <q-icon name="chevron_right" size="14px"/>
-              <span>Dashboard</span>
-            </div>
+    <!-- Header Section -->
+    <div class="tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-500 tw-px-6 tw-py-4 tw-mb-4 tw-rounded-lg tw-shadow-md">
+      <div class="tw-flex tw-justify-between tw-items-center">
+        <div>
+          <h5 class="tw-text-white tw-text-xl tw-font-semibold tw-mb-1">Dashboard</h5>
+          <div class="tw-flex tw-items-center tw-gap-2 tw-text-white/90 tw-text-sm">
+            <span>Home</span>
+            <q-icon name="chevron_right" size="12px"/>
+            <span>Dashboard</span>
           </div>
         </div>
-      </q-card-section>
-    </q-card>
-
-    <!-- Statistics Cards -->
-    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4 tw-mb-6">
-      <!-- Total Prosedur Card -->
-      <q-card class="tw-bg-red-500 tw-text-white">
-        <q-card-section class="tw-flex tw-items-center">
-          <div class="tw-flex-shrink-0 tw-mr-4">
-            <q-icon name="description" size="48px" />
-          </div>
-          <div class="tw-flex-1 tw-text-center">
-            <div class="tw-text-sm tw-font-medium tw-mb-1">TOTAL PROSEDUR</div>
-            <div class="tw-text-3xl tw-font-bold">
-              {{ stats.prosedur }}
-            </div>
-          </div>
-        </q-card-section>
-      </q-card>
-
-      <!-- Total IK Card -->
-      <q-card class="tw-bg-green-500 tw-text-white">
-        <q-card-section class="tw-flex tw-items-center">
-          <div class="tw-flex-shrink-0 tw-mr-4">
-            <q-icon name="description" size="48px" />
-          </div>
-          <div class="tw-flex-1 tw-text-center">
-            <div class="tw-text-sm tw-font-medium tw-mb-1">TOTAL IK</div>
-            <div class="tw-text-3xl tw-font-bold">
-              {{ stats.ik }}
-            </div>
-          </div>
-        </q-card-section>
-      </q-card>
-
-      <!-- Total Form Card -->
-      <q-card class="tw-bg-yellow-500 tw-text-white">
-        <q-card-section class="tw-flex tw-items-center">
-          <div class="tw-flex-shrink-0 tw-mr-4">
-            <q-icon name="description" size="48px" />
-          </div>
-          <div class="tw-flex-1 tw-text-center">
-            <div class="tw-text-sm tw-font-medium tw-mb-1">TOTAL FORM</div>
-            <div class="tw-text-3xl tw-font-bold">
-              {{ stats.form }}
-            </div>
-          </div>
-        </q-card-section>
-      </q-card>
+      </div>
     </div>
 
-    <!-- Chart Section -->
-    <q-card>
-      <q-card-section>
-        <div class="tw-text-lg tw-font-semibold tw-mb-4">
-          Total Dokumen Per Departemen
+    <!-- Main Card -->
+    <q-card class="tw-shadow-lg">
+      <q-card-section class="tw-bg-white tw-p-6">
+        <!-- Statistics Cards -->
+        <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4 tw-mb-6">
+          <!-- Total Prosedur Card -->
+          <div class="tw-bg-red-500 tw-text-white tw-rounded-lg tw-p-4">
+            <div class="tw-flex tw-items-center">
+              <div class="tw-flex-shrink-0 tw-mr-4">
+                <q-icon name="description" size="48px" />
+              </div>
+              <div class="tw-flex-1 tw-text-center">
+                <div class="tw-text-sm tw-font-medium tw-mb-1">TOTAL PROSEDUR</div>
+                <div class="tw-text-3xl tw-font-bold">
+                  {{ stats.prosedur }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total IK Card -->
+          <div class="tw-bg-green-500 tw-text-white tw-rounded-lg tw-p-4">
+            <div class="tw-flex tw-items-center">
+              <div class="tw-flex-shrink-0 tw-mr-4">
+                <q-icon name="description" size="48px" />
+              </div>
+              <div class="tw-flex-1 tw-text-center">
+                <div class="tw-text-sm tw-font-medium tw-mb-1">TOTAL IK</div>
+                <div class="tw-text-3xl tw-font-bold">
+                  {{ stats.ik }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Form Card -->
+          <div class="tw-bg-yellow-500 tw-text-white tw-rounded-lg tw-p-4">
+            <div class="tw-flex tw-items-center">
+              <div class="tw-flex-shrink-0 tw-mr-4">
+                <q-icon name="description" size="48px" />
+              </div>
+              <div class="tw-flex-1 tw-text-center">
+                <div class="tw-text-sm tw-font-medium tw-mb-1">TOTAL FORM</div>
+                <div class="tw-text-3xl tw-font-bold">
+                  {{ stats.form }}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div ref="chartContainer" style="min-width: 310px; height: 400px;"></div>
+
+        <!-- Chart Section -->
+        <div class="tw-border tw-border-gray-200 tw-rounded-lg tw-p-4">
+          <div class="tw-text-lg tw-font-semibold tw-mb-4 tw-text-gray-700">
+            Total Dokumen Per Departemen
+          </div>
+          <div ref="chartContainer" style="min-width: 310px; height: 400px;"></div>
+        </div>
       </q-card-section>
     </q-card>
 
@@ -154,7 +154,7 @@ const getPageAkses = async () => {
     spinnerBall();
     const res = await axios.get(`${import.meta.env.VITE_API}pageakses`, {
       params: {
-        role: empid(),
+        role: window.localStorage.getItem("empid"),
         page: 'dashboard',
         domain: domain(),
       }
@@ -183,7 +183,11 @@ const getPageAkses = async () => {
 // Get dashboard statistics
 const getDashboardStats = async () => {
   try {
-    const response = await axios.get('/report/getDashboardStats');
+    const response = await axios.get('/getDashboardStats', {
+      params: {
+        domain: window.localStorage.getItem("domain")
+      }
+    });
     if (response.data.success) {
       stats.value = response.data.data;
     }
@@ -200,7 +204,11 @@ const getDashboardStats = async () => {
 // Get chart data and render
 const loadChartData = async () => {
   try {
-    const response = await axios.get('/report/getChartData');
+    const response = await axios.get('/getChartData', {
+      params: {
+        domain: window.localStorage.getItem("domain")
+      }
+    });
     if (response.data.success) {
       renderChart(response.data.data);
     }

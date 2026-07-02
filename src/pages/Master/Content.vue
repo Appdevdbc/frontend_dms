@@ -319,14 +319,45 @@
             </div>
             <div class="col-md-6 col-12">
               <q-input
-                v-model="tmpForm.content_revision"
+                v-model.number="tmpForm.content_revision"
                 outlined
                 type="number"
                 label="Revisi"
                 class="tw-rounded-lg"
+                readonly
               >
                 <template v-slot:prepend>
                   <q-icon name="history" color="blue-6"/>
+                </template>
+                <template v-slot:before>
+                  <q-btn
+                    round
+                    dense
+                    flat
+                    icon="remove"
+                    color="red-7"
+                    @click="decrementRevision"
+                    class="tw-mr-2"
+                  >
+                    <q-tooltip class="tw-bg-slate-800 tw-text-xs">
+                      Kurangi Revisi
+                    </q-tooltip>
+                  </q-btn>
+                </template>
+                <template v-slot:after>
+                  <q-btn
+                    round
+                    dense
+                    flat
+                    icon="add"
+                    color="green-7"
+                    @click="incrementRevision"
+                    class="tw-ml-2"
+                  >
+                    <q-tooltip class="tw-bg-slate-800 tw-text-xs">
+                      Tambah Revisi
+                    </q-tooltip>
+                  </q-btn>
                 </template>
               </q-input>
             </div>
@@ -334,14 +365,19 @@
               <q-input
                 v-model="tmpForm.content_entry_date"
                 outlined
-                label="Tanggal Entry"
+                label="Tanggal Pengesahan"
                 class="tw-rounded-lg"
-                mask="####-##-##"
+                mask="##-##-####"
+                placeholder="DD-MM-YYYY"
               >
                 <template v-slot:prepend>
                   <q-icon name="event" color="blue-6" class="cursor-pointer">
                     <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                      <q-date v-model="tmpForm.content_entry_date">
+                      <q-date 
+                        v-model="tmpForm.content_entry_date"
+                        mask="DD-MM-YYYY"
+                        :locale="dateLocale"
+                      >
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Close" color="primary" flat />
                         </div>
@@ -355,14 +391,19 @@
               <q-input
                 v-model="tmpForm.content_eff_date"
                 outlined
-                label="Tanggal Efektif"
+                label="Tanggal Terbit"
                 class="tw-rounded-lg"
-                mask="####-##-##"
+                mask="##-##-####"
+                placeholder="DD-MM-YYYY"
               >
                 <template v-slot:prepend>
                   <q-icon name="event_available" color="blue-6" class="cursor-pointer">
                     <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                      <q-date v-model="tmpForm.content_eff_date">
+                      <q-date 
+                        v-model="tmpForm.content_eff_date"
+                        mask="DD-MM-YYYY"
+                        :locale="dateLocale"
+                      >
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Close" color="primary" flat />
                         </div>
@@ -373,31 +414,49 @@
               </q-input>
             </div>
             <div class="col-md-6 col-12">
-              <q-input
-                v-model="tmpForm.content_file"
+              <q-file
+                v-model="tmpForm.content_file_upload"
                 outlined
-                counter maxlength="200" 
-                label="File Name"
+                counter
+                label="File Upload"
                 class="tw-rounded-lg"
+                accept=".pdf,.doc,.docx,.xls,.xlsx"
+                max-file-size="10485760"
+                @update:model-value="onFileSelected"
               >
                 <template v-slot:prepend>
-                  <q-icon name="insert_drive_file" color="blue-6"/>
+                  <q-icon name="attach_file" color="blue-6"/>
                 </template>
-              </q-input>
+                <template v-slot:append>
+                  <q-icon name="cloud_upload" color="blue-6" />
+                </template>
+                <template v-slot:hint>
+                  Max 10MB - PDF, DOC, DOCX, XLS, XLSX
+                </template>
+              </q-file>
             </div>
-            <div class="col-md-6 col-12">
-              <q-input
-                v-model="tmpForm.content_file1"
+            <!-- <div class="col-md-6 col-12">
+              <q-file
+                v-model="tmpForm.content_file1_upload"
                 outlined
-                counter maxlength="200" 
-                label="File Name 1"
+                counter
+                label="File Upload 1"
                 class="tw-rounded-lg"
+                accept=".pdf,.doc,.docx,.xls,.xlsx"
+                max-file-size="10485760"
+                @update:model-value="onFile1Selected"
               >
                 <template v-slot:prepend>
-                  <q-icon name="attachment" color="blue-6"/>
+                  <q-icon name="attach_file" color="blue-6"/>
                 </template>
-              </q-input>
-            </div>
+                <template v-slot:append>
+                  <q-icon name="cloud_upload" color="blue-6" />
+                </template>
+                <template v-slot:hint>
+                  Max 10MB - PDF, DOC, DOCX, XLS, XLSX
+                </template>
+              </q-file>
+            </div> -->
             <div class="col-12">
               <q-input
                 v-model="tmpForm.content_note_revision"
@@ -458,6 +517,15 @@ import "./../../assets/styles/table.css";
 
 const router = useVueRouter();
 const { success, error } = useNotify();
+
+// Date locale for Indonesian format
+const dateLocale = {
+  days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+  daysShort: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+  months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+  monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'],
+};
+
 const columns = [
   {
     name: "aksi",
@@ -556,6 +624,8 @@ const tmpForm = reactive({
   content_idsubfolder2: null,
   content_file: null,
   content_file1: null,
+  content_file_upload: null,
+  content_file1_upload: null,
   content_active: 1,
   content_klasifikasi: null,
   creator: empid(),
@@ -733,6 +803,36 @@ const onSubFolder1Change = async (value) => {
   }
 };
 
+const onFileSelected = (file) => {
+  if (file) {
+    tmpForm.content_file = file.name;
+  } else {
+    tmpForm.content_file = null;
+  }
+};
+
+const onFile1Selected = (file) => {
+  if (file) {
+    tmpForm.content_file1 = file.name;
+  } else {
+    tmpForm.content_file1 = null;
+  }
+};
+
+const incrementRevision = () => {
+  if (tmpForm.content_revision === null || tmpForm.content_revision === undefined) {
+    tmpForm.content_revision = 1;
+  } else {
+    tmpForm.content_revision++;
+  }
+};
+
+const decrementRevision = () => {
+  if (tmpForm.content_revision > 0) {
+    tmpForm.content_revision--;
+  }
+};
+
 const addContent = async () => {
   updateForm.value = false;
   dialogForm.value = true;
@@ -752,8 +852,30 @@ const editContent = async (value) => {
     tmpForm.content_name = value.content_name;
     tmpForm.content_revision = value.content_revision;
     tmpForm.content_note_revision = value.content_note_revision;
-    tmpForm.content_entry_date = value.content_entry_date;
-    tmpForm.content_eff_date = value.content_eff_date;
+    
+    // Convert date from YYYY-MM-DD to DD-MM-YYYY for display
+    if (value.content_entry_date) {
+      const dateStr = value.content_entry_date.split('T')[0]; // Remove time if exists
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const [year, month, day] = parts;
+        tmpForm.content_entry_date = `${day}-${month}-${year}`;
+      }
+    } else {
+      tmpForm.content_entry_date = null;
+    }
+    
+    if (value.content_eff_date) {
+      const dateStr = value.content_eff_date.split('T')[0]; // Remove time if exists
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const [year, month, day] = parts;
+        tmpForm.content_eff_date = `${day}-${month}-${year}`;
+      }
+    } else {
+      tmpForm.content_eff_date = null;
+    }
+    
     tmpForm.content_iddiv = value.content_iddiv;
     tmpForm.content_iddept = value.content_iddept;
     tmpForm.content_idfolder = value.content_idfolder;
@@ -835,7 +957,71 @@ const saveDialog = async () => {
 
 const saveContent = async () => {
   try {
-    await axios.post(`${import.meta.env.VITE_API}saveContent`, tmpForm);
+    // Create FormData for file upload
+    const formData = new FormData();
+    
+    // Append all form fields
+    formData.append('id', tmpForm.id || '');
+    formData.append('content_no', tmpForm.content_no || '');
+    formData.append('content_name', tmpForm.content_name || '');
+    formData.append('content_revision', tmpForm.content_revision || 0);
+    formData.append('content_note_revision', tmpForm.content_note_revision || '');
+    
+    // Convert and append content_entry_date from DD-MM-YYYY to YYYY-MM-DD
+    if (tmpForm.content_entry_date && tmpForm.content_entry_date.includes('-')) {
+      const parts = tmpForm.content_entry_date.split('-');
+      if (parts.length === 3) {
+        const [day, month, year] = parts;
+        formData.append('content_entry_date', `${year}-${month}-${day}`);
+      }
+    } else {
+      formData.append('content_entry_date', '');
+    }
+    
+    // Convert and append content_eff_date from DD-MM-YYYY to YYYY-MM-DD
+    if (tmpForm.content_eff_date && tmpForm.content_eff_date.includes('-')) {
+      const parts = tmpForm.content_eff_date.split('-');
+      if (parts.length === 3) {
+        const [day, month, year] = parts;
+        formData.append('content_eff_date', `${year}-${month}-${day}`);
+      }
+    } else {
+      formData.append('content_eff_date', '');
+    }
+    
+    formData.append('content_iddiv', tmpForm.content_iddiv || '');
+    formData.append('content_iddept', tmpForm.content_iddept || '');
+    formData.append('content_idfolder', tmpForm.content_idfolder || '');
+    formData.append('content_idsubfolder1', tmpForm.content_idsubfolder1 || '');
+    formData.append('content_idsubfolder2', tmpForm.content_idsubfolder2 || '');
+    formData.append('content_active', tmpForm.content_active);
+    formData.append('content_klasifikasi', tmpForm.content_klasifikasi || '');
+    formData.append('creator', tmpForm.creator);
+    formData.append('domain', tmpForm.domain);
+    
+    // Append files if they exist
+    if (tmpForm.content_file_upload) {
+      formData.append('file', tmpForm.content_file_upload);
+    }
+    if (tmpForm.content_file1_upload) {
+      formData.append('file1', tmpForm.content_file1_upload);
+    }
+    
+    // Append old filenames if no new file uploaded (for update case)
+    if (!tmpForm.content_file_upload && tmpForm.content_file) {
+      formData.append('content_file_old', tmpForm.content_file);
+    }
+    if (!tmpForm.content_file1_upload && tmpForm.content_file1) {
+      formData.append('content_file1_old', tmpForm.content_file1);
+    }
+    
+    // Send with multipart/form-data header
+    await axios.post(`${import.meta.env.VITE_API}saveContent`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    
     dialogForm.value = false;
     reset();
     success(updateForm.value ? 'Data berhasil diubah' : 'Data berhasil disimpan');
@@ -918,6 +1104,8 @@ const reset = () => {
   tmpForm.content_idsubfolder2 = null;
   tmpForm.content_file = null;
   tmpForm.content_file1 = null;
+  tmpForm.content_file_upload = null;
+  tmpForm.content_file1_upload = null;
   tmpForm.content_active = 1;
   tmpForm.content_klasifikasi = null;
   listDept.value = [];

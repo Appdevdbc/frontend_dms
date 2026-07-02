@@ -5,12 +5,16 @@
         <div class="tw-flex tw-items-center tw-gap-3">
           <q-icon name="corporate_fare" size="28px" class="tw-text-white" />
           <div>
-            <div class="text-h6 tw-text-white tw-font-bold">Master Departement</div>
-            <div class="tw-flex tw-items-center tw-gap-2 tw-text-blue-100 tw-text-xs">
-              <q-icon name="home" size="14px"/>
-              <q-icon name="chevron_right" size="14px"/>
+            <div class="text-h6 tw-text-white tw-font-bold">
+              Master Departement
+            </div>
+            <div
+              class="tw-flex tw-items-center tw-gap-2 tw-text-blue-100 tw-text-xs"
+            >
+              <q-icon name="home" size="14px" />
+              <q-icon name="chevron_right" size="14px" />
               <span>Master</span>
-              <q-icon name="chevron_right" size="14px"/>
+              <q-icon name="chevron_right" size="14px" />
               <span>Data Departement</span>
             </div>
           </div>
@@ -19,7 +23,7 @@
       <q-separator />
       <q-card-section class="tw-bg-white">
         <q-table
-          v-if="tmpPage.view =='1' || tmpPage.admin =='1'"
+          v-if="tmpPage.view == '1' || tmpPage.admin == '1'"
           :rows="listDept"
           :columns="columns"
           row-key="dept_id"
@@ -34,28 +38,28 @@
         >
           <template v-slot:header="props">
             <q-tr :props="props">
-                <q-th
-                    v-for="col in props.cols"
-                    :key="col.name"
-                    :props="props"
-                    :class="[
-                      `bg-${domain()} tw-text-white tw-font-bold tw-text-sm tw-uppercase tw-tracking-wide tw-py-4`,
-                      col.name === 'aksi' ? 'sticky-column-left-header' : ''
-                    ]"
-                >
-                        {{ col.label }}
-                </q-th>
+              <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+                :class="[
+                  `bg-${domain()} tw-text-white tw-font-bold tw-text-sm tw-uppercase tw-tracking-wide tw-py-4`,
+                  col.name === 'aksi' ? 'sticky-column-left-header' : '',
+                ]"
+              >
+                {{ col.label }}
+              </q-th>
             </q-tr>
           </template>
           <template v-slot:top-left>
-             <div class="row q-col-gutter-sm">
-               <div class="col-12">
-                  <q-select
+            <div class="row q-col-gutter-sm">
+              <div class="col-12">
+                <q-select
                   borderless
                   dense
                   debounce="300"
                   v-model="pagination.rowsPerPage"
-                  :options="[5,10,25,50,100,200]"
+                  :options="[5, 10, 25, 50, 100, 200]"
                   @update:modelValue="updateTable"
                 >
                   <template v-slot:before>
@@ -65,9 +69,9 @@
                       </q-tooltip>
                     </q-icon>
                   </template>
-                </q-select>  
-                </div>
-             </div>    
+                </q-select>
+              </div>
+            </div>
           </template>
           <template v-slot:top-right>
             <div class="tw-flex tw-gap-3 tw-items-center">
@@ -83,7 +87,7 @@
                   <q-icon name="search" color="blue-6" />
                 </template>
               </q-input>
-              <q-btn 
+              <q-btn
                 v-if="tmpPage.add == '1' || tmpPage.admin == '1'"
                 push
                 :color="`${domain()}`"
@@ -101,35 +105,33 @@
           </template>
           <template v-slot:body-cell-aksi="props">
             <q-td :props="props" class="tw-py-3 sticky-column-left">
-                <q-btn 
-                  v-if="tmpPage.edit == '1' || tmpPage.admin == '1'"
-                  round
-                  dense
-                  color="orange-7"
-                  size="sm"
-                  class="tw-mr-1 tw-shadow-md hover:tw-shadow-lg hover:tw-scale-110 tw-transition-all"
-                  @click="editDept(props.row)"
-                  icon="edit"
-                >
-                  <q-tooltip class="tw-bg-slate-800 tw-text-xs">
-                    Edit
-                  </q-tooltip>
-                </q-btn>
+              <q-btn
+                v-if="tmpPage.edit == '1' || tmpPage.admin == '1'"
+                round
+                dense
+                color="orange-7"
+                size="sm"
+                class="tw-mr-1 tw-shadow-md hover:tw-shadow-lg hover:tw-scale-110 tw-transition-all"
+                @click="editDept(props.row)"
+                icon="edit"
+              >
+                <q-tooltip class="tw-bg-slate-800 tw-text-xs"> Edit </q-tooltip>
+              </q-btn>
 
-                <q-btn 
-                  v-if="tmpPage.delete == '1' || tmpPage.admin == '1'"
-                  round
-                  dense
-                  color="red-7"
-                  size="sm"
-                  class="tw-mr-1 tw-shadow-md hover:tw-shadow-lg hover:tw-scale-110 tw-transition-all"
-                  @click="deleteDept(props.row)"
-                  icon="delete"
-                >
-                  <q-tooltip class="tw-bg-slate-800 tw-text-xs">
-                    Delete
-                  </q-tooltip>
-                </q-btn>
+              <q-btn
+                v-if="tmpPage.delete == '1' || tmpPage.admin == '1'"
+                round
+                dense
+                color="red-7"
+                size="sm"
+                class="tw-mr-1 tw-shadow-md hover:tw-shadow-lg hover:tw-scale-110 tw-transition-all"
+                @click="deleteDept(props.row)"
+                icon="delete"
+              >
+                <q-tooltip class="tw-bg-slate-800 tw-text-xs">
+                  Delete
+                </q-tooltip>
+              </q-btn>
             </q-td>
           </template>
         </q-table>
@@ -137,39 +139,53 @@
     </q-card>
 
     <!-- Dialog Form -->
-    <q-dialog v-model="dialogForm" transition-show="slide-up" transition-hide="slide-down">
+    <q-dialog
+      v-model="dialogForm"
+      transition-show="slide-up"
+      transition-hide="slide-down"
+    >
       <q-card class="tw-w-full tw-max-w-2xl tw-rounded-2xl tw-shadow-2xl">
         <q-card-section :class="`bg-${domain()}`">
-          <div class="text-h5 tw-text-white tw-font-bold tw-flex tw-items-center tw-gap-3">
-            <q-icon name="edit_note" size="32px"/>
-            {{ updateForm ? 'Edit Departement' : 'Tambah Departement' }}
+          <div
+            class="text-h5 tw-text-white tw-font-bold tw-flex tw-items-center tw-gap-3"
+          >
+            <q-icon name="edit_note" size="32px" />
+            {{ updateForm ? "Edit Departement" : "Tambah Departement" }}
           </div>
         </q-card-section>
-        <q-separator/>
+        <q-separator />
         <q-card-section style="max-height: 70vh" class="scroll tw-p-6">
           <div class="row q-col-gutter-md">
             <div class="col-12">
-              <q-banner rounded class="tw-bg-red-50 tw-border-l-4 tw-border-red-500 tw-shadow-sm">
+              <q-banner
+                rounded
+                class="tw-bg-red-50 tw-border-l-4 tw-border-red-500 tw-shadow-sm"
+              >
                 <template v-slot:avatar>
-                  <q-icon name="info" color="red" size="24px"/>
+                  <q-icon name="info" color="red" size="24px" />
                 </template>
-                <span class="tw-text-red-700 tw-font-medium">Field bertanda bintang (*) wajib diisi</span>
+                <span class="tw-text-red-700 tw-font-medium"
+                  >Field bertanda bintang (*) wajib diisi</span
+                >
               </q-banner>
             </div>
             <div class="col-12">
               <q-input
                 v-model="tmpForm.dept_name"
                 outlined
-                counter maxlength="100" 
-                :rules="[val => !!val || 'Field is required']"
+                counter
+                maxlength="100"
+                :rules="[(val) => !!val || 'Field is required']"
                 label-slot
                 class="tw-rounded-lg"
               >
                 <template v-slot:prepend>
-                  <q-icon name="corporate_fare" color="blue-6"/>
+                  <q-icon name="corporate_fare" color="blue-6" />
                 </template>
                 <template v-slot:label>
-                  <span class="tw-font-semibold tw-text-slate-700">Nama Departement</span>
+                  <span class="tw-font-semibold tw-text-slate-700"
+                    >Nama Departement</span
+                  >
                   <span class="tw-text-red-500 tw-font-bold">*</span>
                 </template>
               </q-input>
@@ -181,12 +197,12 @@
                 outlined
                 emit-value
                 map-options
-                :rules="[val => !!val || 'Field is required']"
+                :rules="[(val) => !!val || 'Field is required']"
                 label-slot
                 class="tw-rounded-lg"
               >
                 <template v-slot:prepend>
-                  <q-icon name="business" color="blue-6"/>
+                  <q-icon name="business" color="blue-6" />
                 </template>
                 <template v-slot:label>
                   <span class="tw-font-semibold tw-text-slate-700">Divisi</span>
@@ -200,18 +216,19 @@
                 outlined
                 type="textarea"
                 rows="3"
-                counter maxlength="200" 
+                counter
+                maxlength="200"
                 label="Keterangan"
                 class="tw-rounded-lg"
               >
                 <template v-slot:prepend>
-                  <q-icon name="notes" color="blue-6"/>
+                  <q-icon name="notes" color="blue-6" />
                 </template>
               </q-input>
             </div>
           </div>
         </q-card-section>
-        <q-separator class="tw-bg-slate-200"/>
+        <q-separator class="tw-bg-slate-200" />
         <q-card-actions align="right" class="tw-p-6 tw-bg-slate-50">
           <q-btn
             label="Close"
@@ -232,20 +249,21 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, reactive } from "vue";
-import axios from "axios"
-import { ParseError, 
-        domain, 
-        empid,
-        admin,
-        spinnerBall,
-        decrypt,
-        decryptMessage} from "./../../utils";
+import axios from "axios";
+import {
+  ParseError,
+  domain,
+  empid,
+  admin,
+  spinnerBall,
+  decrypt,
+  decryptMessage,
+} from "./../../utils";
 import { useQuasar, Loading } from "quasar";
 import * as yup from "yup";
 import { useRouter as useVueRouter } from "vue-router";
@@ -261,8 +279,8 @@ const columns = [
     label: "Aksi",
     align: "left",
     field: "aksi",
-    classes: 'sticky-column-left',
-    headerClasses: 'sticky-column-left-header'
+    classes: "sticky-column-left",
+    headerClasses: "sticky-column-left-header",
   },
   {
     name: "dept_name",
@@ -285,7 +303,7 @@ const columns = [
     align: "left",
     field: "dept_note",
     sortable: true,
-  }
+  },
 ];
 const $q = useQuasar();
 const listDept = ref([]);
@@ -314,11 +332,11 @@ const tmpForm = reactive({
 });
 
 const tmpPage = reactive({
-  add:'0',
-  edit:'0',
-  delete:'0',
-  view:'0',
-  admin:'0',
+  add: "0",
+  edit: "0",
+  delete: "0",
+  view: "0",
+  admin: "0",
 });
 
 const schema = yup.object({
@@ -328,38 +346,40 @@ const schema = yup.object({
 
 const getPageAkses = async () => {
   try {
-    spinnerBall()
+    spinnerBall();
     const res = await axios.get(`${import.meta.env.VITE_API}pageakses`, {
       params: {
         role: empid(),
-        page: 'master_dept',
+        page: "master_dept",
         domain: domain(),
-      }
+      },
     });
     tmpPage.add = decryptMessage(res.data.add);
     tmpPage.edit = decryptMessage(res.data.edit);
     tmpPage.delete = decryptMessage(res.data.delete);
     tmpPage.view = decryptMessage(res.data.view);
     tmpPage.admin = admin();
-    Loading.hide()
+    Loading.hide();
   } catch (error) {
-    console.error('getPageAkses error:', error);
-    Loading.hide()
-    router.push('/404');
+    console.error("getPageAkses error:", error);
+    Loading.hide();
+    router.push("/404");
   }
 };
 
 const getDept = async () => {
   try {
-    spinnerBall()
+    spinnerBall();
     loading.value = true;
-    if (pagination.value.rowsPerPage == 'All')
-     pagination.value.rowsPerPage = pagination.value.rowsNumber;
-    
+    if (pagination.value.rowsPerPage == "All")
+      pagination.value.rowsPerPage = pagination.value.rowsNumber;
+
+    pagination.value.domain = domain();
+
     const res = await axios.get(`${import.meta.env.VITE_API}listDept`, {
-      params: pagination.value
+      params: pagination.value,
     });
-    
+
     if (typeof res.data.data === "undefined") {
       listDept.value = res.data;
     } else {
@@ -368,10 +388,10 @@ const getDept = async () => {
 
     pagination.value.rowsNumber = res.data.pagination?.total || res.data.length;
     loading.value = false;
-    Loading.hide()
+    Loading.hide();
   } catch (error) {
     loading.value = false;
-    Loading.hide()
+    Loading.hide();
   }
 };
 
@@ -380,7 +400,7 @@ const getDivisi = async () => {
     const res = await axios.get(`${import.meta.env.VITE_API}getSelectDivisi`);
     listDivisi.value = res.data;
   } catch (error) {
-    console.error('getDivisi error:', error);
+    console.error("getDivisi error:", error);
   }
 };
 
@@ -396,15 +416,15 @@ const editDept = async (value) => {
     reset();
     updateForm.value = true;
     dialogForm.value = true;
-    
+
     tmpForm.id = value.dept_id;
     tmpForm.dept_name = value.dept_name;
     tmpForm.dept_divisi = value.dept_divisi;
     tmpForm.dept_note = value.dept_note;
-    
+
     await getDivisi();
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 
@@ -412,13 +432,14 @@ const validateDept = async () => {
   let validate = {
     dept_name: tmpForm.dept_name,
     dept_divisi: tmpForm.dept_divisi,
-  }
-  schema.validate(validate, { abortEarly: false })
+  };
+  schema
+    .validate(validate, { abortEarly: false })
     .then(() => {
       saveDialog();
     })
-    .catch(err => {
-      err.inner.forEach(e => {
+    .catch((err) => {
+      err.inner.forEach((e) => {
         error(e.message);
       });
     });
@@ -429,21 +450,21 @@ const saveDialog = async () => {
     title: "Konfirmasi",
     message: `Apakah data sudah sesuai ?`,
     html: true,
-    class:`side-${domain()} text-semibold tw-rounded-2xl`,
-    style: 'border-radius: 16px;',
+    class: `side-${domain()} text-semibold tw-rounded-2xl`,
+    style: "border-radius: 16px;",
     ok: {
       push: true,
-      color:"blue-6",
+      color: "blue-6",
       label: "Ya, Simpan",
       icon: "check_circle",
-      class: "tw-font-semibold tw-px-6 tw-rounded-lg"
+      class: "tw-font-semibold tw-px-6 tw-rounded-lg",
     },
     cancel: {
       push: true,
-      color: 'red-7',
+      color: "red-7",
       label: "Batal",
       icon: "cancel",
-      class: "tw-font-semibold tw-px-6 tw-rounded-lg"
+      class: "tw-font-semibold tw-px-6 tw-rounded-lg",
     },
     persistent: true,
   }).onOk(async () => {
@@ -460,7 +481,9 @@ const saveDept = async () => {
     await axios.post(`${import.meta.env.VITE_API}saveDept`, tmpForm);
     dialogForm.value = false;
     reset();
-    success(updateForm.value ? 'Data berhasil diubah' : 'Data berhasil disimpan');
+    success(
+      updateForm.value ? "Data berhasil diubah" : "Data berhasil disimpan"
+    );
     await onRequest({
       pagination: pagination.value,
     });
@@ -474,21 +497,21 @@ const deleteDept = (value) => {
     title: "Konfirmasi",
     message: `Apakah anda ingin menghapus departement <span class="text-bold">${value.dept_name}</span>?`,
     html: true,
-    class:`side-${domain()} text-semibold tw-rounded-2xl`,
-    style: 'border-radius: 16px;',
+    class: `side-${domain()} text-semibold tw-rounded-2xl`,
+    style: "border-radius: 16px;",
     ok: {
       push: true,
-      color:"blue-6",
+      color: "blue-6",
       label: "Ya, Hapus",
       icon: "check_circle",
-      class: "tw-font-semibold tw-px-6 tw-rounded-lg"
+      class: "tw-font-semibold tw-px-6 tw-rounded-lg",
     },
     cancel: {
       push: true,
-      color: 'red-7',
+      color: "red-7",
       label: "Batal",
       icon: "cancel",
-      class: "tw-font-semibold tw-px-6 tw-rounded-lg"
+      class: "tw-font-semibold tw-px-6 tw-rounded-lg",
     },
     persistent: true,
   }).onOk(async () => {
@@ -499,7 +522,7 @@ const deleteDept = (value) => {
       });
       dialogForm.value = false;
       reset();
-      success('Data berhasil dihapus');
+      success("Data berhasil dihapus");
       await onRequest({
         pagination: pagination.value,
       });
@@ -538,5 +561,4 @@ onMounted(() => {
     pagination: pagination.value,
   });
 });
-
 </script>

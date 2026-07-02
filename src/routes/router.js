@@ -74,6 +74,10 @@ const router = createRouter({
       redirect: "/master/akses"
     },
     {
+      path: "/history_document",
+      redirect: "/report/history_document",
+    },
+    {
       path: "/dept/:deptSeo/:folderSeo?/:subfolder1Seo?/:subfolder2Seo?",
       redirect: to => `/transaction/dept/${to.params.deptSeo}${to.params.folderSeo ? '/' + to.params.folderSeo : ''}${to.params.subfolder1Seo ? '/' + to.params.subfolder1Seo : ''}${to.params.subfolder2Seo ? '/' + to.params.subfolder2Seo : ''}`
     },

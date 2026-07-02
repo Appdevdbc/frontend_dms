@@ -35,13 +35,16 @@
           <div class="col-md-6 col-12">
             <q-select
               v-model="selectedUser"
-              :options="listUsers"
+              :options="filteredUsers"
               outlined
               emit-value
               map-options
               label="Pilih User"
               :loading="loadingUsers"
               @update:model-value="onUserChange"
+              use-input
+              input-debounce="300"
+              @filter="filterUsers"
               class="tw-rounded-lg"
             >
               <template v-slot:prepend>
@@ -50,7 +53,7 @@
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
-                    Tidak ada data user
+                    Tidak ada data user yang cocok
                   </q-item-section>
                 </q-item>
               </template>
@@ -136,8 +139,8 @@
             </q-card-section>
           </q-card>
 
-          <!-- Folder Section -->
-          <q-card flat bordered class="tw-rounded-xl">
+          <!-- Folder Section - Grouped by Department -->
+          <q-card flat bordered class="tw-rounded-xl tw-mb-4">
             <q-card-section class="bg-grey-2">
               <div class="tw-flex tw-items-center tw-justify-between">
                 <div class="text-h6 tw-font-bold tw-text-slate-700">
@@ -152,24 +155,46 @@
                 />
               </div>
             </q-card-section>
-            <q-separator />
-            <q-card-section>
-              <div class="row q-col-gutter-sm">
-                <div 
-                  v-for="folder in listFolders" 
-                  :key="folder.folder_id"
-                  class="col-md-3 col-sm-4 col-6"
-                >
+          </q-card>
+
+          <!-- Department Groups -->
+          <div v-for="deptGroup in listFoldersByDept" :key="deptGroup.dept_id" class="q-mb-md">
+            <q-card flat bordered class="tw-rounded-xl">
+              <q-card-section class="bg-grey-3">
+                <div class="tw-flex tw-items-center tw-justify-between">
+                  <div class="text-subtitle1 tw-font-bold tw-text-slate-700">
+                    <q-icon name="corporate_fare" class="q-mr-sm" size="20px"/>
+                    {{ deptGroup.dept_name }}
+                  </div>
                   <q-checkbox
-                    v-model="selectedFolders"
-                    :val="folder.folder_id"
-                    :label="`${folder.folder_name} (${folder.divisi_name} - ${folder.dept_name})`"
+                    :model-value="isDeptAllSelected(deptGroup)"
+                    @update:model-value="toggleDeptFolders(deptGroup, $event)"
+                    label="Select All"
                     color="accent"
+                    dense
                   />
                 </div>
-              </div>
-            </q-card-section>
-          </q-card>
+              </q-card-section>
+              <q-separator />
+              <q-card-section>
+                <div class="row q-col-gutter-sm">
+                  <div 
+                    v-for="folder in deptGroup.folders" 
+                    :key="folder.folder_id"
+                    class="col-md-3 col-sm-4 col-6"
+                  >
+                    <q-checkbox
+                      v-model="selectedFolders"
+                      :val="folder.folder_id"
+                      :label="folder.folder_name"
+                      color="accent"
+                      @update:model-value="updateSelectAllStates"
+                    />
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
         </div>
 
         <!-- Loading State -->
@@ -208,9 +233,11 @@ const $q = useQuasar();
 
 const selectedUser = ref(null);
 const listUsers = ref([]);
+const filteredUsers = ref([]);
 const listMainMenus = ref([]);
 const listSubMenus = ref([]);
-const listFolders = ref([]);
+const listFoldersByDept = ref([]); // Changed: grouped by department
+const listFolders = ref([]); // Flat list for compatibility
 
 const selectedMainMenus = ref([]);
 const selectedSubMenus = ref([]);
@@ -261,6 +288,7 @@ const getUsers = async () => {
       params: { domain: domain() }
     });
     listUsers.value = res.data;
+    filteredUsers.value = res.data;
     loadingUsers.value = false;
   } catch (err) {
     loadingUsers.value = false;
@@ -291,7 +319,10 @@ const getFolders = async () => {
     const res = await axios.get(`${import.meta.env.VITE_API}getFoldersAkses`, {
       params: { domain: domain() }
     });
-    listFolders.value = res.data;
+    listFoldersByDept.value = res.data;
+    
+    // Create flat list for compatibility with existing logic
+    listFolders.value = res.data.flatMap(dept => dept.folders);
   } catch (err) {
     error(ParseError(err));
   }
@@ -349,11 +380,51 @@ const toggleAllFolders = (val) => {
   }
 };
 
+const isDeptAllSelected = (deptGroup) => {
+  if (!deptGroup.folders || deptGroup.folders.length === 0) return false;
+  return deptGroup.folders.every(folder => 
+    selectedFolders.value.includes(folder.folder_id)
+  );
+};
+
+const toggleDeptFolders = (deptGroup, val) => {
+  if (val) {
+    // Select all folders in this department
+    const folderIds = deptGroup.folders.map(f => f.folder_id);
+    selectedFolders.value = [
+      ...new Set([...selectedFolders.value, ...folderIds])
+    ];
+  } else {
+    // Deselect all folders in this department
+    const folderIds = deptGroup.folders.map(f => f.folder_id);
+    selectedFolders.value = selectedFolders.value.filter(
+      id => !folderIds.includes(id)
+    );
+  }
+  updateSelectAllStates();
+};
+
 const updateSelectAllStates = () => {
   selectAllMain.value = listMainMenus.value.length > 0 && 
     selectedMainMenus.value.length === listMainMenus.value.length;
   selectAllFolders.value = listFolders.value.length > 0 && 
     selectedFolders.value.length === listFolders.value.length;
+};
+
+const filterUsers = (val, update) => {
+  if (val === '') {
+    update(() => {
+      filteredUsers.value = listUsers.value;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    filteredUsers.value = listUsers.value.filter(user => 
+      user.label.toLowerCase().includes(needle)
+    );
+  });
 };
 
 const saveAkses = async () => {

@@ -242,7 +242,7 @@
                 </template>
               </q-input>
             </div>
-            <div class="col-12">
+            <!-- <div class="col-12">
               <q-input
                 v-model.number="tmpForm.menu_order"
                 outlined
@@ -255,7 +255,7 @@
                   <q-icon name="reorder" color="blue-6"/>
                 </template>
               </q-input>
-            </div>
+            </div> -->
           </div>
         </q-card-section>
         <q-separator class="tw-bg-slate-200"/>

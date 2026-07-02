@@ -215,12 +215,13 @@ const loadData = async () => {
     spinnerBall();
     
     // Load department name, folders, and documents
-    const res = await axios.get(`${import.meta.env.VITE_API}getDeptFiles`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}transaction/getDeptFiles`, {
       params: {
         deptSeo: deptSeo.value,
         folderSeo: folderSeo.value,
         subfolder1Seo: subfolder1Seo.value,
         subfolder2Seo: subfolder2Seo.value,
+        userId: empid(),
         ...pagination.value
       }
     });
@@ -263,7 +264,7 @@ const navigateToFolder = (folder) => {
 };
 
 const downloadFile = (document) => {
-  window.open(`${import.meta.env.VITE_FTP_URL}/${document.content_file}`, '_blank');
+  window.open(`${import.meta.env.VITE_FTP}${import.meta.env.VITE_FTP_FOLDER}/${document.content_file}`, '_blank');
 };
 
 const onRequest = (props) => {

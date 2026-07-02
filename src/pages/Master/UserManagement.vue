@@ -215,26 +215,6 @@
               </q-input>
             </div>
 
-            <div class="col-md-6 col-12" v-if="!updateForm">
-              <q-input
-                v-model="tmpForm.password"
-                outlined
-                type="password"
-                counter maxlength="100"
-                :rules="[val => updateForm || !!val || 'Field is required']"
-                label-slot
-                class="tw-rounded-lg"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="lock" color="blue-6"/>
-                </template>
-                <template v-slot:label>
-                  <span class="tw-font-semibold tw-text-slate-700">Password</span>
-                  <span class="tw-text-red-500 tw-font-bold" v-if="!updateForm">*</span>
-                </template>
-              </q-input>
-            </div>
-
             <!-- Right Column -->
             <div class="col-md-6 col-12">
               <q-select
@@ -244,7 +224,7 @@
                 emit-value
                 map-options
                 option-value="value"
-                option-label="description"
+                option-label="label"
                 @update:modelValue="onDivisiChange"
                 label-slot
                 class="tw-rounded-lg"
@@ -267,7 +247,7 @@
                 emit-value
                 map-options
                 option-value="value"
-                option-label="description"
+                option-label="label"
                 label-slot
                 class="tw-rounded-lg"
               >
@@ -422,7 +402,6 @@ const tmpForm = reactive({
   nik: null,
   nama: null,
   email: null,
-  password: null,
   divisi: null,
   dept: null,
   role: null,
@@ -444,10 +423,6 @@ const schema = yup.object({
   divisi: yup.string().required("Divisi wajib diisi").nullable(),
   dept: yup.string().required("Departemen wajib diisi").nullable(),
   role: yup.string().required("Role wajib diisi").nullable(),
-  password: yup.string().when('$updateForm', {
-    is: false,
-    then: (schema) => schema.required("Password wajib diisi untuk user baru"),
-  }),
 });
 
 const getPageAkses = async () => {
@@ -501,9 +476,7 @@ const getUser = async () => {
 
 const getDivisi = async (selectedId = null) => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}User_Action/get_select_divisi`, {
-      params: { id: selectedId }
-    });
+    const res = await axios.get(`${import.meta.env.VITE_API}getSelectDivisi`);
     listDivisi.value = res.data;
   } catch (error) {
     console.error('getDivisi error:', error);
@@ -512,10 +485,9 @@ const getDivisi = async (selectedId = null) => {
 
 const getDept = async (divisiId, selectedId = null) => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API}User_Action/get_select_dept`, {
+    const res = await axios.get(`${import.meta.env.VITE_API}getSelectDept`, {
       params: { 
-        iddiv: divisiId,
-        iddept: selectedId 
+        iddiv: divisiId
       }
     });
     listDept.value = res.data;
@@ -551,7 +523,7 @@ const editUser = async (value) => {
     dialogForm.value = true;
     
     tmpForm.id = value.user_id;
-    tmpForm.nik = value.account_nik;
+    tmpForm.nik = value.user_nik;
     tmpForm.nama = value.account_name;
     tmpForm.email = value.account_email;
     tmpForm.empid = value.emp_id;
@@ -576,9 +548,8 @@ const validateUser = async () => {
     divisi: tmpForm.divisi,
     dept: tmpForm.dept,
     role: tmpForm.role,
-    password: tmpForm.password,
   }
-  schema.validate(validate, { abortEarly: false, context: { updateForm: updateForm.value } })
+  schema.validate(validate, { abortEarly: false })
     .then(() => {
       saveDialog();
     })
@@ -709,7 +680,6 @@ const reset = () => {
   tmpForm.nik = null;
   tmpForm.nama = null;
   tmpForm.email = null;
-  tmpForm.password = null;
   tmpForm.divisi = null;
   tmpForm.dept = null;
   tmpForm.role = null;

@@ -1,11 +1,21 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import dmsRoutes from "./routes/wjs";
+import reportRoutes from "./routes/report";
+import masterRoutes from "./routes/master";
+import transactionRoutes from "./routes/transaction";
 import { authGuard, guestGuard } from "./router/guards";
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     ...dmsRoutes,
+    ...reportRoutes,
+    ...masterRoutes,
+    ...transactionRoutes,
+    {
+      path: "/history_document",
+      redirect: "/report/history_document"
+    },
     {
       path: "/",
       redirect: "/dashboard",
