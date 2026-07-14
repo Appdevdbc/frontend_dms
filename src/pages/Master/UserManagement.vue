@@ -535,7 +535,8 @@ const editUser = async (value) => {
     tmpForm.dept = value.user_iddept;
     
     await getRole(value.user_role);
-    tmpForm.role = value.user_role;
+    // Convert role to number to match the options format
+    tmpForm.role = parseInt(value.user_role);
   } catch (error) {
     console.log(error)
   }
