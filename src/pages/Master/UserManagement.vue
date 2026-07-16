@@ -336,6 +336,13 @@ const columns = [
     field: "no",
   },
   {
+    name: "user_nik",
+    align: "left",
+    label: "NIK",
+    field: "user_nik",
+    sortable: true,
+  },
+  {
     name: "account_name",
     align: "left",
     label: "Nama",
@@ -449,9 +456,8 @@ const getPageAkses = async () => {
 };
 
 const getUser = async () => {
+  loading.value = true;
   try {
-    spinnerBall()
-    loading.value = true;
     if (pagination.value.rowsPerPage == 'All')
      pagination.value.rowsPerPage = pagination.value.rowsNumber;
     
@@ -461,16 +467,18 @@ const getUser = async () => {
     
     if (typeof res.data.data === "undefined") {
       listUser.value = res.data;
+      pagination.value.rowsNumber = res.data.length;
     } else {
       listUser.value = res.data.data;
+      pagination.value.rowsNumber = res.data.pagination?.total || 0;
     }
-
-    pagination.value.rowsNumber = res.data.pagination?.total || res.data.length;
+  } catch (err) {
+    console.error('getUser error:', err);
+    error(ParseError(err));
+    listUser.value = [];
+    pagination.value.rowsNumber = 0;
+  } finally {
     loading.value = false;
-    Loading.hide()
-  } catch (error) {
-    loading.value = false;
-    Loading.hide()
   }
 };
 

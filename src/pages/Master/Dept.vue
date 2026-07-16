@@ -368,9 +368,8 @@ const getPageAkses = async () => {
 };
 
 const getDept = async () => {
+  loading.value = true;
   try {
-    spinnerBall();
-    loading.value = true;
     if (pagination.value.rowsPerPage == "All")
       pagination.value.rowsPerPage = pagination.value.rowsNumber;
 
@@ -382,16 +381,18 @@ const getDept = async () => {
 
     if (typeof res.data.data === "undefined") {
       listDept.value = res.data;
+      pagination.value.rowsNumber = res.data.length;
     } else {
       listDept.value = res.data.data;
+      pagination.value.rowsNumber = res.data.pagination?.total || 0;
     }
-
-    pagination.value.rowsNumber = res.data.pagination?.total || res.data.length;
+  } catch (err) {
+    console.error('getDept error:', err);
+    error(ParseError(err));
+    listDept.value = [];
+    pagination.value.rowsNumber = 0;
+  } finally {
     loading.value = false;
-    Loading.hide();
-  } catch (error) {
-    loading.value = false;
-    Loading.hide();
   }
 };
 
