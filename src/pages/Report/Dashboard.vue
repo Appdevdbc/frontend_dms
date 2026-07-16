@@ -206,7 +206,8 @@ const loadChartData = async () => {
   try {
     const response = await axios.get('/getChartData', {
       params: {
-        domain: window.localStorage.getItem("domain")
+        domain: window.localStorage.getItem("domain"),
+        empid: window.localStorage.getItem("empid")
       }
     });
     if (response.data.success) {
