@@ -328,13 +328,13 @@ import "./../../assets/styles/table.css";
 const router = useVueRouter();
 const { success, error } = useNotify();
 const columns = [
-  {
-    name: "no",
-    required: true,
-    label: "No",
-    align: "left",
-    field: "no",
-  },
+  // {
+  //   name: "no",
+  //   required: true,
+  //   label: "No",
+  //   align: "left",
+  //   field: "no",
+  // },
   {
     name: "user_nik",
     align: "left",
