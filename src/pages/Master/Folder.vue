@@ -1201,9 +1201,8 @@ const getPageAkses = async () => {
 };
 
 const getFolder = async () => {
+  loading.value = true;
   try {
-    spinnerBall();
-    loading.value = true;
     if (pagination.value.rowsPerPage == "All")
       pagination.value.rowsPerPage = pagination.value.rowsNumber;
     pagination.value.domain = localStorage.getItem("domain");
@@ -1214,16 +1213,18 @@ const getFolder = async () => {
 
     if (typeof res.data.data === "undefined") {
       listFolder.value = res.data;
+      pagination.value.rowsNumber = res.data.length;
     } else {
       listFolder.value = res.data.data;
+      pagination.value.rowsNumber = res.data.pagination?.total || 0;
     }
-
-    pagination.value.rowsNumber = res.data.pagination?.total || res.data.length;
+  } catch (err) {
+    console.error('getFolder error:', err);
+    error(ParseError(err));
+    listFolder.value = [];
+    pagination.value.rowsNumber = 0;
+  } finally {
     loading.value = false;
-    Loading.hide();
-  } catch (error) {
-    loading.value = false;
-    Loading.hide();
   }
 };
 
@@ -1415,9 +1416,8 @@ const updateTable = async () => {
 
 // Sub Folder 1 Functions
 const getSubFolder1 = async () => {
+  loadingSub1.value = true;
   try {
-    spinnerBall();
-    loadingSub1.value = true;
     if (paginationSub1.value.rowsPerPage == "All")
       paginationSub1.value.rowsPerPage = paginationSub1.value.rowsNumber;
 
@@ -1429,17 +1429,18 @@ const getSubFolder1 = async () => {
 
     if (typeof res.data.data === "undefined") {
       listSubFolder1.value = res.data;
+      paginationSub1.value.rowsNumber = res.data.length;
     } else {
       listSubFolder1.value = res.data.data;
+      paginationSub1.value.rowsNumber = res.data.pagination?.total || 0;
     }
-
-    paginationSub1.value.rowsNumber =
-      res.data.pagination?.total || res.data.length;
+  } catch (err) {
+    console.error('getSubFolder1 error:', err);
+    error(ParseError(err));
+    listSubFolder1.value = [];
+    paginationSub1.value.rowsNumber = 0;
+  } finally {
     loadingSub1.value = false;
-    Loading.hide();
-  } catch (error) {
-    loadingSub1.value = false;
-    Loading.hide();
   }
 };
 
@@ -1650,9 +1651,8 @@ const updateTableSub1 = async () => {
 
 // Sub Folder 2 Functions
 const getSubFolder2 = async () => {
+  loadingSub2.value = true;
   try {
-    spinnerBall();
-    loadingSub2.value = true;
     if (paginationSub2.value.rowsPerPage == "All")
       paginationSub2.value.rowsPerPage = paginationSub2.value.rowsNumber;
 
@@ -1664,17 +1664,18 @@ const getSubFolder2 = async () => {
 
     if (typeof res.data.data === "undefined") {
       listSubFolder2.value = res.data;
+      paginationSub2.value.rowsNumber = res.data.length;
     } else {
       listSubFolder2.value = res.data.data;
+      paginationSub2.value.rowsNumber = res.data.pagination?.total || 0;
     }
-
-    paginationSub2.value.rowsNumber =
-      res.data.pagination?.total || res.data.length;
+  } catch (err) {
+    console.error('getSubFolder2 error:', err);
+    error(ParseError(err));
+    listSubFolder2.value = [];
+    paginationSub2.value.rowsNumber = 0;
+  } finally {
     loadingSub2.value = false;
-    Loading.hide();
-  } catch (error) {
-    loadingSub2.value = false;
-    Loading.hide();
   }
 };
 
