@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { useNotify } from '../composables/useNotify';
+import { setSession, getSession, clearSession, isLoggedIn as sessionIsLoggedIn } from '../session.js';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
-    token: null,
+    // token TIDAK lagi disimpan di frontend (httpOnly cookie).
     isAuthenticated: false,
     loading: false
   }),
@@ -15,8 +16,9 @@ export const useAuthStore = defineStore('auth', {
     userNik: (state) => state.user?.nik,
     userName: (state) => state.user?.name,
     userEmail: (state) => state.user?.email,
-    userEmpId: (state) => state.user?.empid || state.user?.id || localStorage.getItem('empid'),
-    isLoggedIn: (state) => state.isAuthenticated && !!state.token
+    userEmpId: (state) => state.user?.empid || state.user?.id || getSession().empid,
+    // Status login berdasarkan session facade (cookie yang mengotorisasi request)
+    isLoggedIn: () => sessionIsLoggedIn()
   },
 
   actions: {
@@ -28,24 +30,28 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true;
       
       try {
+        // withCredentials default global → Set-Cookie token httpOnly tersimpan
         const response = await axios.post('/wjs/auth/login', {
           username,
           password
         });
 
         if (response.data.success) {
-          const { token, user } = response.data.data;
+          // Body tidak lagi berisi token; hanya data user
+          const { user } = response.data.data;
 
-          this.token = token;
           this.user = user;
           this.isAuthenticated = true;
 
-          // Store in localStorage
-          localStorage.setItem('wjs_token', token);
-          localStorage.setItem('wjs_user', JSON.stringify(user));
-          localStorage.setItem('token', token); // For compatibility
-          localStorage.setItem('empid', user.id);
-          localStorage.setItem('nik', user.nik);
+          // Simpan identitas sebagai blob terenkripsi (tanpa token)
+          setSession({
+            ...user,
+            empid: user?.empid || user?.id,
+            nik: user?.nik,
+            nama: user?.name,
+            domain: user?.domain || user?.bu_id,
+            role: user?.role,
+          });
 
           success('Login berhasil');
           return { success: true };
@@ -86,7 +92,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     /**
-     * Verify token validity
+     * Verify token validity (via cookie)
      */
     async verifyToken() {
       try {
@@ -109,8 +115,11 @@ export const useAuthStore = defineStore('auth', {
           this.user = response.data.data;
           this.isAuthenticated = true;
           
-          // Update localStorage
-          localStorage.setItem('wjs_user', JSON.stringify(response.data.data));
+          // Perbarui blob identitas
+          setSession({
+            ...getSession(),
+            ...response.data.data,
+          });
           
           return true;
         }
@@ -124,21 +133,12 @@ export const useAuthStore = defineStore('auth', {
     },
 
     /**
-     * Refresh token
+     * Refresh token (cookie diperbarui backend, tidak ada token di body)
      */
     async refreshToken() {
       try {
         const response = await axios.post('/wjs/auth/refresh');
-        
-        if (response.data.success) {
-          const { token } = response.data.data;
-          this.token = token;
-          localStorage.setItem('wjs_token', token);
-          localStorage.setItem('token', token);
-          return true;
-        }
-        
-        return false;
+        return !!response.data?.success;
       } catch (err) {
         console.error('Refresh token error:', err);
         return false;
@@ -150,34 +150,21 @@ export const useAuthStore = defineStore('auth', {
      */
     clearAuth() {
       this.user = null;
-      this.token = null;
       this.isAuthenticated = false;
-      
-      // Clear localStorage
-      localStorage.removeItem('wjs_token');
-      localStorage.removeItem('wjs_user');
-      localStorage.removeItem('token');
-      localStorage.removeItem('empid');
-      localStorage.removeItem('nik');
-      localStorage.removeItem('nama');
-      localStorage.removeItem('domain');
-      localStorage.removeItem('role');
+      // Hapus session identitas + flag (preferensi UI non-auth tetap)
+      clearSession();
     },
 
     /**
-     * Initialize auth from localStorage
+     * Initialize auth from session (dipanggil saat app start / guard)
      */
     initFromStorage() {
-      const token = localStorage.getItem('wjs_token') || localStorage.getItem('token');
-      const userStr = localStorage.getItem('wjs_user');
-
-      if (token && userStr) {
+      if (sessionIsLoggedIn()) {
         try {
-          this.token = token;
-          this.user = JSON.parse(userStr);
+          this.user = getSession();
           this.isAuthenticated = true;
         } catch (err) {
-          console.error('Error parsing user data:', err);
+          console.error('Error reading session:', err);
           this.clearAuth();
         }
       }
@@ -189,17 +176,7 @@ export const useAuthStore = defineStore('auth', {
     setUser(user) {
       this.user = user;
       this.isAuthenticated = true;
-      localStorage.setItem('wjs_user', JSON.stringify(user));
-    },
-
-    /**
-     * Set token
-     */
-    setToken(token) {
-      this.token = token;
-      localStorage.setItem('wjs_token', token);
-      localStorage.setItem('token', token);
+      setSession({ ...getSession(), ...user });
     }
   }
 });
-

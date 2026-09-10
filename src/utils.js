@@ -121,9 +121,22 @@ export function decodeFromUrl (ciphertext) {
    return ciphertext.replace(/-/g, '+').replace(/_/g, '/').padEnd(ciphertext.length + (4 - (ciphertext.length % 4)) % 4, '=');
 }
 
+// --- Session facade accessor (baca blob identitas terenkripsi) ---
+// Dibaca langsung di sini (tanpa import session.js) untuk menghindari circular import.
+const readSession = () => {
+  try {
+    const raw = window.localStorage.getItem("session");
+    if (!raw) return {};
+    const decrypted = useDecrypt(raw);
+    if (!decrypted) return {};
+    return JSON.parse(decrypted);
+  } catch (e) {
+    return {};
+  }
+};
+
 export const nik = () => {
-  let data = JSON.parse(window.localStorage.getItem("data"));
-  return data.data.nik;
+  return readSession().nik ?? null;
 };
 
 export const terbilang = (angka) => {
@@ -152,49 +165,60 @@ export const terbilang = (angka) => {
 }
 
 export const empid = () => {
-  let data = JSON.parse(window.localStorage.getItem("data"));
-  //console.log(data);
-  if (data){
-    return data.data.empid;
-  }else
-  return window.localStorage.getItem("empid"); 
+  return readSession().empid ?? null;
 };
 
 export const nama = () => {
-  return window.localStorage.getItem("nama");
+  return readSession().nama ?? null;
 };
 
 export const role = () => {
-  return window.localStorage.getItem("role");
+  return readSession().role ?? null;
 };
 
 export const admin = () => {
-  return window.localStorage.getItem("super");
+  return readSession().super ?? null;
 };
 
 export const domain = () => {
-  return window.localStorage.getItem("domain");
+  return readSession().domain ?? null;
 };
 
 export const site= () => {
-  return window.localStorage.getItem("site");
+  return readSession().site ?? null;
 };
 
 export const ListSite = () => {
-  return window.localStorage.getItem("ListSite");
+  return readSession().ListSite ?? null;
 };
 
 export const idleTime = () => {
-  return window.localStorage.getItem("idle_time");
+  return readSession().idle_time ?? null;
 };
 
 export const unit = () => {
-  return window.localStorage.getItem("unit");
+  return readSession().unit ?? null;
 };
 
+// Token tidak lagi disimpan di frontend (httpOnly cookie).
+// Dipertahankan agar import lama tidak pecah; selalu null di alur normal.
 export const token = () => {
-  let data = JSON.parse(window.localStorage.getItem("data"));
-  return data.data.token;
+  return null;
+};
+
+// Bersihkan session identitas + arahkan ke login (tanpa menghapus preferensi UI).
+const handleSessionExpired = () => {
+  window.localStorage.removeItem("session");
+  window.localStorage.removeItem("isLoggedIn");
+  const environment = `${import.meta.env.VITE_ENV}`;
+  setTimeout(() => {
+    if (environment === "LOCAL") {
+      window.location.hash = "#/login";
+      window.location.reload();
+    } else {
+      window.location.replace(`${import.meta.env.VITE_APPDBC}`);
+    }
+  }, 3000);
 };
 
 export const ParseError = (error) => {
@@ -204,11 +228,9 @@ export const ParseError = (error) => {
       case 400:  
         return error.response.data.message;  
       case 401:  
-        window.localStorage.clear();  
-        setTimeout(() => {  
-          location.reload();  
-        }, 7000);  
-        return error.response.data.message;
+      case 402:  
+        handleSessionExpired();
+        return error.response.data?.message || "Sesi Anda telah berakhir. Silakan login kembali.";
       case 413:
         return "Data terlalu besar untuk dikirim. Silakan kurangi jumlah data atau hubungi admin.";  
       case 500:  

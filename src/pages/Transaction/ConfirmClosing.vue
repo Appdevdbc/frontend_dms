@@ -637,7 +637,7 @@ import { useQuasar } from 'quasar';
 import axios from 'axios';
 import { useAuthStore } from '../../stores/auth';
 import dayjs from 'dayjs';
-import { encryptMessage } from '../../utils';
+import { encryptMessage, domain as sessionDomain } from '../../utils';
 
 const router = useRouter();
 const $q = useQuasar();
@@ -776,7 +776,7 @@ const progressColumns = [
 
 // Get user's BU from localStorage
 const userBU = computed(() => {
-  return localStorage.getItem('domain') || authStore.user?.bu_id || '';
+  return sessionDomain() || authStore.user?.bu_id || '';
 });
 
 // Group items by list_id (points)

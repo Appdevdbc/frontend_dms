@@ -1205,7 +1205,7 @@ const getFolder = async () => {
   try {
     if (pagination.value.rowsPerPage == "All")
       pagination.value.rowsPerPage = pagination.value.rowsNumber;
-    pagination.value.domain = localStorage.getItem("domain");
+    pagination.value.domain = domain();
 
     const res = await axios.get(`${import.meta.env.VITE_API}listFolder`, {
       params: pagination.value,
