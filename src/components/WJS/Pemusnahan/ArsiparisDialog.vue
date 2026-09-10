@@ -206,7 +206,7 @@
 import { ref, reactive, watch, computed } from 'vue';
 import axios from 'axios';
 import { useNotify } from '../../../composables/useNotify';
-import { empid } from '../../../utils';
+import { empid, domain } from '../../../utils';
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -269,7 +269,7 @@ const resetForm = () => {
 const loadArchives = async () => {
   try {
     const res = await axios.get(`${apiUrl}dms/pemusnahan/${props.ticketData.tr_arsip_id}`, {
-      params: { empid: empid(), domain: localStorage.getItem('domain') },
+      params: { empid: empid(), domain: domain() },
       skipErrorInterceptor: true
     });
     archives.value = res.data.data.details || [];

@@ -400,7 +400,7 @@ import axios from 'axios';
 import { useQuasar } from 'quasar';
 import { useNotify } from '../../composables/useNotify';
 import { useAuthStore } from '../../stores/auth';
-import { encryptMessage, decryptMessage } from '../../utils';
+import { encryptMessage, decryptMessage, nik as sessionNik, empid as sessionEmpid } from '../../utils';
 import dayjs from 'dayjs';
 
 const $q = useQuasar();
@@ -466,7 +466,7 @@ onMounted(async () => {
   }
   
   // Get NIK from auth store or localStorage
-  form.auditor_nik = authStore.user?.nik || localStorage.getItem('nik') || '';
+  form.auditor_nik = authStore.user?.nik || sessionNik() || '';
 });
 
 const loadTemuanData = async (encryptedTemuanId) => {
@@ -733,7 +733,7 @@ const submitForm = async () => {
   
   try {
     // Get empid from auth store (with fallback to localStorage)
-    const empid = authStore.userEmpId || localStorage.getItem('empid') || '';
+    const empid = authStore.userEmpId || sessionEmpid() || '';
     
     // Prepare FormData for file upload
     const formData = new FormData();
