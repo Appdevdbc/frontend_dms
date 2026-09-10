@@ -328,12 +328,19 @@ import "./../../assets/styles/table.css";
 const router = useVueRouter();
 const { success, error } = useNotify();
 const columns = [
+  // {
+  //   name: "no",
+  //   required: true,
+  //   label: "No",
+  //   align: "left",
+  //   field: "no",
+  // },
   {
-    name: "no",
-    required: true,
-    label: "No",
+    name: "user_nik",
     align: "left",
-    field: "no",
+    label: "NIK",
+    field: "user_nik",
+    sortable: true,
   },
   {
     name: "account_name",
@@ -449,9 +456,8 @@ const getPageAkses = async () => {
 };
 
 const getUser = async () => {
+  loading.value = true;
   try {
-    spinnerBall()
-    loading.value = true;
     if (pagination.value.rowsPerPage == 'All')
      pagination.value.rowsPerPage = pagination.value.rowsNumber;
     
@@ -461,16 +467,18 @@ const getUser = async () => {
     
     if (typeof res.data.data === "undefined") {
       listUser.value = res.data;
+      pagination.value.rowsNumber = res.data.length;
     } else {
       listUser.value = res.data.data;
+      pagination.value.rowsNumber = res.data.pagination?.total || 0;
     }
-
-    pagination.value.rowsNumber = res.data.pagination?.total || res.data.length;
+  } catch (err) {
+    console.error('getUser error:', err);
+    error(ParseError(err));
+    listUser.value = [];
+    pagination.value.rowsNumber = 0;
+  } finally {
     loading.value = false;
-    Loading.hide()
-  } catch (error) {
-    loading.value = false;
-    Loading.hide()
   }
 };
 
@@ -535,7 +543,8 @@ const editUser = async (value) => {
     tmpForm.dept = value.user_iddept;
     
     await getRole(value.user_role);
-    tmpForm.role = value.user_role;
+    // Convert role to number to match the options format
+    tmpForm.role = parseInt(value.user_role);
   } catch (error) {
     console.log(error)
   }

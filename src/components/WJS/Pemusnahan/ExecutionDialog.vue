@@ -400,7 +400,7 @@ const resetForm = () => {
 const loadArchives = async () => {
   try {
     const res = await axios.get(`${apiUrl}dms/${props.module}/${props.ticketData.tr_arsip_id}`, {
-      params: { empid: empid(), domain: localStorage.getItem('domain') },
+      params: { empid: empid(), domain: domain() },
       skipErrorInterceptor: true
     });
     archives.value = res.data.data.details || [];

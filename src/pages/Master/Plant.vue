@@ -379,9 +379,8 @@ const getBusinessUnits = async () => {
 };
 
 const getPlant = async () => {
+  loading.value = true;
   try {
-    spinnerBall();
-    loading.value = true;
     if (pagination.value.rowsPerPage == "All")
       pagination.value.rowsPerPage = pagination.value.rowsNumber;
     
@@ -393,16 +392,18 @@ const getPlant = async () => {
 
     if (typeof res.data.data === "undefined") {
       listPlant.value = res.data;
+      pagination.value.rowsNumber = res.data.length;
     } else {
       listPlant.value = res.data.data;
+      pagination.value.rowsNumber = res.data.pagination?.total || 0;
     }
-
-    pagination.value.rowsNumber = res.data.pagination?.total || res.data.length;
+  } catch (err) {
+    console.error('getPlant error:', err);
+    error(ParseError(err));
+    listPlant.value = [];
+    pagination.value.rowsNumber = 0;
+  } finally {
     loading.value = false;
-    Loading.hide();
-  } catch (error) {
-    loading.value = false;
-    Loading.hide();
   }
 };
 

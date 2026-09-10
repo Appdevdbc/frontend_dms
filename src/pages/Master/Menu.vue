@@ -415,9 +415,8 @@ const getPageAkses = async () => {
 };
 
 const getMenu = async () => {
+  loading.value = true;
   try {
-    spinnerBall()
-    loading.value = true;
     if (pagination.value.rowsPerPage == 'All')
      pagination.value.rowsPerPage = pagination.value.rowsNumber;
     
@@ -427,16 +426,18 @@ const getMenu = async () => {
     
     if (typeof res.data.data === "undefined") {
       listMenu.value = res.data;
+      pagination.value.rowsNumber = res.data.length;
     } else {
       listMenu.value = res.data.data;
+      pagination.value.rowsNumber = res.data.pagination?.total || 0;
     }
-
-    pagination.value.rowsNumber = res.data.pagination?.total || res.data.length;
+  } catch (err) {
+    console.error('getMenu error:', err);
+    error(ParseError(err));
+    listMenu.value = [];
+    pagination.value.rowsNumber = 0;
+  } finally {
     loading.value = false;
-    Loading.hide()
-  } catch (error) {
-    loading.value = false;
-    Loading.hide()
   }
 };
 

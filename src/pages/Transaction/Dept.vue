@@ -211,9 +211,8 @@ const columns = [
 ];
 
 const loadData = async () => {
+  loading.value = true;
   try {
-    spinnerBall();
-    
     // Load department name, folders, and documents
     const res = await axios.get(`${import.meta.env.VITE_API}transaction/getDeptFiles`, {
       params: {
@@ -234,16 +233,19 @@ const loadData = async () => {
     
     if (typeof res.data.documents.data === "undefined") {
       documents.value = res.data.documents;
+      pagination.value.rowsNumber = res.data.documents.length;
     } else {
       documents.value = res.data.documents.data;
+      pagination.value.rowsNumber = res.data.documents.pagination?.total || 0;
     }
-    
-    pagination.value.rowsNumber = res.data.documents.pagination?.total || res.data.documents.length;
-    
-    Loading.hide();
   } catch (err) {
-    Loading.hide();
+    console.error('loadData error:', err);
     error(ParseError(err));
+    documents.value = [];
+    folders.value = [];
+    pagination.value.rowsNumber = 0;
+  } finally {
+    loading.value = false;
   }
 };
 

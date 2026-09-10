@@ -89,6 +89,7 @@ import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Highcharts from 'highcharts';
 import CryptoJS from "crypto-js";
+import { empid, domain, role } from '../../utils.js';
 
 const $q = useQuasar();
 const router = useRouter();
@@ -109,34 +110,10 @@ const tmpPage = reactive({
 });
 
 // Helper functions
-const domain = () => {
-  const value = window.localStorage.getItem("domain");
-  if (!value) return "blue";
-  
-  const key = "WJSPASSWORD";
-  const bytes = CryptoJS.AES.decrypt(value, key);
-  const decryptedValue = bytes.toString(CryptoJS.enc.Utf8);
-  
-  return decryptedValue.toLowerCase();
-};
-
-const empid = () => {
-  const value = window.localStorage.getItem("empid");
-  if (!value) return "";
-  
-  const key = "WJSPASSWORD";
-  const bytes = CryptoJS.AES.decrypt(value, key);
-  return bytes.toString(CryptoJS.enc.Utf8);
-};
-
+// empid(), domain(), role() diambil dari session facade (utils.js).
+// admin: role dari login DMS berupa nilai terenkripsi ('0' by default).
 const admin = () => {
-  const value = window.localStorage.getItem("role");
-  if (!value) return "0";
-  
-  const key = "WJSPASSWORD";
-  const bytes = CryptoJS.AES.decrypt(value, key);
-  const role = bytes.toString(CryptoJS.enc.Utf8);
-  return (role === "rw" || role === "rwx") ? "1" : "0";
+  return role() === "1" ? "1" : "0";
 };
 
 const spinnerBall = () => {
@@ -154,7 +131,7 @@ const getPageAkses = async () => {
     spinnerBall();
     const res = await axios.get(`${import.meta.env.VITE_API}pageakses`, {
       params: {
-        role: window.localStorage.getItem("empid"),
+        role: empid(),
         page: 'dashboard',
         domain: domain(),
       }
@@ -185,7 +162,8 @@ const getDashboardStats = async () => {
   try {
     const response = await axios.get('/getDashboardStats', {
       params: {
-        domain: window.localStorage.getItem("domain")
+        domain: domain(),
+        empid: empid()
       }
     });
     if (response.data.success) {
@@ -206,7 +184,8 @@ const loadChartData = async () => {
   try {
     const response = await axios.get('/getChartData', {
       params: {
-        domain: window.localStorage.getItem("domain")
+        domain: domain(),
+        empid: empid()
       }
     });
     if (response.data.success) {
